@@ -27,15 +27,6 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:label="@string/app_name" />
         <activity
-            android:name=".GoogleMeps"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.GoogleMeps" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".AnaAkim"
             android:label="@string/app_name" >
             <intent-filter>
@@ -44,6 +35,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <service android:name=".TakipServisi" ></service>
+
         <provider
             android:authorities="com.facebook.app.FacebookContentProvider146074849062664"
             android:name="com.facebook.FacebookContentProvider"

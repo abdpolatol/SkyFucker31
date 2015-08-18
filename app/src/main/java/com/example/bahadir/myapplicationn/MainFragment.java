@@ -7,12 +7,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -20,15 +22,10 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,64 +34,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
-public class MainFragment extends Fragment implements View.OnClickListener {
-    TextView tv1;
-    Button buton1;
+public class MainFragment extends Fragment{
+    String isim;
     Profile profile;
-    ImageView image1;
     AccessToken accessToken;
     Bitmap bitmap=null;
     ProfileTracker protracker;
     AccessTokenTracker tracker;
     NettenIndir a = new NettenIndir();
+    Button buton1;
     private CallbackManager mCallbackManager;
 
-    private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
-        public void onSuccess(LoginResult loginResult) {
-            accessToken = loginResult.getAccessToken();
-            profile = Profile.getCurrentProfile();
-            Log.i("tago" ,"okudum");
-            displayCase(profile);
-            GraphRequest request = GraphRequest.newMeRequest( AccessToken.getCurrentAccessToken(),
-                    new GraphRequest.GraphJSONObjectCallback() {
-                        @Override
-                        public void onCompleted(JSONObject object,GraphResponse response) {
-                            try {
-                                String email=object.getString("user");
-                                Log.d("tago" , "user email :" + email);
-                            } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-
-                        }
-
-                    });
-
-            request.executeAsync();
-
-        }
-
-        public void onCancel() {
-
-        }
-
-        public void onError(FacebookException e) {
-
-        }
-    };
-    private void displayCase(Profile profile) {
-        if(profile!=null){
-            tv1.setText("Welcome " + profile.getName());
-            Log.i("tago", "adı yazdım");
-            a.execute(profile.getId());
-            Log.i("tago" , "fotoyu çektim");
-            image1.setImageBitmap(bitmap);
-            Log.i("tago", "yazdım");
-        }
-    }
-    public MainFragment() {
-    }
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
@@ -114,6 +64,47 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         tracker.startTracking();
         protracker.stopTracking();
     }
+    public MainFragment() {}
+    private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
+        public void onSuccess(LoginResult loginResult) {
+            accessToken = loginResult.getAccessToken();
+            profile = Profile.getCurrentProfile();
+            Log.i("tago" ,"okudum");
+            displayCase(profile);
+            /*GraphRequest request = GraphRequest.newMeRequest( AccessToken.getCurrentAccessToken(),
+                    new GraphRequest.GraphJSONObjectCallback() {
+                        @Override
+                        public void onCompleted(JSONObject object,GraphResponse response) {
+                            try {
+                                String isim=object.getString("user");
+                                //Log.i("tago" , "user email :" + isim);
+                            } catch (JSONException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                    });
+
+            request.executeAsync();
+            */
+        }
+
+        public void onCancel() {
+
+        }
+
+        public void onError(FacebookException e) {
+
+        }
+    };
+    private void displayCase(Profile profile) {
+        if(profile!=null){
+            a.execute(profile.getId());
+            Log.i("tago" , "fotoyu çektim");
+        }
+    }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
@@ -123,10 +114,8 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         loginb.setReadPermissions("user_friends" , "public_profile" ,"email");
         loginb.setFragment(this);
         loginb.registerCallback(mCallbackManager, mCallBack);
-        tv1 = (TextView) view.findViewById(R.id.textView);
-        image1 = (ImageView) view.findViewById(R.id.imageView);
         buton1 = (Button) view.findViewById(R.id.button);
-        buton1.setOnClickListener(this);
+        registerForContextMenu(buton1);
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -136,7 +125,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         super.onResume();
         Profile profile = Profile.getCurrentProfile();
         if (profile != null) {
-            tv1.setText("Welcome " + profile.getName());
+            isim = profile.getName();
         }
     }
     public void onStop(){
@@ -144,10 +133,30 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         tracker.stopTracking();
         protracker.stopTracking();
     }
-    public void onClick(View v) {
-        Intent i = new Intent(getActivity() ,GoogleMeps.class);
-        startActivity(i);
+
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater menuInflater = getActivity().getMenuInflater();
+        menuInflater.inflate(R.menu.girismenusu , menu);
+        Log.i("tago" , "contextmenuyapıldı");
     }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.item1:
+                Toast.makeText(getActivity(), "item1" , Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.item2:
+                Toast.makeText(getActivity(), "item2" , Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.item3:
+                Toast.makeText(getActivity(), "item3" , Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
+
     public class NettenIndir extends AsyncTask<String , Void , Bitmap>{
 
         protected Bitmap doInBackground(String... params) {
@@ -175,8 +184,14 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         }
 
         protected void onPostExecute(Bitmap bitmap) {
-            image1.setImageBitmap(bitmap);
             Log.i("tago" , "bitmap yerleştirdim");
+            if(isim!=null) {
+                Intent i = new Intent(getActivity(), AnaAkim.class);
+                i.putExtra("isim", isim);
+                i.putExtra("resim", bitmap);
+                startActivity(i);
+            }
         }
     }
 }
+

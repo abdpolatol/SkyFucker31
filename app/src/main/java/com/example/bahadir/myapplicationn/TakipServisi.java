@@ -1,52 +1,60 @@
 package com.example.bahadir.myapplicationn;
 
+import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 
 import java.text.DateFormat;
 import java.util.Date;
 
-public class GoogleMeps extends FragmentActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks ,
-        GoogleApiClient.OnConnectionFailedListener , LocationListener , View.OnClickListener{
+public class TakipServisi extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
+,LocationListener{
     Location mCurrentLocation;
     GoogleApiClient googleclient;
-    Button buton1;
+    public void onCreate() {
+        super.onCreate();
+        Log.i("tago" , "onCreate çağırıldı");
+    }
 
-    protected void onCreate(Bundle bambam){
-        super.onCreate(bambam);
-        setContentView(R.layout.fragment_main);
-        googleclient = new GoogleApiClient.Builder(this).addApi(LocationServices.API).addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this).build();
-        Log.i("tago", "clienti yaptım");
-        buton1 = (Button) findViewById(R.id.button);
-        buton1.setOnClickListener(this);
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("tago", "onStartCommand çağırıldı");
+        Runnable r = new Runnable() {
+            public void run() {
+                googleclient = new GoogleApiClient.Builder(TakipServisi.this).addApi(LocationServices.API).addConnectionCallbacks(TakipServisi.this)
+                        .addOnConnectionFailedListener(TakipServisi.this).build();
+                Log.i("tago", "clienti yaptım");
+                googleclient.connect();
+                Log.i("tago" , "baglandım");
+            }
+        };
+        Thread islem = new Thread(r);
+        islem.start();
+        return Service.START_STICKY;
     }
-    public void onStart(){
-        super.onStart();
-        googleclient.connect();
-    }
-    protected void onStop() {
+
+    public void onDestroy() {
+        Log.i("tago", "onDestroy çağırıldı");
         googleclient.disconnect();
-        super.onStop();
+        Log.i("tago" , "baglantı bitirildi");
+        super.onDestroy();
     }
-    public void onMapReady(GoogleMap googleMap) {
+
+    public IBinder onBind(Intent intent) {
+        return null;
     }
+
     public void onConnected(Bundle bundle) {
-       mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(
-               googleclient);
+        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(
+                googleclient);
         if (mCurrentLocation != null) {
             Log.i("tago" ,String.valueOf(mCurrentLocation.getLatitude())+ String.valueOf(mCurrentLocation.getLongitude()) );
         }
@@ -55,22 +63,24 @@ public class GoogleMeps extends FragmentActivity implements OnMapReadyCallback ,
         locrequest.setFastestInterval(5000);
         locrequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if(true){
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleclient,locrequest ,this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleclient,locrequest,this);
         }
     }
+
     public void onConnectionSuspended(int i) {
 
     }
+
     public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
+
     public void onLocationChanged(Location location) {
         mCurrentLocation = location ;
         String mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         Log.i("tago" ,  String.valueOf(mCurrentLocation.getLatitude())+ " " + String.valueOf(mCurrentLocation.getLongitude()) );
-        Log.i("tago" , mLastUpdateTime);
+        Log.i("tago", mLastUpdateTime);
     }
-    public void onClick(View v) {
-        Intent i = new Intent(GoogleMeps.this , AnaAkim.class );
-        startActivity(i);
-    }
+
 }
+

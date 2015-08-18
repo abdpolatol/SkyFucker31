@@ -33,30 +33,6 @@
                     android:orientation="vertical"
                     android:background="#CEDE19">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="#3A86AB">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceLarge"
-                            android:text="Yakındaki picler"
-                            android:id="@+id/textView3" />
-
-                        <ImageButton
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/imageButton"
-                            android:minHeight="50dp"
-                            android:minWidth="50dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentEnd="true"
-                            android:background="@mipmap/aramabutonu"/>
-
-
-                    </RelativeLayout>
                     <ListView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
