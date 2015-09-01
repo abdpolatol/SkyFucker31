@@ -294,5 +294,9 @@ public class VeriTabani {
             return "alabama";
         }
 
+        @Override
+        protected void onPostExecute(String s) {
+
+        }
     }
 }
