@@ -7,14 +7,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -35,8 +31,12 @@ import java.net.URL;
 
 
 public class MainFragment extends Fragment{
-    String isim;
+    String tumisim;
+    String firstname;
+    String middlename;
+    String lastname;
     Profile profile;
+    String urll;
     AccessToken accessToken;
     Bitmap bitmap=null;
     ProfileTracker protracker;
@@ -62,14 +62,14 @@ public class MainFragment extends Fragment{
             }
         };
         tracker.startTracking();
-        protracker.stopTracking();
+        protracker.startTracking();
     }
     public MainFragment() {}
     private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
         public void onSuccess(LoginResult loginResult) {
             accessToken = loginResult.getAccessToken();
             profile = Profile.getCurrentProfile();
-            Log.i("tago" ,"okudum");
+            Log.i("tago" ,"MainFragment okudum");
             displayCase(profile);
             /*GraphRequest request = GraphRequest.newMeRequest( AccessToken.getCurrentAccessToken(),
                     new GraphRequest.GraphJSONObjectCallback() {
@@ -102,7 +102,7 @@ public class MainFragment extends Fragment{
     private void displayCase(Profile profile) {
         if(profile!=null){
             a.execute(profile.getId());
-            Log.i("tago" , "fotoyu çektim");
+            Log.i("tago" , "MainFragment fotoyu çektim");
         }
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -125,36 +125,17 @@ public class MainFragment extends Fragment{
         super.onResume();
         Profile profile = Profile.getCurrentProfile();
         if (profile != null) {
-            isim = profile.getName();
+            tumisim = profile.getName();
+            firstname = profile.getFirstName();
+            middlename = profile.getMiddleName();
+            lastname = profile.getLastName();
         }
     }
     public void onStop(){
         super.onStop();
         tracker.stopTracking();
         protracker.stopTracking();
-    }
-
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater menuInflater = getActivity().getMenuInflater();
-        menuInflater.inflate(R.menu.girismenusu , menu);
-        Log.i("tago" , "contextmenuyapıldı");
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        switch(item.getItemId()){
-            case R.id.item1:
-                Toast.makeText(getActivity(), "item1" , Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.item2:
-                Toast.makeText(getActivity(), "item2" , Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.item3:
-                Toast.makeText(getActivity(), "item3" , Toast.LENGTH_SHORT).show();
-                break;
-        }
-        return super.onContextItemSelected(item);
+        getActivity().finish();
     }
 
     public class NettenIndir extends AsyncTask<String , Void , Bitmap>{
@@ -162,17 +143,18 @@ public class MainFragment extends Fragment{
         protected Bitmap doInBackground(String... params) {
             try {
                 URL url = new URL("https://graph.facebook.com/" + params[0]+ "/picture?type=large");
+                urll = "https://graph.facebook.com/" + params[0]+ "/picture?type=large";
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                Log.i("tago" , "connection sağladm");
+                Log.i("tago" , "MainFragment connection sağladm");
                 connection.setDoInput(true);
-                Log.i("tago" , "doinput");
+                Log.i("tago" , "MainFragment doinput");
                 connection.connect();
-                Log.i("tago" , "connection sağladım");
+                Log.i("tago" , "MainFragment connect sağladım");
                 InputStream input = connection.getInputStream();
                 bitmap = BitmapFactory.decodeStream(input);
-                Log.i("tago" , "bitmap yaptım");
+                Log.i("tago" , "Main Fragment bitmap yaptım");
                 if(bitmap == null){
-                    Log.i("tago" , "bitmap yok");
+                    Log.i("tago" , "Main Fragment bitmap yok");
                 }
                 return bitmap;
             } catch (MalformedURLException e) {
@@ -184,12 +166,16 @@ public class MainFragment extends Fragment{
         }
 
         protected void onPostExecute(Bitmap bitmap) {
-            Log.i("tago" , "bitmap yerleştirdim");
-            if(isim!=null) {
+            Log.i("tago" , "Main Fragment bitmap yerleştirdim");
+            if(tumisim!=null) {
                 Intent i = new Intent(getActivity(), AnaAkim.class);
-                i.putExtra("isim", isim);
+                i.putExtra("isim", tumisim);
                 i.putExtra("resim", bitmap);
+                i.putExtra("resimurl" , urll);
+                i.putExtra("firstname" , firstname);
+                i.putExtra("lastname" , lastname);
                 startActivity(i);
+
             }
         }
     }

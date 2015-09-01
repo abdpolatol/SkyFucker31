@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical" android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:background="#345355"
-    android:minHeight="250dp"
-    android:minWidth="250dp">
+    android:background="@mipmap/cute_owl3"
+    android:minHeight="300dp"
+    android:minWidth="300dp">
 
     <LinearLayout
         android:orientation="vertical"
@@ -12,11 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Welcome to SHappy"
-            android:id="@+id/textView2" />
     </LinearLayout>
 
     <LinearLayout
@@ -27,13 +22,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nick :"
-            android:id="@+id/textView3" />
+            android:id="@+id/textView3"
+            android:background="@mipmap/verrrrrr"
+            android:layout_marginLeft="10dp" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editText" />
+            android:id="@+id/editText"
+            android:layout_marginTop="12dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -43,9 +40,10 @@
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Come Mome"
-            android:id="@+id/button5" />
+            android:layout_height="46dp"
+            android:id="@+id/button5"
+            android:layout_gravity="bottom"
+            android:background="@mipmap/cmmme" />
     </LinearLayout>
 
 </LinearLayout>

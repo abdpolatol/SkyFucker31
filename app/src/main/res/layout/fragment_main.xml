@@ -12,9 +12,9 @@
         android:id="@+id/imageView2"
         android:minHeight="200dp"
         android:minWidth="200dp"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/button"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="38dp" />
+        android:layout_marginTop="37dp" />
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button"

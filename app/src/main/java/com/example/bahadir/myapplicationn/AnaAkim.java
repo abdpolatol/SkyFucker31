@@ -1,35 +1,59 @@
 package com.example.bahadir.myapplicationn;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TabHost;
 
-public class AnaAkim extends Activity {
-    TabHost thost;
-    TabHost.TabSpec tspec1,tspec2,tspec3,tspec4,tspec5;
-    ListView list1;
+import com.astuetz.PagerSlidingTabStrip;
+
+public class AnaAkim extends FragmentActivity {
     Bitmap bitmap;
     String isim;
+    String resimurl;
+    Location x = new Location("ababa");
+    Location y = new Location("caccaca");
     protected void onCreate(Bundle bambam){
         super.onCreate(bambam);
         setContentView(R.layout.cevrendekiler);
-        tanimlar();
         Intent intent = getIntent();
-        bitmap = (Bitmap) intent.getParcelableExtra("resim");
+        bitmap = intent.getParcelableExtra("resim");
         isim =  intent.getStringExtra("isim");
-        Log.i("tago", isim + " giriş yaptı");
-        Intent i = new Intent(AnaAkim.this, TakipServisi.class);
-        startService(i);
-        Log.i("tago", "takibe aldı");
+        String firstname = intent.getStringExtra("firstname");
+        String lastname = intent.getStringExtra("lastname");
+        resimurl = intent.getStringExtra("resimurl");;
+        Intent inte = new Intent(AnaAkim.this , TakipServisi.class);
+        inte.putExtra("isim" , isim);
+        inte.putExtra("resimurl" , resimurl);
+        inte.putExtra("firstname" , firstname);
+        inte.putExtra("lastname", lastname);
+        startService(inte);
+        Log.i("tago", "Takip servisi başlatıldı");
+        tanimlar();
+        nickAl();
+       // yerolustur();
+        //mesafeyiBul(x, y);
+    }
+
+    protected void onResume() {
+        super.onResume();
+        Log.i("tago","AnaAkim " +  isim + " giriş yaptı");
+
+    }
+    public void tanimlar(){
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setAdapter(new SampleFragmentPagerAdapter(getSupportFragmentManager()));
+        PagerSlidingTabStrip tabsStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabsStrip.setViewPager(viewPager);
+    }
+    public void nickAl(){
         final Dialog dialog = new Dialog(AnaAkim.this);
         dialog.setTitle("nick ver");
         dialog.setContentView(R.layout.customdialog);
@@ -47,55 +71,28 @@ public class AnaAkim extends Activity {
             }
         });
     }
+    public void mesafeyiBul(Location a , Location b){
+        float distance = a.distanceTo(b);
+        Log.i("tago", "" + distance);
 
-    public void tanimlar(){
-        thost = (TabHost) findViewById(R.id.tabHost);
-        thost.setup();
-        tspec1 = thost.newTabSpec("Baslik1");
-        tspec1.setContent(R.id.tab1);
-        Drawable d = getResources().getDrawable(R.mipmap.ic_launcher , null);
-        tspec1.setIndicator("", d);
-        thost.addTab(tspec1);
-        tspec2 = thost.newTabSpec("Baslik2");
-        tspec2.setContent(R.id.tab2);
-        tspec2.setIndicator("IkinciTab");
-        thost.addTab(tspec2);
-        tspec3 = thost.newTabSpec("Baslik3");
-        tspec3.setContent(R.id.tab3);
-        tspec3.setIndicator("UcuncuTab");
-        thost.addTab(tspec3);
-        tspec4= thost.newTabSpec("Baslik4");
-        tspec4.setContent(R.id.tab4);
-        tspec4.setIndicator("Dorduncu Tab");
-        thost.addTab(tspec4);
-        tspec5 = thost.newTabSpec("Baslik5");
-        tspec5.setContent(R.id.tab5);
-        tspec5.setIndicator("Besinci Tab");
-        thost.addTab(tspec5);
-        adapterkur();
     }
-    public void adapterkur() {
-        Insan[] insan_data = new Insan[]
-                {
-                        new Insan(R.mipmap.apoprof, "Apo"),
-                        new Insan(R.mipmap.baranprof, "Showers"),
-                        new Insan(R.mipmap.kursatprof, "Snow"),
-                        new Insan(R.mipmap.ozerprof , "Ben Delay Remix"),
-                        new Insan(R.mipmap.taylanprof , "Sis Atma Och"),
-                        new Insan(R.mipmap.aliprof , "BigFoot"),
-                        new Insan(R.mipmap.hasanprof , "Marlboro Light"),
-                        new Insan(R.mipmap.bengisuprof , "Operation"),
-                        new Insan(R.mipmap.beyzaprof, "Bana yok mu"),
-                        new Insan(R.mipmap.seloprof , "mega")
-                };
-
-        InsanAdapter adapter = new InsanAdapter(this,
-                R.layout.listview_item, insan_data);
-
-
-        list1 = (ListView) findViewById(R.id.listView);
-        View header = getLayoutInflater().inflate(R.layout.listview_header, null);
-        list1.addHeaderView(header);
-        list1.setAdapter(adapter);
+    public void yerolustur(){
+        x.setLatitude(39.8998454);
+        x.setLongitude(32.7949772);
+        y.setLatitude(39.8973333);
+        y.setLongitude(32.7924444);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+   /* protected void onDestroy() {
+        unregisterReceiver(breceiver);
+        stopService(new Intent(AnaAkim.this , TakipServisi.class));
+        super.onDestroy();
+    }
+*/
+
 }
