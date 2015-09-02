@@ -2,6 +2,7 @@ package com.example.bahadir.myapplicationn;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -10,12 +11,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+
 public class PageFragment extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
     private int mPage;
     ListView list1;
     View view;
     VeriTabani v ;
+    String url;
+    String charset;
+    String query;
+    CevredekileriGoster cG;
+    ArrayList<Insann> InsanListesi;
 
     public static PageFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -24,31 +43,25 @@ public class PageFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
     }
-
     private String idSharedPreferenceAl() {
         SharedPreferences sP = getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
         String veritabani_id = sP.getString("veritabani_id", "default id");
-        Log.i("tago", "Page Fragment hafýzadan ulaþtým veritabaný id = " + veritabani_id);
+        Log.i("tago", "Page Fragment hafï¿½zadan ulaï¿½tï¿½m veritabanï¿½ id = " + veritabani_id);
         return veritabani_id;
     }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.tab1, container, false);
-        adapterkur();
+        list1 = (ListView) view.findViewById(R.id.listView);
         Log.i("tago", "Page Fragment onCreateView");
         String veritabani_id = idSharedPreferenceAl();
         if (veritabani_id != "default") {
-            v = new VeriTabani(getActivity(), veritabani_id, "32.3344343", "32.3223233");
-            v.cevredekilerigoster();
+            cevredekilericek(veritabani_id);
         } else if(veritabani_id=="default"){
-            Log.i("tago" , "default aldýn þu anda 800 milisaniye kaybettin");
+            Log.i("tago", "default aldï¿½n ï¿½u anda 800 milisaniye kaybettin");
             Thread idyibeklepic = new Thread() {
                 public void run(){
                     try {
@@ -60,33 +73,88 @@ public class PageFragment extends Fragment {
             };
             idyibeklepic.start();
             String veritabani_idd= idSharedPreferenceAl();
-            v = new VeriTabani(getActivity(), veritabani_idd, "32.3344343", "32.3223233");
-            v.cevredekilerigoster();
+            cevredekilericek(veritabani_idd);
         }else{
-            Log.i("tago" , "Ananý avradýný sikerim senin");
+            Log.i("tago" , "Ananï¿½ avradï¿½nï¿½ sikerim senin");
         }
             return view;
     }
+    private void cevredekilericek(String veritabani_id) {
+        cG = new CevredekileriGoster();
+        cG.execute(veritabani_id);
+    }
 
-    private void adapterkur() {
-        Insan[] insan_data = new Insan[]
-                {
-                        new Insan(R.mipmap.aliprof, "Apo"),
-                        new Insan(R.mipmap.aliprof, "Showers"),
-                        new Insan(R.mipmap.aliprof, "Snow"),
-                        new Insan(R.mipmap.aliprof , "Ben Delay Remix"),
-                        new Insan(R.mipmap.aliprof , "Sis Atma Och"),
-                        new Insan(R.mipmap.aliprof , "BigFoot"),
-                        new Insan(R.mipmap.aliprof, "Marlboro Light"),
-                        new Insan(R.mipmap.aliprof , "Operation"),
-                        new Insan(R.mipmap.aliprof, "Bana yok mu"),
-                        new Insan(R.mipmap.aliprof, "mega")
-                };
+    private class CevredekileriGoster extends AsyncTask<String , Void , String>{
 
-        InsanAdapter adapter = new InsanAdapter(getActivity(), R.layout.listview_item, insan_data);
-        list1 = (ListView) view.findViewById(R.id.listView);
-        View header = getActivity().getLayoutInflater().inflate(R.layout.listview_header, null);
-        list1.addHeaderView(header);
-        list1.setAdapter(adapter);
+        protected String doInBackground(String... params) {
+            url = "http://185.22.184.103/project/connection.php?name=bahadirturk&url=http://www.google.com&long=33.2132123&lat=33.2322322";
+            charset = "ISO-8859-9";
+            String param1 = "id";
+            try {
+                query = String.format("param1=%s", URLEncoder.encode(param1, charset));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.i("tago", "Page Fragment cevredekileri goster baï¿½latï¿½ldï¿½");
+            try {
+                return cevredekilerigor(params[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "olmadï¿½" ;
+            }
+        }
+
+        public String cevredekilerigor(String id) {
+            HttpURLConnection connection = null;
+            try {
+                connection = (HttpURLConnection) new URL("http://185.22.184.103/project/near_users.php?id="+ id).openConnection();
+                Log.i("tago", "Page Fragment cevredekileri gor bagï¿½ kuruldu");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
+            connection.setRequestProperty("Accept", "*/*");
+            connection.setRequestProperty("Accept-Charset", charset);
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+
+            try (OutputStream output = connection.getOutputStream()) {
+                output.write(query.getBytes(charset));
+                int status = connection.getResponseCode();
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                String inputline;
+                while ((inputline = in.readLine()) != null) {
+                    Log.i("tago", inputline);
+                    InsanListesi = new ArrayList<Insann>();
+                    JSONArray jsono = new JSONArray(inputline);
+                    for(int i = 0 ; i < jsono.length() ; i++){
+                        JSONObject object = jsono.getJSONObject(i);
+                        Insann insann = new Insann();
+                        insann.setId(object.optString("id"));
+                        insann.setName(object.optString("name"));
+                        insann.setUrl(object.optString("profile_picture"));
+                        insann.setUzaklik(object.optString("distance"));
+                        InsanListesi.add(insann);
+                    }
+                }
+                in.close();
+                Log.i("tago", "VeriTabani status= " + status);
+                Log.i("tago", "Page Fragment cevredekileri gor inputline yazdï¿½m");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.i("tago", "Page Fragment cevredekileri gor yazamadï¿½m");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.i("tago" , "json Exception");
+            }
+            return "inputline";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            InsannAdapter adapter = new InsannAdapter (getActivity() , R.layout.listview_item , InsanListesi);
+            list1.setAdapter(adapter);
+        }
     }
 }

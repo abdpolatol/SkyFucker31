@@ -3,12 +3,12 @@ package com.example.bahadir.myapplicationn;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -18,17 +18,15 @@ public class AnaAkim extends FragmentActivity {
     Bitmap bitmap;
     String isim;
     String resimurl;
-    Location x = new Location("ababa");
-    Location y = new Location("caccaca");
     protected void onCreate(Bundle bambam){
         super.onCreate(bambam);
         setContentView(R.layout.cevrendekiler);
         Intent intent = getIntent();
         bitmap = intent.getParcelableExtra("resim");
         isim =  intent.getStringExtra("isim");
+        resimurl = intent.getStringExtra("resimurl");;
         String firstname = intent.getStringExtra("firstname");
         String lastname = intent.getStringExtra("lastname");
-        resimurl = intent.getStringExtra("resimurl");;
         Intent inte = new Intent(AnaAkim.this , TakipServisi.class);
         inte.putExtra("isim" , isim);
         inte.putExtra("resimurl" , resimurl);
@@ -44,7 +42,7 @@ public class AnaAkim extends FragmentActivity {
 
     protected void onResume() {
         super.onResume();
-        Log.i("tago","AnaAkim " +  isim + " giriş yaptı");
+        Log.i("tago", "AnaAkim " + isim + " giriş yaptı");
 
     }
     public void tanimlar(){
@@ -55,7 +53,7 @@ public class AnaAkim extends FragmentActivity {
     }
     public void nickAl(){
         final Dialog dialog = new Dialog(AnaAkim.this);
-        dialog.setTitle("nick ver");
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.customdialog);
         dialog.getWindow().setDimAmount(0.7f);
         dialog.setCancelable(false);
@@ -71,19 +69,6 @@ public class AnaAkim extends FragmentActivity {
             }
         });
     }
-    public void mesafeyiBul(Location a , Location b){
-        float distance = a.distanceTo(b);
-        Log.i("tago", "" + distance);
-
-    }
-    public void yerolustur(){
-        x.setLatitude(39.8998454);
-        x.setLongitude(32.7949772);
-        y.setLatitude(39.8973333);
-        y.setLongitude(32.7924444);
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
     }

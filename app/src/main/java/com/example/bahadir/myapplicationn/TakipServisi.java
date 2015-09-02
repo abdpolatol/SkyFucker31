@@ -20,7 +20,6 @@ import java.util.Date;
 
 public class TakipServisi extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 ,LocationListener{
-    public static String LOKASYON_AL = "lokasyon al işte mk";
     Location mCurrentLocation;
     Location mFirstLocation;
     VeriTabani v;
@@ -31,18 +30,18 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
     String isim;
     String resimurl;
     GoogleApiClient googleclient;
+
     public void onCreate() {
         super.onCreate();
         Log.i("tago" , "Takip Servisi onCreate çağırıldı");
     }
-
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("tago", "Takip Servisi onStartCommand çağırıldı");
         Runnable r = new Runnable() {
             public void run() {
                 googleclient = new GoogleApiClient.Builder(TakipServisi.this).addApi(LocationServices.API).addConnectionCallbacks(TakipServisi.this)
                         .addOnConnectionFailedListener(TakipServisi.this).build();
-                Log.i("tago", "Takip servisi clienti yaptım");
+                Log.i("tago", "Takip servisi google clienti yaptım");
                 googleclient.connect();
                 Log.i("tago" , "Takip Servisi baglandım");
             }
@@ -57,31 +56,29 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
         Log.i("tago" , "Takip Servisi lastname= " + lastname);
         Log.i("tago" , "burası Takip servisi" + isim);
         firstname = firstname.replace(" " ,".");
-        issim = firstname+"-"+lastname;
         Log.i("tago", "Takip servisi yenilenmis firstname = " + firstname);
+        issim = firstname+"-"+lastname;
         return Service.START_STICKY;
     }
-
     public void onDestroy() {
-        Log.i("tago", "Takip Servisi onDestroy çağırıldı");
         googleclient.disconnect();
-        Log.i("tago" , "Takip Servisi baglantı bitirildi");
+        Log.i("tago", "Takip Servisi onDestroy çağırıldı");
         super.onDestroy();
+        Log.i("tago", "Takip Servisi baglantı bitirildi");
     }
-
-
     public IBinder onBind(Intent intent) {
         return null;
     }
-
     public void onConnected(Bundle bundle) {
         mFirstLocation = LocationServices.FusedLocationApi.getLastLocation(
                 googleclient);
         if (mFirstLocation != null) {
-            Log.i("tago" ,"TakipServisi OnConnected " +String.valueOf(mFirstLocation.getLatitude())+ " " +String.valueOf(mFirstLocation.getLongitude()) );
+            Log.i("tago" ,"TakipServisi OnConnected " + "First Latitude = " + String.valueOf(mFirstLocation.getLatitude())+
+                    " First Longitude" +String.valueOf(mFirstLocation.getLongitude()) );
         }
         VeriTabani c = new VeriTabani( this ,issim, resimurl ,String.valueOf(mFirstLocation.getLatitude()), String.valueOf(mFirstLocation.getLongitude()));
         c.firehttprequestwithqueryparameters();
+        Log.i("tago" , "Takip servisi veritabanı objesi veritabanına kaydı yaptı");
         LocationRequest locrequest = new LocationRequest();
         locrequest.setInterval(10000);
         locrequest.setFastestInterval(5000);
@@ -90,16 +87,12 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
             LocationServices.FusedLocationApi.requestLocationUpdates(googleclient,locrequest,this);
         }
     }
-
-
     public void onConnectionSuspended(int i) {
 
     }
-
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
-
     public void onLocationChanged(Location location) {
         mCurrentLocation = location ;
         String mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
@@ -113,8 +106,17 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
             vRefresh.lokasyonuyenile();
         }
     }
-
     private String idSharedPreferenceAl() {
+           Thread bekle = new Thread(){
+                public void run(){
+                    try {
+                        sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+        bekle.start();
             SharedPreferences sP = getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
             String veritabani_id = sP.getString("veritabani_id","default id");
             Log.i("tago" , "Takip Servisi hafızadan ulaştım veritabanı id = " + veritabani_id);

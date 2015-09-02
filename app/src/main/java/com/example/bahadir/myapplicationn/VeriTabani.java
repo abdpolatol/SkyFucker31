@@ -23,13 +23,11 @@ import java.net.URLEncoder;
 
 public class VeriTabani {
 
-    JSONObject jsonObject;
     String url;
     String query;
     String charset;
     ArkadanKaynat aK;
     ArkadanVurdur aV;
-    ArkadanCevir aC;
     String is;
     String urrl;
     String lat;
@@ -37,7 +35,7 @@ public class VeriTabani {
     String id;
     String lato;
     String longio;
-    String veritabani_id;
+    String veritabani_id = "default";
     Context context;
 
     public VeriTabani(Context context){}
@@ -52,12 +50,26 @@ public class VeriTabani {
     }
     public VeriTabani(Context context , String id , String lato , String longio){
         this.id=id;
-        this.lato=lato;
-        this.longio = longio;
+        this.lat=lato;
+        this.longi = longio;
         this.context = context;
         yenilemetanimlar();
     }
 
+    public void tanımlar() {
+        charset = "ISO-8859-9";
+        url = "http://185.22.184.103/project/connection.php?name=bahadirturk&url=http://www.google.com&long=33.2132123&lat=33.2322322";
+        String param1 = "id";
+        String param2 = "url";
+        String param3 ="long";
+        String param4 ="lat";
+        try {
+            query = String.format("param1=%s&param2=%s&param3=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
+                    URLEncoder.encode(param3, charset),URLEncoder.encode(param4, charset ));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void yenilemetanimlar(){
         url = "http://185.22.184.103/project/connection.php?name=bahadirturk&url=http://www.google.com&long=33.2132123&lat=33.2322322";
         charset = "UTF-8";
@@ -67,20 +79,6 @@ public class VeriTabani {
         try {
             query = String.format("param1=%s&param2=%s&param3=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
                     URLEncoder.encode(param3, charset) );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void tanımlar() {
-        url = "http://185.22.184.103/project/connection.php?name=bahadirturk&url=http://www.google.com&long=33.2132123&lat=33.2322322";
-        charset = "ISO-8859-9";
-        String param1 = "name";
-        String param2 = "url";
-        String param3 ="long";
-        String param4 ="lat";
-        try {
-            query = String.format("param1=%s&param2=%s&param3=%s&param4=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
-                    URLEncoder.encode(param3, charset) ,URLEncoder.encode(param4, charset) );
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,10 +104,6 @@ public class VeriTabani {
         aV = new ArkadanVurdur();
         aV.execute(url);
     }
-    public void cevredekilerigoster(){
-        aC = new ArkadanCevir();
-        aC.execute();
-    }
     public IBinder onBind(Intent intent) {
         return null;
     }
@@ -117,7 +111,7 @@ public class VeriTabani {
     public class ArkadanKaynat extends AsyncTask<String , Void , String> {
 
         protected String doInBackground(String... params) {
-            Log.i("tago", "VeriTabani Arkadan Kaynat arkadan işlem başlatıldı");
+            Log.i("tago", "VeriTabani İlk Location verme işlemi başlatıldı");
             try{
                 return bilgiyigonder();
             }catch(Exception e){
@@ -133,7 +127,7 @@ public class VeriTabani {
                 Log.i("tago" , "Veri Tabani bilgiyi gonder" + urrl);
                 Log.i("tago" , "VeriTabani bilgiyi gonder" + longi);
                 Log.i("tago" ,"VeriTabani bilgiyi gonder" + lat);
-                connection = (HttpURLConnection)new URL("http://185.22.184.103/project/connection.php?name="+is+"&url="+urrl+"&long="+longi+"&lat="+lat).openConnection();
+                connection = (HttpURLConnection)new URL("http://185.22.184.103/project/connection.php?name="+URLEncoder.encode("Faarık Fazıl", "ISO-8859-9")+"&url="+urrl+"&long="+longi+"&lat="+lat).openConnection();
                 Log.i("tago" ,"VeriTabani bagı kurdum");
             }catch(IOException e){
                 e.printStackTrace();
@@ -202,18 +196,17 @@ public class VeriTabani {
             SharedPreferences sP = a.getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
             SharedPreferences.Editor prefEditor = sP.edit();
             prefEditor.putString("veritabani_id", veritabani_id);
-            Log.i("tago" , "Telefon hafızasına aldım veritabanı id = " + veritabani_id);
+            Log.i("tago", "Telefon hafızasına aldım veritabanı id = " + veritabani_id);
             prefEditor.commit();
         }
 
 
     }
-
     public class ArkadanVurdur extends AsyncTask<String , Void , String>{
 
         protected String doInBackground(String... params) {
 
-            Log.i("tago" , "VeriTabani arkadan vurdurma başlatıldı");
+            Log.i("tago", "VeriTabani arkadan vurdurma başlatıldı");
             try{
                 return lokasyonuyenilee();
             }catch(Exception e){
@@ -225,8 +218,11 @@ public class VeriTabani {
         private String lokasyonuyenilee() {
             URLConnection connection = null;
             try{
+                Log.i("tago" , id);
+                Log.i("tago" , longi);
+                Log.i("tago" , lat);
                 connection = new URL("http://185.22.184.103/project/update_location.php?id="+id+
-                        "&long="+longio+"&lat="+lato).openConnection();
+                        "&long="+longi+"&lat="+lat).openConnection();
                 Log.i("tago" ,"VeriTabani Arkadan vurdurma bagı kurdum");
             }catch(IOException e){
                 e.printStackTrace();
@@ -237,7 +233,7 @@ public class VeriTabani {
 
             try(OutputStream output = connection.getOutputStream()){
                 output.write(query.getBytes(charset));
-                //InputStream response = connection.getInputStream();
+               // InputStream response = connection.getInputStream();
                 Log.i("tago" , "VeriTabani Arkadan vurdurma yazdım");
             }catch(IOException e){
                 e.printStackTrace();
@@ -247,56 +243,4 @@ public class VeriTabani {
         }
     }
 
-    public class ArkadanCevir extends AsyncTask<String , Void , String> {
-        protected String doInBackground(String... params) {
-
-            Log.i("tago", "VeriTabani arkadan cevirme başlatıldı");
-            try {
-                return cevredekilerigor();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "olmadı" ;
-            }
-        }
-
-        public String cevredekilerigor() {
-            HttpURLConnection connection = null;
-            try {
-                connection = (HttpURLConnection) new URL("http://185.22.184.103/project/near_users.php?id=" + "98" +
-                        "&long=" + "33.3332233" + "&lat=" + "33.3332233").openConnection();
-                Log.i("tago", "VeriTabani Arkadan cevirme bagı kurdum");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
-            connection.setRequestProperty("Accept", "*/*");
-            connection.setRequestProperty("Accept-Charset", charset);
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
-
-            try (OutputStream output = connection.getOutputStream()) {
-                output.write(query.getBytes(charset));
-                int status = connection.getResponseCode();
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                String inputline;
-                while ((inputline = in.readLine()) != null) {
-                    Log.i("tago", inputline);
-
-                }
-                in.close();
-                Log.i("tago", "VeriTabani status= " + status);
-                Log.i("tago", "VeriTabani Arkadan cevirme yazdım");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.i("tago", "VeriTabani Arkadan cevirme yazamadım");
-            }
-            return "alabama";
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-
-        }
-    }
 }
