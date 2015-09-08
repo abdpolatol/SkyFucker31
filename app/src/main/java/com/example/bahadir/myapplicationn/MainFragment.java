@@ -102,6 +102,7 @@ public class MainFragment extends Fragment{
     private void displayCase(Profile profile) {
         if(profile!=null){
             a.execute(profile.getId());
+            Log.i("tago" , "Kullanıcı Main Fragment .getId " + profile.getId());
             Log.i("tago" , "MainFragment fotoyu çektim");
         }
     }
@@ -168,13 +169,13 @@ public class MainFragment extends Fragment{
         protected void onPostExecute(Bitmap bitmap) {
             Log.i("tago" , "Main Fragment bitmap yerleştirdim");
             if(tumisim!=null) {
-                Intent i = new Intent(getActivity(), AnaAkim.class);
+                Intent i = new Intent(getActivity(), TakipServisi.class);
                 i.putExtra("isim", tumisim);
                 i.putExtra("resim", bitmap);
                 i.putExtra("resimurl" , urll);
                 i.putExtra("firstname" , firstname);
                 i.putExtra("lastname" , lastname);
-                startActivity(i);
+                getActivity().startService(i);
 
             }
         }

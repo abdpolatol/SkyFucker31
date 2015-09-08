@@ -1,7 +1,6 @@
 package com.example.bahadir.myapplicationn;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -21,7 +20,7 @@ public class AnaAkim extends FragmentActivity {
     protected void onCreate(Bundle bambam){
         super.onCreate(bambam);
         setContentView(R.layout.cevrendekiler);
-        Intent intent = getIntent();
+        /*Intent intent = getIntent();
         bitmap = intent.getParcelableExtra("resim");
         isim =  intent.getStringExtra("isim");
         resimurl = intent.getStringExtra("resimurl");;
@@ -32,7 +31,7 @@ public class AnaAkim extends FragmentActivity {
         inte.putExtra("resimurl" , resimurl);
         inte.putExtra("firstname" , firstname);
         inte.putExtra("lastname", lastname);
-        startService(inte);
+        startService(inte);*/
         Log.i("tago", "Takip servisi başlatıldı");
         tanimlar();
         nickAl();

@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,8 +30,6 @@ public class PageFragment extends Fragment {
     private int mPage;
     ListView list1;
     View view;
-    VeriTabani v ;
-    String url;
     String charset;
     String query;
     CevredekileriGoster cG;
@@ -58,37 +57,27 @@ public class PageFragment extends Fragment {
         list1 = (ListView) view.findViewById(R.id.listView);
         Log.i("tago", "Page Fragment onCreateView");
         String veritabani_id = idSharedPreferenceAl();
-        if (veritabani_id != "default") {
+        if (!veritabani_id.equals("default")) {
             cevredekilericek(veritabani_id);
-        } else if(veritabani_id=="default"){
-            Log.i("tago", "default ald�n �u anda 800 milisaniye kaybettin");
-            Thread idyibeklepic = new Thread() {
-                public void run(){
-                    try {
-                        sleep(800);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            idyibeklepic.start();
-            String veritabani_idd= idSharedPreferenceAl();
-            cevredekilericek(veritabani_idd);
-        }else{
-            Log.i("tago" , "Anan� avrad�n� sikerim senin");
+        } else if (veritabani_id.equals("default")) {
+            do{
+                idSharedPreferenceAl();
+            }while(!veritabani_id.equals("default"));
+            cevredekilericek(veritabani_id);
+        } else {
+            Log.i("tago", "Anan� avrad�n� sikerim senin");
         }
-            return view;
+        return view;
     }
     private void cevredekilericek(String veritabani_id) {
         cG = new CevredekileriGoster();
         cG.execute(veritabani_id);
     }
 
-    private class CevredekileriGoster extends AsyncTask<String , Void , String>{
+    private class CevredekileriGoster extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... params) {
-            url = "http://185.22.184.103/project/connection.php?name=bahadirturk&url=http://www.google.com&long=33.2132123&lat=33.2322322";
-            charset = "ISO-8859-9";
+            charset = "utf-8";
             String param1 = "id";
             try {
                 query = String.format("param1=%s", URLEncoder.encode(param1, charset));
@@ -100,35 +89,83 @@ public class PageFragment extends Fragment {
                 return cevredekilerigor(params[0]);
             } catch (Exception e) {
                 e.printStackTrace();
-                return "olmad�" ;
+                return "olmad�";
             }
         }
 
         public String cevredekilerigor(String id) {
             HttpURLConnection connection = null;
             try {
-                connection = (HttpURLConnection) new URL("http://185.22.184.103/project/near_users.php?id="+ id).openConnection();
-                Log.i("tago", "Page Fragment cevredekileri gor bag� kuruldu");
+                connection = (HttpURLConnection) new URL("http://185.22.184.103/project/near_users?id=" +id).openConnection();
+                Log.i("tago", "Page Fragment cevredekileri gor bagı kuruldu");
             } catch (IOException e) {
                 e.printStackTrace();
             }
             connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
-            connection.setRequestProperty("Accept", "*/*");
+            connection.setRequestProperty("Accept", "* /*");
             connection.setRequestProperty("Accept-Charset", charset);
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
 
-            try (OutputStream output = connection.getOutputStream()) {
+            try {
+                OutputStream output = new BufferedOutputStream(connection.getOutputStream());
                 output.write(query.getBytes(charset));
-                int status = connection.getResponseCode();
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                String inputline;
-                while ((inputline = in.readLine()) != null) {
-                    Log.i("tago", inputline);
-                    InsanListesi = new ArrayList<Insann>();
+                output.close();
+                try {
+                    int a = connection.getResponseCode();
+                    String b = connection.getResponseMessage();
+                    Log.i("tago", "rerere" + a + " " + b);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                BufferedReader in;
+                if(connection.getResponseCode() == 200) {
+                    in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    Log.i("tago", "InputStream");
+                    String inputline=null;
+
+                    for(int i=0 ; i<3 ; i++){
+                        inputline = in.readLine();
+                        Log.i("tago" , ""+i+" for inputline= " + inputline);
+                    }
+                    /*while ((inputline = in.readLine()) != null) {
+                        Log.i("tago", "Caxo camcamcam bambam" + inputline);
+                        Log.i("tago", "while inputline = " + inputline);
+                    }*/
+                            InsanListesi = new ArrayList();
+                            JSONArray jsono = new JSONArray(inputline);
+                            for (int i = 0; i < jsono.length(); i++) {
+                                JSONObject object = jsono.getJSONObject(i);
+                                Insann insann = new Insann();
+                                insann.setId(object.optString("id"));
+                                insann.setName(object.optString("name"));
+                                insann.setUrl(object.optString("profile_picture"));
+                                insann.setUzaklik(object.optString("distance"));
+                                InsanListesi.add(insann);
+                            }
+                    }
+                    /*
+                   InsanListesi = new ArrayList();
+                    for(int i = 0 ; i < 12 ; i++){
+                        Insann insan = new Insann();
+                        insan.setId("" + i);
+                        insan.setName("Bahadır");
+                        insan.setUrl("https://graph.facebook.com/116429068707650/picture?type=large");
+                        InsanListesi.add(insan);
+                    }
+                }*/
+                else
+                {
+                    in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                    Log.i("tago" , "Error Stream");
+                    String inputline;
+                    while ((inputline = in.readLine()) != null) {
+                        Log.i("tago", "camcamcam" + inputline);
+                }
+                    InsanListesi = new ArrayList();
                     JSONArray jsono = new JSONArray(inputline);
-                    for(int i = 0 ; i < jsono.length() ; i++){
+                    for (int i = 0; i < jsono.length(); i++) {
                         JSONObject object = jsono.getJSONObject(i);
                         Insann insann = new Insann();
                         insann.setId(object.optString("id"));
@@ -139,14 +176,13 @@ public class PageFragment extends Fragment {
                     }
                 }
                 in.close();
-                Log.i("tago", "VeriTabani status= " + status);
                 Log.i("tago", "Page Fragment cevredekileri gor inputline yazd�m");
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.i("tago", "Page Fragment cevredekileri gor yazamad�m");
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.i("tago" , "json Exception");
+                Log.i("tago", "json Exception");
             }
             return "inputline";
         }
@@ -157,4 +193,4 @@ public class PageFragment extends Fragment {
             list1.setAdapter(adapter);
         }
     }
-}
+    }

@@ -18,11 +18,15 @@
         android:text="cas"
         android:layout_marginLeft="5dp"
         android:layout_gravity="center" />
-
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/esasbolge">
     <TextView android:id="@+id/txtTitle"
         android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
+        android:layout_gravity="center"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:textStyle="bold"
@@ -34,7 +38,7 @@
         android:typeface="normal"
         android:maxLength="@android:integer/config_shortAnimTime"
         android:elegantTextHeight="false" />
-
+    </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

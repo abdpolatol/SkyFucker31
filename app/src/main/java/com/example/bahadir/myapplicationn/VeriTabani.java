@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,8 +34,6 @@ public class VeriTabani {
     String lat;
     String longi;
     String id;
-    String lato;
-    String longio;
     String veritabani_id = "default";
     Context context;
 
@@ -57,18 +56,18 @@ public class VeriTabani {
     }
 
     public void tanımlar() {
-        charset = "ISO-8859-9";
+        charset = "UTF-8";
         url = "http://185.22.184.103/project/connection.php?name=bahadirturk&url=http://www.google.com&long=33.2132123&lat=33.2322322";
-        String param1 = "id";
-        String param2 = "url";
-        String param3 ="long";
+        String param1 = "is";
+        String param2 = "urrl";
+        String param3 ="longi";
         String param4 ="lat";
-        try {
-            query = String.format("param1=%s&param2=%s&param3=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
-                    URLEncoder.encode(param3, charset),URLEncoder.encode(param4, charset ));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            try {
+                query = String.format("param1=%s&param2=%s&param3=%s&param4=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
+                        URLEncoder.encode(param3, charset),URLEncoder.encode(param4, charset ));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
     public void yenilemetanimlar(){
         url = "http://185.22.184.103/project/connection.php?name=bahadirturk&url=http://www.google.com&long=33.2132123&lat=33.2322322";
@@ -86,7 +85,7 @@ public class VeriTabani {
     public void firehttprequest() {
         URLConnection connection = null;
         try {
-            connection = new URL("http://185.22.184.103/project/connection.php?name=bahadirturk&url=url&long=33.2132123&lat=33.2322322" + "?" + query).openConnection();
+            connection = new URL("http://185.22.184.103/project/connection.php?name="+URLEncoder.encode("Faarık Fazıl", "ISO-8859-9")+"&url="+urrl+"&long="+longi+"&lat="+lat).openConnection();
             InputStream response = connection.getInputStream();
             Log.i("tago", "tart");
 
@@ -127,7 +126,7 @@ public class VeriTabani {
                 Log.i("tago" , "Veri Tabani bilgiyi gonder" + urrl);
                 Log.i("tago" , "VeriTabani bilgiyi gonder" + longi);
                 Log.i("tago" ,"VeriTabani bilgiyi gonder" + lat);
-                connection = (HttpURLConnection)new URL("http://185.22.184.103/project/connection.php?name="+URLEncoder.encode("Faarık Fazıl", "ISO-8859-9")+"&url="+urrl+"&long="+longi+"&lat="+lat).openConnection();
+                connection = (HttpURLConnection)new URL("http://185.22.184.103/project/connection.php?name="+is+"&url="+urrl+"&long="+longi+"&lat="+lat).openConnection();
                 Log.i("tago" ,"VeriTabani bagı kurdum");
             }catch(IOException e){
                 e.printStackTrace();
@@ -136,16 +135,38 @@ public class VeriTabani {
             connection.setDoInput(true);
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
             connection.setRequestProperty("Accept", "*/*");
+            connection.setReadTimeout(15000);
+            connection.setConnectTimeout(15000);
             connection.setRequestProperty("Accept-Charset", charset);
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
 
-            try(OutputStream output = connection.getOutputStream()){
+
+            try{
+                OutputStream output = new BufferedOutputStream(connection.getOutputStream());
                 output.write(query.getBytes(charset));
-                //BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                //while((inputline=in.readLine()) != null){
-                 //   Log.i("tago" , inputline);
-                //}in.close();
-                //InputStream response = connection.getInputStream();
+                output.close();
+                try {
+                    int a = connection.getResponseCode();
+                    String b = connection.getResponseMessage();
+                    Log.i("tago", "rerere" + a + " " + b);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                BufferedReader in;
+                if(connection.getResponseCode() == 200)
+                {
+                    in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    Log.i("tago" , "InputStream");
+                }
+                else
+                {
+                    in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                    Log.i("tago" , "Error Stream");
+                }
+                String inputline;
+                while((inputline=in.readLine()) != null){
+                    Log.i("tago" ,"zalazort" + inputline);
+                }in.close();
                 Log.i("tago", "VeriTabani yazdım");
             }catch(IOException e){
                 e.printStackTrace();
@@ -156,7 +177,7 @@ public class VeriTabani {
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
                 String inputline;
                 while((inputline=in.readLine()) != null){
-                    Log.i("tago" , inputline);
+                    Log.i("tago" ,"zalazort " +  inputline);
                     JsondanCevir(inputline);
                 }in.close();
                 Log.i("tago" , "VeriTabani status= " +status);
@@ -171,7 +192,7 @@ public class VeriTabani {
             String data = "";
             try {
                 jsonarray = new JSONArray(x);
-                Log.i("tago" , x);
+                Log.i("tago" ,"zalazorta" + x);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -217,6 +238,7 @@ public class VeriTabani {
 
         private String lokasyonuyenilee() {
             URLConnection connection = null;
+
             try{
                 Log.i("tago" , id);
                 Log.i("tago" , longi);
@@ -230,10 +252,10 @@ public class VeriTabani {
             connection.setDoOutput(true);
             connection.setRequestProperty("Accept-Charset", charset);
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
-
-            try(OutputStream output = connection.getOutputStream()){
+            try{
+                OutputStream output = new BufferedOutputStream(connection.getOutputStream());
                 output.write(query.getBytes(charset));
-               // InputStream response = connection.getInputStream();
+                InputStream response = connection.getInputStream();
                 Log.i("tago" , "VeriTabani Arkadan vurdurma yazdım");
             }catch(IOException e){
                 e.printStackTrace();
