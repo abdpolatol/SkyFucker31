@@ -41,6 +41,8 @@ public class MainFragment extends Fragment{
     String firstname;
     String middlename;
     String lastname;
+    String email;
+    String cinsiyet;
     Profile profile;
     String urll;
     AccessToken accessToken;
@@ -96,9 +98,9 @@ public class MainFragment extends Fragment{
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
                             try {
-                                String email = object.getString("email");
+                                email = object.getString("email");
                                 Log.i("tago" , "Main Fragment user email :" + email);
-                                String cinsiyet = object.getString("gender");
+                                cinsiyet = object.getString("gender");
                                 Log.i("tago" , "MainFragment user gender: "  + cinsiyet);
                             } catch (JSONException e) {
                                 // TODO Auto-generated catch block
@@ -188,6 +190,8 @@ public class MainFragment extends Fragment{
                 i.putExtra("resimurl" , urll);
                 i.putExtra("firstname" , firstname);
                 i.putExtra("lastname" , lastname);
+                i.putExtra("email" , email);
+                i.putExtra("gender" , cinsiyet);
                 getActivity().startService(i);
 
             }

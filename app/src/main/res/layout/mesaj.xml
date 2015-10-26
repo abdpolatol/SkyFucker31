@@ -15,6 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text"
+            android:background="@drawable/baloncuk"
             android:scaleType="fitXY"/>
     </LinearLayout>
 </LinearLayout>

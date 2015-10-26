@@ -19,7 +19,6 @@ public class AnaAkim extends FragmentActivity {
     Bitmap bitmap;
     String isim;
     String resimurl;
-    String deneme = "deneme";
     boolean notificationbas;
     protected void onCreate(Bundle bambam){
         super.onCreate(bambam);

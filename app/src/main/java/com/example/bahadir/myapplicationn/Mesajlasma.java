@@ -45,7 +45,8 @@ public class Mesajlasma extends Activity {
     public MesajArrayAdapter adapter;
     public List<Mesaj> MesajListesi = new ArrayList();
     EditText etv1;
-    Button buton1;
+    ImageButton buton1;
+    Button buton2;
     TextView tv1;
     ProgressBar progressbar;
     int ilerleme = 0;
@@ -121,7 +122,13 @@ public class Mesajlasma extends Activity {
         tv1.setText(karsidakiisim);
         imagebuton1 = (ImageButton) findViewById(R.id.imageButton);
         imagebuton1.setImageBitmap(icon);
-        buton1 = (Button) findViewById(R.id.button4);
+        buton1 = (ImageButton) findViewById(R.id.button4);
+        buton2 = (Button) findViewById(R.id.button6);
+        buton2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                finish();
+            }
+        });
         list1 = (ListView) findViewById(R.id.listView2);
         adapter = new MesajArrayAdapter(getApplicationContext(), R.layout.mesaj, MesajListesi);
         etv1 = (EditText) findViewById(R.id.editText2);

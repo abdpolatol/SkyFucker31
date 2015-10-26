@@ -38,6 +38,8 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
     String issim;
     String isim;
     String resimurl;
+    String cinsiyet;
+    String email;
     GoogleApiClient googleclient;
     String regid;
     public void onCreate() {
@@ -64,6 +66,8 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
         resimurl = intent.getStringExtra("resimurl");
         firstname = intent.getStringExtra("firstname");
         lastname = intent.getStringExtra("lastname");
+        cinsiyet = intent.getStringExtra("gender");
+        email = intent.getStringExtra("email");
         Log.i("tago" , "Takip Servisi firstname= " + firstname);
         Log.i("tago" , "Takip Servisi lastname= " + lastname);
         Log.i("tago" , "Takip Servisi isim " + isim);
@@ -196,10 +200,8 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
                 Log.i("tago" , "Takip Servisi VeriTabani ilk bilgiyi gonder" + longi);
                 Log.i("tago" ,"Takip Servisi VeriTabani ilk bilgiyi gonder" + lat);
                 Log.i("tago" , "Takip Servisi Veritabani ilk bilgiyi gonder" + regid);
-                //connection = (HttpURLConnection)new URL("http://185.22.184.103/project/connection.php?name="+isim+"&url="+resimurl+
-                  //      "&long="+longi+"&lat=" +lat).openConnection();
                 connection = (HttpURLConnection)new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/connection.php?name="+isim+"&url="+resimurl+
-                        "&long="+longi+"&lat=" +lat+"&regid="+regid).openConnection();
+                        "&long="+longi+"&lat=" +lat+"&regid="+regid+ "&email="+email+"&gender=" +cinsiyet ).openConnection();
                 Log.i("tago" ,"Takip Servisi VeriTabani bagı kurdum");
             }catch(IOException e){
                 e.printStackTrace();
