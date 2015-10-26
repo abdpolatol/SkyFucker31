@@ -1,6 +1,8 @@
 package com.example.bahadir.myapplicationn;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -17,9 +19,13 @@ public class AnaAkim extends FragmentActivity {
     Bitmap bitmap;
     String isim;
     String resimurl;
+    String deneme ="sikali";
+    boolean notificationbas;
     protected void onCreate(Bundle bambam){
         super.onCreate(bambam);
-        setContentView(R.layout.cevrendekiler);
+        setContentView(R.layout.genelaltplan);
+        notificationbas = true;
+        notificationSharedPrefKaydet();
         /*Intent intent = getIntent();
         bitmap = intent.getParcelableExtra("resim");
         isim =  intent.getStringExtra("isim");
@@ -32,11 +38,17 @@ public class AnaAkim extends FragmentActivity {
         inte.putExtra("firstname" , firstname);
         inte.putExtra("lastname", lastname);
         startService(inte);*/
-        Log.i("tago", "Takip servisi başlatıldı");
         tanimlar();
         nickAl();
        // yerolustur();
         //mesafeyiBul(x, y);
+    }
+
+    private void notificationSharedPrefKaydet() {
+        SharedPreferences sP = getSharedPreferences("notification" , Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = sP.edit();
+        prefEditor.putBoolean("notificationver", notificationbas);
+        prefEditor.commit();
     }
 
     protected void onResume() {
@@ -65,9 +77,19 @@ public class AnaAkim extends FragmentActivity {
                 String nick = etv1.getText().toString();
                 Log.i("tago", "nickin :" + nick);
                 dialog.cancel();
+                nickiSharedKeydet(nick);
             }
         });
+
     }
+
+    private void nickiSharedKeydet(String nick) {
+        SharedPreferences sP = getSharedPreferences("kullaniciverileri",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sP.edit();
+        editor.putString("kullanicinick" , nick);
+        editor.commit();
+    }
+
     protected void onStop() {
         super.onStop();
     }

@@ -27,7 +27,6 @@ public class VeriTabani {
     String url;
     String query;
     String charset;
-    ArkadanKaynat aK;
     ArkadanVurdur aV;
     String is;
     String urrl;
@@ -72,16 +71,16 @@ public class VeriTabani {
     public void yenilemetanimlar(){
         url = "http://185.22.184.103/project/connection.php?name=bahadirturk&url=http://www.google.com&long=33.2132123&lat=33.2322322";
         charset = "UTF-8";
-        String param1 = "id";
-        String param2 = "long";
-        String param3 ="lat";
-        try {
-            query = String.format("param1=%s&param2=%s&param3=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
-                    URLEncoder.encode(param3, charset) );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    String param1 = "id";
+    String param2 = "long";
+    String param3 ="lat";
+    try {
+        query = String.format("param1=%s&param2=%s&param3=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
+                URLEncoder.encode(param3, charset) );
+    } catch (IOException e) {
+        e.printStackTrace();
     }
+}
     public void firehttprequest() {
         URLConnection connection = null;
         try {
@@ -96,8 +95,6 @@ public class VeriTabani {
 
     }
     public void firehttprequestwithqueryparameters() {
-        aK = new ArkadanKaynat();
-        aK.execute(url);
     }
     public void lokasyonuyenile(){
         aV = new ArkadanVurdur();
@@ -243,7 +240,7 @@ public class VeriTabani {
                 Log.i("tago" , id);
                 Log.i("tago" , longi);
                 Log.i("tago" , lat);
-                connection = new URL("http://185.22.184.103/project/update_location.php?id="+id+
+                connection = new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/update_location.php?id="+id+
                         "&long="+longi+"&lat="+lat).openConnection();
                 Log.i("tago" ,"VeriTabani Arkadan vurdurma bagı kurdum");
             }catch(IOException e){

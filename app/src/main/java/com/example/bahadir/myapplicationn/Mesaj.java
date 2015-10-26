@@ -2,11 +2,11 @@ package com.example.bahadir.myapplicationn;
 
 public class Mesaj {
 
-    public boolean left ;
+    public boolean side ;
     public String mesac;
-    public Mesaj(boolean left, String s) {
+    public Mesaj(boolean side, String s) {
         super();
-        this.left = left;
+        this.side = side;
         mesac = s;
     }
 }

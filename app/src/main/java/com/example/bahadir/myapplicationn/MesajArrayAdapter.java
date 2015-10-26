@@ -47,7 +47,7 @@ public class MesajArrayAdapter extends ArrayAdapter<Mesaj> {
         tv1=(TextView) v.findViewById(R.id.textView7);
         tv1.setText(mesajobj.mesac);
        // tv1.setBackgroundResource(mesajobj.left ? R.drawable.pbutton : R.drawable.pbutton3);
-        layout1.setGravity(mesajobj.left? Gravity.LEFT : Gravity.RIGHT);
+        layout1.setGravity(mesajobj.side? Gravity.LEFT : Gravity.RIGHT);
         return v;
     }
 

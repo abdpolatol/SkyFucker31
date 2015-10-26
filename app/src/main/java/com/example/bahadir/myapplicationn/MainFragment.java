@@ -18,16 +18,22 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 
 public class MainFragment extends Fragment{
@@ -46,6 +52,7 @@ public class MainFragment extends Fragment{
     private CallbackManager mCallbackManager;
 
     public void onCreate(Bundle savedInstanceState){
+        Log.i("tago" , "MainFragment onCreate");
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
@@ -64,20 +71,35 @@ public class MainFragment extends Fragment{
         tracker.startTracking();
         protracker.startTracking();
     }
-    public MainFragment() {}
+    public void onStart() {
+        Log.i("tago", "MainFragment onStart");
+        super.onStart();
+    }
+    public void onResume() {
+        super.onResume();
+        Profile profile = Profile.getCurrentProfile();
+        if (profile != null) {
+            tumisim = profile.getName();
+            firstname = profile.getFirstName();
+            middlename = profile.getMiddleName();
+            lastname = profile.getLastName();
+        }
+    }
     private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
         public void onSuccess(LoginResult loginResult) {
             accessToken = loginResult.getAccessToken();
             profile = Profile.getCurrentProfile();
-            Log.i("tago" ,"MainFragment okudum");
+            Log.i("tago" ,"MainFragment Login Result on Success okudum");
             displayCase(profile);
-            /*GraphRequest request = GraphRequest.newMeRequest( AccessToken.getCurrentAccessToken(),
+            GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
                     new GraphRequest.GraphJSONObjectCallback() {
                         @Override
-                        public void onCompleted(JSONObject object,GraphResponse response) {
+                        public void onCompleted(JSONObject object, GraphResponse response) {
                             try {
-                                String isim=object.getString("user");
-                                //Log.i("tago" , "user email :" + isim);
+                                String email = object.getString("email");
+                                Log.i("tago" , "Main Fragment user email :" + email);
+                                String cinsiyet = object.getString("gender");
+                                Log.i("tago" , "MainFragment user gender: "  + cinsiyet);
                             } catch (JSONException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
@@ -86,9 +108,10 @@ public class MainFragment extends Fragment{
                         }
 
                     });
-
+            Bundle parameters = new Bundle();
+            parameters.putString("fields" , "id,name,email,gender");
+            request.setParameters(parameters);
             request.executeAsync();
-            */
         }
 
         public void onCancel() {
@@ -112,7 +135,7 @@ public class MainFragment extends Fragment{
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         LoginButton loginb = (LoginButton) view.findViewById(R.id.login_button);
-        loginb.setReadPermissions("user_friends" , "public_profile" ,"email");
+        loginb.setReadPermissions(Arrays.asList("user_friends" , "public_profile" ,"email"));
         loginb.setFragment(this);
         loginb.registerCallback(mCallbackManager, mCallBack);
         buton1 = (Button) view.findViewById(R.id.button);
@@ -121,16 +144,6 @@ public class MainFragment extends Fragment{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-    public void onResume() {
-        super.onResume();
-        Profile profile = Profile.getCurrentProfile();
-        if (profile != null) {
-            tumisim = profile.getName();
-            firstname = profile.getFirstName();
-            middlename = profile.getMiddleName();
-            lastname = profile.getLastName();
-        }
     }
     public void onStop(){
         super.onStop();

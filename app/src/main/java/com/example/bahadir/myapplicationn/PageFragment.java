@@ -53,7 +53,7 @@ public class PageFragment extends Fragment {
         return veritabani_id;
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.tab1, container, false);
+        view = inflater.inflate(R.layout.cevrendekiler, container, false);
         list1 = (ListView) view.findViewById(R.id.listView);
         Log.i("tago", "Page Fragment onCreateView");
         String veritabani_id = idSharedPreferenceAl();
@@ -96,7 +96,7 @@ public class PageFragment extends Fragment {
         public String cevredekilerigor(String id) {
             HttpURLConnection connection = null;
             try {
-                connection = (HttpURLConnection) new URL("http://185.22.184.103/project/near_users?id=" +id).openConnection();
+                connection = (HttpURLConnection) new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy//near_users?id=" +id).openConnection();
                 Log.i("tago", "Page Fragment cevredekileri gor bagı kuruldu");
             } catch (IOException e) {
                 e.printStackTrace();

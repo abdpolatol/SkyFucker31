@@ -1,5 +1,7 @@
 package com.example.bahadir.myapplicationn;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -25,13 +27,33 @@ import me.pushy.sdk.Pushy;
 public class MainActivity extends AppCompatActivity {
 
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("tago" , "Main Activity onCreate");
         super.onCreate(savedInstanceState);
         Pushy.listen(this);
         setContentView(R.layout.activity_main);
         printHashKey();
         new registerForPushNotificationsAsync().execute();
+    }
+    protected void onStart() {
+        Log.i("tago" , "Main Activity onStart");
+        super.onStart();
+    }
+    protected void onResume() {
+        Log.i("tago" , "Main Activity onResume");
+        super.onResume();
+    }
+    protected void onPause() {
+        Log.i("tago" , "Main Activity onPause");
+        super.onPause();
+    }
+    protected void onStop() {
+        Log.i("tago" , "Main Activity onStop");
+        super.onStop();
+    }
+    protected void onDestroy() {
+        Log.i("tago" , "Main Activity onDestroy");
+        super.onDestroy();
     }
     private void printHashKey() {
 
@@ -41,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             for (Signature signature : info.signatures) {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
-                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+                Log.d("tago","keyhash= "+  Base64.encodeToString(md.digest(), Base64.DEFAULT));
             }
         } catch (PackageManager.NameNotFoundException e) {
 
@@ -55,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 // Acquire a unique registration ID for this device
                 String registrationId = Pushy.register(getApplicationContext());
+                registrationIdSharedPrefKaydet(registrationId);
                 Log.i("tago", registrationId);
 
                 // Save the registration ID in your backend database:
@@ -68,6 +91,14 @@ public class MainActivity extends AppCompatActivity {
             }
             // We're good
             return null;
+        }
+
+        private void registrationIdSharedPrefKaydet(String registrationId) {
+            SharedPreferences sp = getSharedPreferences("kullaniciverileri" , Context.MODE_PRIVATE);
+            SharedPreferences.Editor sedit = sp.edit();
+            sedit.putString("registrationid" , registrationId);
+            sedit.commit();
+            Log.i("tago" , "sharedpreference registration id kaydedildi");
         }
 
         @Override
@@ -96,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
             HttpURLConnection connection;
             //URL sendRegIdRequest = new URL("http://185.22.184.103/project/update_regid.php?id=4&regid="+registrationId);
             Log.i("tago" ,"gonder " + registrationId);
-            connection = (HttpURLConnection) new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/mm.php?id=17cf8714262bca72a00f03").openConnection();
+            connection = (HttpURLConnection) new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/update_regid.php?id=4&regid="+registrationId).openConnection();
 
             // Execute the request
             //sendRegIdRequest.openConnection();
