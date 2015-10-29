@@ -98,6 +98,7 @@ public class MainFragment extends Fragment{
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
                             try {
+                                JSONObject photos = object.getJSONObject("https://graph.facebook.com/" +profile.getId()+ "/photos?type=public");
                                 email = object.getString("email");
                                 Log.i("tago" , "Main Fragment user email :" + email);
                                 cinsiyet = object.getString("gender");

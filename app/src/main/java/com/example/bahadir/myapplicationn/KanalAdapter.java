@@ -3,13 +3,15 @@ package com.example.bahadir.myapplicationn;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -100,8 +102,9 @@ public class KanalAdapter extends BaseAdapter {
                 holder.image2 = (ImageView) convertView.findViewById(R.id.imageView5);
                 holder.tv3 = (TextView) convertView.findViewById(R.id.textView4);
                 holder.tv4 = (TextView) convertView.findViewById(R.id.textView8);
-                holder.buton2 = (Button) convertView.findViewById(R.id.button7);
-                holder.buton3 = (Button) convertView.findViewById(R.id.button8);
+                holder.buton1 = (ImageButton) convertView.findViewById(R.id.button7);
+                holder.buton2 = (ImageButton) convertView.findViewById(R.id.button8);
+                holder.buton3 = (ImageButton) convertView.findViewById(R.id.imageButton7);
                 Log.i("tago", "tagtagatagtagtagatg");
             }
             if (!kanal.official) {
@@ -109,7 +112,6 @@ public class KanalAdapter extends BaseAdapter {
                 holder.image1 = (ImageView) convertView.findViewById(R.id.imageView5);
                 holder.tv1 = (TextView) convertView.findViewById(R.id.textView4);
                 holder.tv2 = (TextView) convertView.findViewById(R.id.textView8);
-                holder.buton1 = (Button) convertView.findViewById(R.id.button8);
                 Log.i("tago", "tagtagtag");
             }
 
@@ -118,7 +120,8 @@ public class KanalAdapter extends BaseAdapter {
             holder = (KanalHolder)convertView.getTag();
         }
             if(kanal.official){
-                holder.image2.setImageResource(R.mipmap.aliprof);
+                Drawable a = ContextCompat.getDrawable(context , R.drawable.taylanprof);
+                holder.image2.setBackground(a);
                 holder.tv3.setText(channelbaba.get(position).getKanaladi());
                 holder.image2.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
@@ -150,7 +153,7 @@ public class KanalAdapter extends BaseAdapter {
     static class KanalHolder{
         public ImageView image1,image2;
         public TextView tv1 , tv2,tv3,tv4;
-        public Button buton1,buton2,buton3;
+        public ImageButton buton1,buton2,buton3;
     }
 
     private class KanalaElemanEkle extends AsyncTask<String,Void,String>{

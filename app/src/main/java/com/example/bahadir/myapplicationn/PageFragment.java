@@ -9,7 +9,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.felipecsl.quickreturn.library.AbsListViewQuickReturnAttacher;
+import com.felipecsl.quickreturn.library.QuickReturnAttacher;
+import com.felipecsl.quickreturn.library.widget.AbsListViewScrollTarget;
+import com.felipecsl.quickreturn.library.widget.QuickReturnAdapter;
+import com.felipecsl.quickreturn.library.widget.QuickReturnTargetView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,16 +37,27 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class PageFragment extends Fragment {
+public class PageFragment extends Fragment implements AbsListView.OnScrollListener,
+        View.OnClickListener,
+        AdapterView.OnItemClickListener,
+        AdapterView.OnItemLongClickListener{
     public static final String ARG_PAGE = "ARG_PAGE";
     private int mPage;
     ListView list1;
+    String veritabani_id;
     View view;
     String charset;
     String query;
     CevredekileriGoster cG;
+    ViewGroup listviewheader;
     ArrayList<Insann> InsanListesi;
 
+    ViewGroup viewGroup;
+    AbsListView absListView;
+    LinearLayout lay1;
+    Button buton1,buton2;
+    private QuickReturnTargetView topTargetView;
+    TextView bottomTextView ;
     public static PageFragment newInstance(int page) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
@@ -54,9 +77,32 @@ public class PageFragment extends Fragment {
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.cevrendekiler, container, false);
-        list1 = (ListView) view.findViewById(R.id.listView);
+        listviewheader = (ViewGroup) inflater.inflate(R.layout.listview_header, list1, false);
+        //list1 = (ListView) view.findViewById(R.id.listView);
         Log.i("tago", "Page Fragment onCreateView");
-        String veritabani_id = idSharedPreferenceAl();
+        veritabani_id = idSharedPreferenceAl();
+        initializeQuickReturn();
+        return view;
+    }
+
+    private void initializeQuickReturn() {
+        viewGroup = (ViewGroup) view.findViewById(R.id.listView);
+        absListView = (AbsListView) viewGroup;
+        lay1 = (LinearLayout) view.findViewById(R.id.quickReturnTopTarget);
+        buton1 = (Button) view.findViewById(R.id.button);
+        buton2 = (Button) view.findViewById(R.id.button2);
+        buton1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                //cevredekilericek(veritabani_id);
+            }
+        });
+        buton2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("tago" , "buton2 basıldı");
+            }
+        });
+        bottomTextView = (TextView) view.findViewById(R.id.quickReturnBottomTarget);
         if (!veritabani_id.equals("default")) {
             cevredekilericek(veritabani_id);
         } else if (veritabani_id.equals("default")) {
@@ -67,11 +113,28 @@ public class PageFragment extends Fragment {
         } else {
             Log.i("tago", "Anan� avrad�n� sikerim senin");
         }
-        return view;
     }
+
     private void cevredekilericek(String veritabani_id) {
         cG = new CevredekileriGoster();
         cG.execute(veritabani_id);
+    }
+
+
+    public void onClick(View view) {
+
+    }
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+    }
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        return false;
+    }
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+
+    }
+    public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+
     }
 
     private class CevredekileriGoster extends AsyncTask<String, Void, String> {
@@ -190,7 +253,35 @@ public class PageFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             InsannAdapter adapter = new InsannAdapter (getActivity() , R.layout.listview_item , InsanListesi);
-            list1.setAdapter(adapter);
+            if (viewGroup instanceof AbsListView) {
+                int numColumns = (viewGroup instanceof GridView) ? 3 : 1;
+                absListView.setAdapter(new QuickReturnAdapter(adapter, numColumns));
+            }
+
+            QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(viewGroup);
+            quickReturnAttacher.addTargetView(bottomTextView, AbsListViewScrollTarget.POSITION_BOTTOM);
+            topTargetView = quickReturnAttacher.addTargetView(lay1,
+                    AbsListViewScrollTarget.POSITION_TOP,
+                    dpToPx(getActivity(), 50));
+
+            if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
+                // This is the correct way to register an OnScrollListener.
+                // You have to add it on the QuickReturnAttacher, instead
+                // of on the viewGroup directly.
+                AbsListViewQuickReturnAttacher
+                        attacher =
+                        (AbsListViewQuickReturnAttacher) quickReturnAttacher;
+                attacher.addOnScrollListener(PageFragment.this);
+                attacher.setOnItemClickListener(PageFragment.this);
+                attacher.setOnItemLongClickListener(PageFragment.this);
+            }
+            // list1.setAdapter(adapter);
+
+        }
+        public int dpToPx(Context context, float dp) {
+            // Took from http://stackoverflow.com/questions/8309354/formula-px-to-dp-dp-to-px-android
+            float scale = context.getResources().getDisplayMetrics().density;
+            return (int) ((dp * scale) + 0.5f);
         }
     }
     }

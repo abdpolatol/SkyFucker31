@@ -1,60 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView5"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:minHeight="120dp"
-        android:minWidth="400dp"
-        android:maxHeight="120dp"
-        android:maxWidth="400dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Official Kanal Adı"
-        android:id="@+id/textView4"
-        android:layout_below="@+id/imageView5"
-        android:layout_centerHorizontal="true" />
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView4"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/linearLayout">
+        android:id="@+id/babo">
 
-        <Button
+        <ImageButton
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:id="@+id/imageView5"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:minHeight="50dp"
+            android:minWidth="400dp"
+            android:maxHeight="50dp"
+            android:maxWidth="400dp"
+            android:cropToPadding="false"
+            android:elevation="15dp"
+            android:layout_gravity="center" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@mipmap/chat_back">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Offical Kanal Adı"
+                android:id="@+id/textView4"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:textSize="15dp"
+                android:textColorHighlight="#70ff00"
+                android:textIsSelectable="false"
+                android:layout_centerInParent="true"
+                android:visibility="visible" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_gravity="right"
+        android:layout_below="@+id/babo"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="5dp"
+        android:id="@+id/relativeLayout">
+
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Menu"
-            android:id="@+id/button7" />
+            android:id="@+id/button7"
+            android:src="@mipmap/menu"
+            android:background="#00000000"
+            android:layout_marginLeft="10dp" />
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Beğen"
             android:id="@+id/button8"
-            android:layout_alignTop="@+id/textView4"
             android:layout_gravity="right"
             android:layout_marginLeft="150dp"
-            android:layout_alignParentRight="true"
-            android:layout_toEndOf="@+id/textView4" />
+            android:src="@mipmap/galpman"
+            android:background="#00000000"
+            android:layout_marginEnd="63dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
 
-        <TextView
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Like"
-            android:id="@+id/textView8" />
-
-    </LinearLayout>
+            android:id="@+id/imageButton7"
+            android:layout_alignParentEnd="true"
+            android:background="#ffffff"
+            android:src="@mipmap/yskayet"
+            android:layout_marginRight="10dp"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
 
 </RelativeLayout>

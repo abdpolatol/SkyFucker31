@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
     String lastname;
     String issim;
     String isim;
+    Bitmap resim;
     String resimurl;
     String cinsiyet;
     String email;
@@ -68,6 +70,7 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
         lastname = intent.getStringExtra("lastname");
         cinsiyet = intent.getStringExtra("gender");
         email = intent.getStringExtra("email");
+        resim = intent.getParcelableExtra("resim");
         Log.i("tago" , "Takip Servisi firstname= " + firstname);
         Log.i("tago" , "Takip Servisi lastname= " + lastname);
         Log.i("tago" , "Takip Servisi isim " + isim);
@@ -255,6 +258,7 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
         protected void onPostExecute(String s) {
             Intent i = new Intent(TakipServisi.this, AnaAkim.class);
             i.putExtra("isim" , isim);
+            i.putExtra("resim" , resim);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
         }

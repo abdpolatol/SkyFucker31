@@ -29,4 +29,5 @@ dependencies {
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.android.support:support-v4:22.2.0'
     compile 'com.android.support:support-v13:22.2.0'
+    compile 'com.felipecsl.quickreturn:library:1.5.1'
 }
