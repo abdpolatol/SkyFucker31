@@ -25,6 +25,10 @@ public class AnaAkim extends FragmentActivity {
         setContentView(R.layout.genelaltplan);
         notificationbas = true;
         notificationSharedPrefKaydet();
+        DatabaseClassKiminleKonustun db = new DatabaseClassKiminleKonustun(this);
+        db.open();
+        db.delete("KonustuklarinTablosu", null, null);
+        db.close();
         /*Intent intent = getIntent();
         bitmap = intent.getParcelableExtra("resim");
         isim =  intent.getStringExtra("isim");

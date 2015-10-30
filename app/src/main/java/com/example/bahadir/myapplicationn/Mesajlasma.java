@@ -55,6 +55,7 @@ public class Mesajlasma extends Activity {
     String karsidakiisim;
     String karsidakiresimurl;
     Bitmap icon;
+    List<String> kayitlimesajlar;
     ImageButton imagebuton1;
     String yazaninid;
     String yazaninmesaj;
@@ -86,7 +87,7 @@ public class Mesajlasma extends Activity {
         registerReceiver(receiveralfa, new IntentFilter("broadCastName"));
         DatabaseClass dB = new DatabaseClass(Mesajlasma.this);
         dB.open();
-        List<String> kayitlimesajlar = dB.databasedencek(karsidakiid);
+        kayitlimesajlar = dB.databasedencek(karsidakiid);
         dB.close();
         Log.i("tago" , String.valueOf(kayitlimesajlar));
 
@@ -168,6 +169,8 @@ public class Mesajlasma extends Activity {
         aV.execute("sikim");
         adapter.add(new Mesaj(taraf, yazaninmesaj));
         etv1.setText("");
+        Log.i("tago" , "yeni konusma kaydi aciliyor");
+        kiminlemesajlasiyorsun();
         mesajiexternalkaydet(yazaninmesaj);
         handler = new Handler();
         Thread thread = new Thread(new Runnable() {
@@ -184,6 +187,29 @@ public class Mesajlasma extends Activity {
 
         return true;
     }
+
+    private void kiminlemesajlasiyorsun() {
+        String durum = Environment.getExternalStorageState();
+        if (durum.equals(Environment.MEDIA_MOUNTED)) {
+            okunabilir = true;
+            yazilabilir = true;
+            Log.i("tago", "okunabilir ve yazılabilir");
+        } else if (durum.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
+            okunabilir = true;
+            yazilabilir = false;
+            Log.i("tago", "okunabilir fakat yazılamaz");
+        } else {
+            okunabilir = false;
+            yazilabilir = false;
+            Log.i("tago", "okunamaz ve yazılamaz");
+        }
+        DatabaseClassKiminleKonustun dB = new DatabaseClassKiminleKonustun(Mesajlasma.this);
+        dB.open();
+        dB.olustur(karsidakiid,karsidakiisim,karsidakiresimurl);
+        dB.close();
+        Log.i("tago", "Mesajlasma sqlite yeni kayit işlemi yapıldı");
+    }
+
     private void mesajiexternalkaydet(String yazaninmesaj) {
         String durum = Environment.getExternalStorageState();
         if (durum.equals(Environment.MEDIA_MOUNTED)) {

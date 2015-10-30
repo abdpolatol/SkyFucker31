@@ -36,6 +36,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PageFragment extends Fragment implements AbsListView.OnScrollListener,
         View.OnClickListener,
@@ -84,7 +85,6 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
         initializeQuickReturn();
         return view;
     }
-
     private void initializeQuickReturn() {
         viewGroup = (ViewGroup) view.findViewById(R.id.listView);
         absListView = (AbsListView) viewGroup;
@@ -93,15 +93,56 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
         buton2 = (Button) view.findViewById(R.id.button2);
         buton1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                //cevredekilericek(veritabani_id);
+                InsanListesi.clear();
+                cevredekilericek(veritabani_id);
             }
         });
         buton2.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View view) {
-                Log.i("tago" , "buton2 basıldı");
+                Log.i("tago", "buton2 basıldı");
+                InsanListesi.clear();
+                DatabaseClassKiminleKonustun dB = new DatabaseClassKiminleKonustun(getActivity());
+                dB.open();
+                List<String> idler = dB.databasedenidcek();
+                List<String> isimler = dB.databasedenisimcek();
+                List<String> resimurller = dB.databasedenresimurlcek();
+                dB.close();
+                for(int i = 0 ; i<idler.size() ; i++){
+                    Insann insann = new Insann();
+                    insann.setId(idler.get(i));
+                    Log.i("tago", idler.get(i));
+                    insann.setName(isimler.get(i));
+                    Log.i("tago", isimler.get(i));
+                    insann.setUrl(resimurller.get(i));
+                    Log.i("tago", resimurller.get(i));
+                    InsanListesi.add(insann);
+                }
+
+                InsannAdapter adapter = new InsannAdapter (getActivity() , R.layout.listview_item , InsanListesi);
+                if (viewGroup instanceof AbsListView) {
+                    int numColumns = (viewGroup instanceof GridView) ? 3 : 1;
+                    absListView.setAdapter(new QuickReturnAdapter(adapter, numColumns));
+                }
+
+                QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(viewGroup);
+                quickReturnAttacher.addTargetView(bottomTextView, AbsListViewScrollTarget.POSITION_BOTTOM);
+                topTargetView = quickReturnAttacher.addTargetView(lay1,
+                        AbsListViewScrollTarget.POSITION_TOP,
+                        dpToPx(getActivity(), 50));
+
+                if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
+                    AbsListViewQuickReturnAttacher
+                            attacher =
+                            (AbsListViewQuickReturnAttacher) quickReturnAttacher;
+                    attacher.addOnScrollListener(PageFragment.this);
+                    attacher.setOnItemClickListener(PageFragment.this);
+                    attacher.setOnItemLongClickListener(PageFragment.this);
+                }
+                // list1.setAdapter(adapter);
+
             }
         });
+
         bottomTextView = (TextView) view.findViewById(R.id.quickReturnBottomTarget);
         if (!veritabani_id.equals("default")) {
             cevredekilericek(veritabani_id);
@@ -114,13 +155,14 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
             Log.i("tago", "Anan� avrad�n� sikerim senin");
         }
     }
-
     private void cevredekilericek(String veritabani_id) {
         cG = new CevredekileriGoster();
         cG.execute(veritabani_id);
     }
-
-
+    public int dpToPx(Context context, float dp) {
+        float scale = context.getResources().getDisplayMetrics().density;
+        return (int) ((dp * scale) + 0.5f);
+    }
     public void onClick(View view) {
 
     }
