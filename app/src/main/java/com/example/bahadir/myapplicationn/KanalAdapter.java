@@ -79,7 +79,7 @@ public class KanalAdapter extends BaseAdapter {
     }
 
     public int getItemViewType(int position) {
-        Object item = getItem(position);
+        Object item = getItem(position-1);
         Kanal kanal = (Kanal)item;
         if(kanal.official){
             return OFFICIAL_KANAL;
@@ -93,7 +93,7 @@ public class KanalAdapter extends BaseAdapter {
         return 2;
     }
 
-    public View getView(int position, View convertView, ViewGroup viewGroup) {
+    public View getView(final int position, View convertView, ViewGroup viewGroup) {
         KanalHolder holder = null;
         final int pozisyon = position;
         Object currentKanal = getItem(position);
@@ -128,9 +128,12 @@ public class KanalAdapter extends BaseAdapter {
                 holder.tv3.setText(channelbaba.get(position).getKanaladi());
                 holder.image2.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
+                        kanaladi = channelbaba.get(position).getKanaladi();
+                        Log.i("tago" , kanaladi);
                         kEE = new KanalaElemanEkle();
                         kEE.execute(kanaladi);
                         Intent intent = new Intent(context , GrupSohbeti.class);
+                        intent.putExtra("kanaladi" ,kanaladi);
                         context.startActivity(intent);
                     }
                 });

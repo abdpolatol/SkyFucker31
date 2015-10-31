@@ -187,7 +187,6 @@ public class Mesajlasma extends Activity {
 
         return true;
     }
-
     private void kiminlemesajlasiyorsun() {
         String durum = Environment.getExternalStorageState();
         if (durum.equals(Environment.MEDIA_MOUNTED)) {
@@ -209,7 +208,6 @@ public class Mesajlasma extends Activity {
         dB.close();
         Log.i("tago", "Mesajlasma sqlite yeni kayit işlemi yapıldı");
     }
-
     private void mesajiexternalkaydet(String yazaninmesaj) {
         String durum = Environment.getExternalStorageState();
         if (durum.equals(Environment.MEDIA_MOUNTED)) {

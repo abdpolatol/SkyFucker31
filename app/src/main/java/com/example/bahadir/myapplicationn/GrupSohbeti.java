@@ -131,8 +131,30 @@ public class GrupSohbeti extends Activity {
         aT.execute("sikim");
         adapter.add(new Mesaj(taraf, yazaninmesaj));
         etv1.setText("");
+        konusulankanalikaydet();
         mesajiexternalkaydet(yazaninmesaj);
         return true;
+    }
+    private void konusulankanalikaydet() {
+        String durum = Environment.getExternalStorageState();
+        if (durum.equals(Environment.MEDIA_MOUNTED)) {
+            okunabilir = true;
+            yazilabilir = true;
+            Log.i("tago", "okunabilir ve yazılabilir");
+        } else if (durum.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
+            okunabilir = true;
+            yazilabilir = false;
+            Log.i("tago", "okunabilir fakat yazılamaz");
+        } else {
+            okunabilir = false;
+            yazilabilir = false;
+            Log.i("tago", "okunamaz ve yazılamaz");
+        }
+        DatabaseClassKonusulanKanallar dB = new DatabaseClassKonusulanKanallar(GrupSohbeti.this);
+        dB.open();
+        dB.olustur(kanaladi);
+        dB.close();
+        Log.i("tago", "Mesajlasma sqlite konusulan kanal kayit işlemi yapıldı");
     }
     private boolean takeChatMessage(String mesaj){
         adapter.add(new Mesaj(!taraf, mesaj));
