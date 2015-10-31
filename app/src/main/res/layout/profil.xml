@@ -3,12 +3,16 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <FrameLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal">
-
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/imageviewkapak"
+            android:minHeight="200dp"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -16,7 +20,7 @@
             android:minHeight="200dp"
             android:minWidth="200dp"
             android:layout_gravity="center" />
-    </LinearLayout>
+    </FrameLayout>
 
     <LinearLayout
         android:orientation="vertical"

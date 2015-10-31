@@ -45,12 +45,15 @@ public class MainFragment extends Fragment{
     String cinsiyet;
     Profile profile;
     String urll;
+    String profilid;
     AccessToken accessToken;
     Bitmap bitmap=null;
+    Bitmap kapakresmi;
     ProfileTracker protracker;
     AccessTokenTracker tracker;
-    NettenIndir a = new NettenIndir();
+    NettenIndir nettenIndir = new NettenIndir();
     Button buton1;
+    String cover_photo;
     private CallbackManager mCallbackManager;
 
     public void onCreate(Bundle savedInstanceState){
@@ -91,18 +94,19 @@ public class MainFragment extends Fragment{
         public void onSuccess(LoginResult loginResult) {
             accessToken = loginResult.getAccessToken();
             profile = Profile.getCurrentProfile();
-            Log.i("tago" ,"MainFragment Login Result on Success okudum");
+            Log.i("tago", "MainFragment Login Result on Success okudum");
             displayCase(profile);
             GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
                     new GraphRequest.GraphJSONObjectCallback() {
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
                             try {
-                                JSONObject photos = object.getJSONObject("https://graph.facebook.com/" +profile.getId()+ "/photos?type=public");
                                 email = object.getString("email");
                                 Log.i("tago" , "Main Fragment user email :" + email);
                                 cinsiyet = object.getString("gender");
                                 Log.i("tago" , "MainFragment user gender: "  + cinsiyet);
+                                cover_photo = object.getJSONObject("cover").getString("source");
+                                Log.i("tago", "cover photo = " + cover_photo);
                             } catch (JSONException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
@@ -112,9 +116,12 @@ public class MainFragment extends Fragment{
 
                     });
             Bundle parameters = new Bundle();
-            parameters.putString("fields" , "id,name,email,gender");
+            parameters.putString("fields", "id,name,email,gender,cover");
             request.setParameters(parameters);
             request.executeAsync();
+            if(profilid!=null){
+                nettenIndir.execute(profilid);
+            }
         }
 
         public void onCancel() {
@@ -127,7 +134,7 @@ public class MainFragment extends Fragment{
     };
     private void displayCase(Profile profile) {
         if(profile!=null){
-            a.execute(profile.getId());
+            profilid = profile.getId();
             Log.i("tago" , "Kullanıcı Main Fragment .getId " + profile.getId());
             Log.i("tago" , "MainFragment fotoyu çektim");
         }
@@ -155,6 +162,7 @@ public class MainFragment extends Fragment{
         getActivity().finish();
     }
 
+
     public class NettenIndir extends AsyncTask<String , Void , Bitmap>{
 
         protected Bitmap doInBackground(String... params) {
@@ -173,7 +181,6 @@ public class MainFragment extends Fragment{
                 if(bitmap == null){
                     Log.i("tago" , "Main Fragment bitmap yok");
                 }
-                return bitmap;
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -193,6 +200,7 @@ public class MainFragment extends Fragment{
                 i.putExtra("lastname" , lastname);
                 i.putExtra("email" , email);
                 i.putExtra("gender" , cinsiyet);
+                i.putExtra("kapakresmiurl" , cover_photo);
                 getActivity().startService(i);
 
             }

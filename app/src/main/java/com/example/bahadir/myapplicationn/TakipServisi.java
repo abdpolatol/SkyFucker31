@@ -42,6 +42,7 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
     String resimurl;
     String cinsiyet;
     String email;
+    String kapakresmiurl;
     GoogleApiClient googleclient;
     String regid;
     public void onCreate() {
@@ -69,6 +70,7 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
         firstname = intent.getStringExtra("firstname");
         lastname = intent.getStringExtra("lastname");
         cinsiyet = intent.getStringExtra("gender");
+        kapakresmiurl = intent.getStringExtra("kapakresmiurl");
         email = intent.getStringExtra("email");
         resim = intent.getParcelableExtra("resim");
         Log.i("tago" , "Takip Servisi firstname= " + firstname);
@@ -259,6 +261,7 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
             Intent i = new Intent(TakipServisi.this, AnaAkim.class);
             i.putExtra("isim" , isim);
             i.putExtra("resim" , resim);
+            i.putExtra("kapakresmiurl" , kapakresmiurl);
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
         }
