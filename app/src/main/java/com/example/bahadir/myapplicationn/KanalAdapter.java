@@ -63,13 +63,13 @@ public class KanalAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        Log.i("tago" , "getCount ="+(kanallar.size()));
-        return (kanallar.size());
+        Log.i("tago" , "getCount ="+(channelbaba.size()));
+        return (channelbaba.size());
     }
 
     public Object getItem(int i) {
-            Log.i("tago" , "getItem = " + kanallar.get(i));
-            return kanallar.get(i);
+            Log.i("tago" , "getItem = " + channelbaba.get(i));
+            return channelbaba.get(i);
 
     }
 
