@@ -50,7 +50,6 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
     String charset;
     String query;
     CevredekileriGoster cG;
-    ViewGroup listviewheader;
     ArrayList<Insann> InsanListesi;
 
     ViewGroup viewGroup;
@@ -78,8 +77,6 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.cevrendekiler, container, false);
-        listviewheader = (ViewGroup) inflater.inflate(R.layout.listview_header, list1, false);
-        //list1 = (ListView) view.findViewById(R.id.listView);
         Log.i("tago", "Page Fragment onCreateView");
         veritabani_id = idSharedPreferenceAl();
         initializeQuickReturn();

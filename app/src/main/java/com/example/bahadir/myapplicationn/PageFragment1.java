@@ -11,9 +11,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.felipecsl.quickreturn.library.AbsListViewQuickReturnAttacher;
+import com.felipecsl.quickreturn.library.QuickReturnAttacher;
+import com.felipecsl.quickreturn.library.widget.AbsListViewScrollTarget;
+import com.felipecsl.quickreturn.library.widget.QuickReturnAdapter;
+import com.felipecsl.quickreturn.library.widget.QuickReturnTargetView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,8 +39,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
-public class PageFragment1 extends Fragment {
+public class PageFragment1 extends Fragment implements AbsListView.OnScrollListener,
+        View.OnClickListener,
+        AdapterView.OnItemClickListener,
+        AdapterView.OnItemLongClickListener {
     public static final String ARG_PAGE = "ARG_PAGE";
     ArrayList<OfficialKanal> officialKanalListesi;
     ArrayList<NormalKanal> normalKanalListesi;
@@ -44,6 +59,14 @@ public class PageFragment1 extends Fragment {
     boolean kanaleklemebitti = false;
     private int mPage;
 
+    ViewGroup viewGroup;
+    View view;
+    AbsListView absListView;
+    LinearLayout lay1;
+    Button buton1,buton2;
+    TextView bottomTextView;
+    private QuickReturnTargetView topTargetView;;
+
     public static PageFragment1 newInstance(int page) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
@@ -51,22 +74,75 @@ public class PageFragment1 extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
     }
-
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.kanallar, container, false);
-        Button buton1 = (Button) view.findViewById(R.id.button9);
-        buton1.setOnClickListener(new View.OnClickListener() {
+        view = inflater.inflate(R.layout.kanallar, container, false);
+        Button buton3 = (Button) view.findViewById(R.id.button9);
+        buton3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 kanalekle();
             }
         });
-        liste1 = (ListView) view.findViewById(R.id.listView3);
-        String veritabani_id = idSharedPrefAl();
+        liste1 = (ListView) view.findViewById(R.id.listView);
+        veritabani_id = idSharedPrefAl();
+        initializeQuickReturn();
+        return view;
+    }
+    private void initializeQuickReturn() {
+        viewGroup = (ViewGroup) view.findViewById(R.id.listView);
+        absListView = (AbsListView) viewGroup;
+        lay1 = (LinearLayout) view.findViewById(R.id.quickReturnTopTarget);
+        buton1 = (Button) view.findViewById(R.id.button);
+        buton2 = (Button) view.findViewById(R.id.button2);
+        buton1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Log.i("tago" , "Buton 1 tıklandı");
+                channelbaba.clear();
+                cevredekikanallaricek(veritabani_id);
+            }
+        });
+
+        buton2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Log.i("tago", "Buton 2 tıklandı");
+                channelbaba.clear();
+                DatabaseClassKonusulanKanallar dB = new DatabaseClassKonusulanKanallar(getActivity());
+                dB.open();
+                List<String> kanallar = dB.databasedenkanalcek();;
+                dB.close();
+                for(int i = 0 ; i<kanallar.size() ; i++){
+                    Kanal kanal = new Kanal(true);
+                    kanal.setKanaladi(kanallar.get(i));
+                    Log.i("tago", kanallar.get(i));
+                    channelbaba.add(kanal);
+                }
+
+                KanalAdapter adapter = new KanalAdapter(getActivity() ,officialKanalListesi , normalKanalListesi, channelbaba);
+                if (viewGroup instanceof AbsListView) {
+                    absListView.setAdapter(new QuickReturnAdapter(adapter));
+                }
+
+                QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(viewGroup);
+                quickReturnAttacher.addTargetView(bottomTextView, AbsListViewScrollTarget.POSITION_BOTTOM);
+                topTargetView = quickReturnAttacher.addTargetView(lay1,
+                        AbsListViewScrollTarget.POSITION_TOP,
+                        dpToPx(getActivity(), 50));
+
+                if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
+                    AbsListViewQuickReturnAttacher
+                            attacher =
+                            (AbsListViewQuickReturnAttacher) quickReturnAttacher;
+                    attacher.addOnScrollListener(PageFragment1.this);
+                    attacher.setOnItemClickListener(PageFragment1.this);
+                    attacher.setOnItemLongClickListener(PageFragment1.this);
+                }
+            }
+        });
+
+        bottomTextView = (TextView) view.findViewById(R.id.quickReturnBottomTarget);
         if (!veritabani_id.equals("default")) {
             cevredekikanallaricek(veritabani_id);
         } else if (veritabani_id.equals("default")) {
@@ -78,9 +154,7 @@ public class PageFragment1 extends Fragment {
             Log.i("tago", "Anan� avrad�n� sikerim senin");
         }
 
-        return view;
     }
-
     private void kanalekle() {
         final Dialog dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -113,18 +187,31 @@ public class PageFragment1 extends Fragment {
                 }
     });
     }
-
     private void cevredekikanallaricek(String veritabani_id) {
         kC = new KanallariCek();
         kC.execute(veritabani_id);
     }
-
     private String idSharedPrefAl() {
         SharedPreferences sP = getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
         String veritabani_id = sP.getString("veritabani_id", "default id");
         Log.i("tago", "Page Fragment1 haf�zadan ula�t�m veritaban� id = " + veritabani_id);
         this.veritabani_id = veritabani_id;
         return veritabani_id;
+    }
+    public int dpToPx(Context context, float dp) {
+        float scale = context.getResources().getDisplayMetrics().density;
+        return (int) ((dp * scale) + 0.5f);
+    }
+    public void onClick(View view) {
+    }
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+    }
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        return false;
+    }
+    public void onScrollStateChanged(AbsListView absListView, int i) {
+    }
+    public void onScroll(AbsListView absListView, int i, int i1, int i2) {
     }
 
     private class KanallariCek extends AsyncTask<String, Void, String> {
@@ -308,7 +395,25 @@ public class PageFragment1 extends Fragment {
         protected void onPostExecute(String s) {
 
             KanalAdapter adapter = new KanalAdapter(getActivity(), officialKanalListesi, normalKanalListesi, channelbaba);
-            liste1.setAdapter(adapter);
+            if (viewGroup instanceof AbsListView) {
+                int numColumns = (viewGroup instanceof GridView) ? 3 : 1;
+                absListView.setAdapter(new QuickReturnAdapter(adapter, numColumns));
+            }
+
+            QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(viewGroup);
+            quickReturnAttacher.addTargetView(bottomTextView, AbsListViewScrollTarget.POSITION_BOTTOM);
+            topTargetView = quickReturnAttacher.addTargetView(lay1,
+                    AbsListViewScrollTarget.POSITION_TOP,
+                    dpToPx(getActivity(), 50));
+
+            if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
+                AbsListViewQuickReturnAttacher
+                        attacher =
+                        (AbsListViewQuickReturnAttacher) quickReturnAttacher;
+                attacher.addOnScrollListener(PageFragment1.this);
+                attacher.setOnItemClickListener(PageFragment1.this);
+                attacher.setOnItemLongClickListener(PageFragment1.this);
+            }
         }
 
     }

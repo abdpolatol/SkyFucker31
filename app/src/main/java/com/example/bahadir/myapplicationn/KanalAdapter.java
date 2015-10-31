@@ -45,7 +45,6 @@ public class KanalAdapter extends BaseAdapter {
         officialKanals = officiallar;
         normalKanals = normaller;
         this.channelbaba = channelbaba;
-
         for(int i = 0 ; i < officiallar.size() ; i++){
             kanallar.add(officiallar.get(i));
         }
@@ -64,14 +63,18 @@ public class KanalAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        return channelbaba.size();
+        Log.i("tago" , "getCount ="+(kanallar.size()));
+        return (kanallar.size());
     }
 
     public Object getItem(int i) {
-        return channelbaba.get(i);
+            Log.i("tago" , "getItem = " + kanallar.get(i));
+            return kanallar.get(i);
+
     }
 
     public long getItemId(int i) {
+        Log.i("tago" , "getItemId =" + i);
         return i;
     }
 
