@@ -81,7 +81,8 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                 image4 = (ImageView) dialog.findViewById(R.id.imageView9);
                 image1.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
-                        openImageIntent();
+                        Intent i= new Intent(getActivity(), resim_aktivitesi.class);
+                        startActivity(i);
                     }
                 });
                 break;

@@ -69,7 +69,7 @@ public class KanalAdapter extends BaseAdapter {
 
     public Object getItem(int i) {
             Log.i("tago" , "getItem = " + channelbaba.get(i));
-            return channelbaba.get(i);
+        return channelbaba.get(i);
 
     }
 
@@ -96,6 +96,7 @@ public class KanalAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup viewGroup) {
         KanalHolder holder = null;
         final int pozisyon = position;
+
         Object currentKanal = getItem(position);
         Kanal kanal = (Kanal) currentKanal;
         if(convertView==null) {

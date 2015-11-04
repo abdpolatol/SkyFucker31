@@ -66,6 +66,7 @@
         <activity android:name=".Mesajlasma" />
         <activity android:name=".GrupSohbeti" />
         <service android:name=".TakipServisi" />
+        <activity android:name=".resim_aktivitesi" />
 
         <provider
             android:name="com.facebook.FacebookContentProvider"

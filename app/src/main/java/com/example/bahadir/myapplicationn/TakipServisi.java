@@ -207,7 +207,7 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
                 Log.i("tago" , "Takip Servisi Veritabani ilk bilgiyi gonder" + regid);
                 connection = (HttpURLConnection)new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/connection.php?name="+isim+"&url="+resimurl+
                         "&long="+longi+"&lat=" +lat+"&regid="+regid+ "&email="+email+"&gender=" +cinsiyet ).openConnection();
-                Log.i("tago" ,"Takip Servisi VeriTabani bagı kurdum");
+                Log.i("tago" ,"Takip Servisi VeriTabani bagı kurdumemail===="+email);
             }catch(IOException e){
                 e.printStackTrace();
             }
