@@ -3,13 +3,6 @@ package com.example.bahadir.myapplicationn;
 /**
  * Created by ali_s_000 on 11/4/2015.
  */
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -25,6 +18,8 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -37,6 +32,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class resim_aktivitesi extends Activity {
     private Uri mImageCaptureUri;
@@ -51,9 +52,7 @@ public class resim_aktivitesi extends Activity {
 
     public static String Finalmedia = "";
 
-    @Override
     public void onCreate(Bundle savedInstanceState) {
-        Intent i = getIntent();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cropmain);
 
@@ -106,9 +105,6 @@ public class resim_aktivitesi extends Activity {
         });
 
     }
-
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK)
             return;
@@ -185,7 +181,6 @@ public class resim_aktivitesi extends Activity {
 
         }
     }
-
     public static Bitmap decodeFile(String path) {
         int orientation;
         try {
@@ -246,7 +241,6 @@ public class resim_aktivitesi extends Activity {
         }
 
     }
-
     public String getRealPathFromURI(Uri contentUri) {
         String[] proj = { MediaStore.Images.Media.DATA };
         Cursor cursor = managedQuery(contentUri, proj, null, null, null);
@@ -255,7 +249,6 @@ public class resim_aktivitesi extends Activity {
         cursor.moveToFirst();
         return cursor.getString(column_index);
     }
-
     private void doCrop() {
         final ArrayList<CropOption> cropOptions = new ArrayList<CropOption>();
 
@@ -275,8 +268,8 @@ public class resim_aktivitesi extends Activity {
 
             intent.putExtra("outputX", 200);
             intent.putExtra("outputY", 200);
-            intent.putExtra("aspectX", 1);
-            intent.putExtra("aspectY", 1);
+            //intent.putExtra("aspectX", 1);
+            //intent.putExtra("aspectY", 1);
             intent.putExtra("scale", true);
             intent.putExtra("return-data", true);
 

@@ -67,7 +67,8 @@
         <activity android:name=".GrupSohbeti" />
         <service android:name=".TakipServisi" />
         <activity android:name=".resim_aktivitesi" />
-
+        <activity android:name=".YaziPaylas" />
+        <activity android:name=".KarsilastirmaliFotoPaylas" />
         <provider
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider146074849062664"

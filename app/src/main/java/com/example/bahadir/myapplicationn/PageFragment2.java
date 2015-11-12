@@ -85,6 +85,18 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                         startActivity(i);
                     }
                 });
+                image2.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        Intent i = new Intent(getActivity() , YaziPaylas.class);
+                        startActivity(i);
+                    }
+                });
+                image3.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                       Intent i = new Intent(getActivity() , KarsilastirmaliFotoPaylas.class);
+                        startActivity(i);
+                    }
+                });
                 break;
 
         }
