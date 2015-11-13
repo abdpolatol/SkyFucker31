@@ -1,11 +1,25 @@
 package com.example.bahadir.myapplicationn;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,14 +31,38 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.android.gms.internal.zzhl.runOnUiThread;
 
 public class PageFragment2 extends Fragment implements View.OnClickListener {
     public static final String ARG_PAGE = "ARG_PAGE";
@@ -33,7 +71,16 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
     private int mPage;
     private Uri outputFileUri;
     Dialog dialog;
-
+    //ali edited here
+    private ImageView mImageView;
+    private Uri mImageCaptureUri;
+    private static final int PICK_FROM_CAMERA = 1;
+    private static final int CROP_FROM_CAMERA = 2;
+    private static final int PICK_FROM_FILE = 3;
+    private String selectedImagePath = "";
+    boolean GallaryPhotoSelected = false;
+    public static String Finalmedia = "";
+    //
     public static PageFragment2 newInstance(int page) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
@@ -46,6 +93,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
+
     }
 
     @Override
@@ -79,10 +127,50 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                 image2 = (ImageView) dialog.findViewById(R.id.imageView7);
                 image3 = (ImageView) dialog.findViewById(R.id.imageView8);
                 image4 = (ImageView) dialog.findViewById(R.id.imageView9);
+                //ali edited here for image activity
+                final String[] items = new String[] { "Take from camera","Select from gallery" };
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.select_dialog_item, items);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Select Image");
+                builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) { // pick from
+                        // camera
+                        if (item == 0) {
+                            Intent intent   = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                            mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
+                                    "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
+
+                            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+
+                            try {
+                                intent.putExtra("return-data", true);
+
+                                startActivityForResult(intent, PICK_FROM_CAMERA);
+                            } catch (ActivityNotFoundException e) {
+                                e.printStackTrace();
+                            }
+
+                        } else { // pick from file
+                            Intent intent = new Intent();
+
+                            intent.setType("image/*");
+                            intent.setAction(Intent.ACTION_GET_CONTENT);
+
+                            startActivityForResult(Intent.createChooser(intent,
+                                    "Complete action using"), PICK_FROM_FILE);
+                        }
+                    }
+                });
+                final AlertDialog dialog1 = builder.create();
+
+                //
                 image1.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
-                        Intent i= new Intent(getActivity(), resim_aktivitesi.class);
-                        startActivity(i);
+                        dialog.dismiss();
+                        dialog1.show();
+                        //Intent i= new Intent(getActivity(), resim_aktivitesi.class);
+                        //startActivity(i);
                     }
                 });
                 image2.setOnClickListener(new View.OnClickListener() {
@@ -93,7 +181,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                 });
                 image3.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
-                       Intent i = new Intent(getActivity() , KarsilastirmaliFotoPaylas.class);
+                        Intent i = new Intent(getActivity() , KarsilastirmaliFotoPaylas.class);
                         startActivity(i);
                     }
                 });
@@ -139,6 +227,329 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         startActivityForResult(chooserIntent,11);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != -1)
+            return;
+
+        switch (requestCode) {
+            case PICK_FROM_CAMERA:
+                Log.i("TAG", "Inside PICK_FROM_CAMERA");
+                doCrop();
+                break;
+
+            case PICK_FROM_FILE:
+                mImageCaptureUri = data.getData();
+                Log.i("TAG",
+                        "After Crop mImageCaptureUri " + mImageCaptureUri.getPath());
+                GallaryPhotoSelected = true;
+                doCrop();
+
+                break;
+
+            case CROP_FROM_CAMERA:
+                Bundle extras = data.getExtras();
+
+                selectedImagePath = mImageCaptureUri.getPath();
+
+                Log.i("TAG", "After Crop selectedImagePath " + selectedImagePath);
+
+                if (GallaryPhotoSelected) {
+                    selectedImagePath = getRealPathFromURI(mImageCaptureUri);
+                    Log.i("TAG", "Absolute Path " + selectedImagePath);
+                    GallaryPhotoSelected = true;
+                }
+
+                Finalmedia = selectedImagePath;
+
+                if (extras != null) {
+                    // Bitmap photo = extras.getParcelable("data");
+                    Log.i("TAG", "Inside Extra " + selectedImagePath);
+                    Bitmap photo = (Bitmap) extras.get("data");
+                    //photo = getRoundedCroppedBitmap(photo, 300);
+                    selectedImagePath = String.valueOf(System.currentTimeMillis())
+                            + ".jpg";
+
+                    Log.i("TAG", "new selectedImagePath before file "
+                            + selectedImagePath);
+
+                    File file = new File(Environment.getExternalStorageDirectory(),
+                            selectedImagePath);
+
+                    try {
+                        file.createNewFile();
+                        FileOutputStream fos = new FileOutputStream(file);
+                        photo.compress(Bitmap.CompressFormat.PNG, 95, fos);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        Toast.makeText(getActivity(),
+                                "Sorry, Camera Crashed-Please Report as Crash A.",
+                                Toast.LENGTH_LONG).show();
+                    }
+
+                    selectedImagePath = Environment.getExternalStorageDirectory()
+                            + "/" + selectedImagePath;
+                    Log.i("TAG", "After File Created  " + selectedImagePath);
+
+                    Bitmap bm = BitmapFactory.decodeFile(selectedImagePath);
+                    Log.i("TAG", "After File Created  " + bm.toString());
+                    getActivity().setContentView(R.layout.cropmain);
+                    Button uploadbutton = (Button) getActivity().findViewById(R.id.uploadbutton);
+                    mImageView = (ImageView) getActivity().findViewById(R.id.iv_photo);
+                    mImageView.setImageBitmap(bm);
+                    uploadbutton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            new Thread(new Runnable() {
+                                public void run() {
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+
+                                        }
+                                    });
+                                    try {
+                                        uploadFile(selectedImagePath);
+                                    } catch (MalformedURLException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).start();
+                        }
+                    });
+                }
+
+                File f = new File(mImageCaptureUri.getPath());
+                if (f.exists()) f.delete();
+
+
+                break;
+
+        }
+    }
+    public String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getActivity().getContentResolver().query(contentUri, proj, null, null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
+    private String sharedPreferenceIdAl() {
+        SharedPreferences sp = getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        String veritabani_id = sp.getString("veritabani_id", "default id");
+        Log.i("tago", "Mesajlasma veritabani id = " + veritabani_id);
+        return veritabani_id;
+    }
+    private void doCrop() {
+        final ArrayList<CropOption> cropOptions = new ArrayList<CropOption>();
+
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setType("image/*");
+
+        List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities(intent, 0);
+
+        int size = list.size();
+
+        if (size == 0) {
+            Toast.makeText(getActivity(), "Can not find image crop app", Toast.LENGTH_SHORT).show();
+
+            return;
+        } else {
+            intent.setData(mImageCaptureUri);
+
+            intent.putExtra("outputX", 400);
+            intent.putExtra("outputY", 600);
+            intent.putExtra("aspectX", 1);
+            //intent.putExtra("aspectY", 1);
+            //intent.putExtra("scale", false);
+            intent.putExtra("return-data", true);
+
+            if (size == 1) {
+                Intent i   = new Intent(intent);
+                ResolveInfo res = list.get(0);
+
+                i.setComponent( new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+
+                startActivityForResult(i, CROP_FROM_CAMERA);
+            } else {
+                for (ResolveInfo res : list) {
+                    final CropOption co = new CropOption();
+
+                    co.title  = getActivity().getPackageManager().getApplicationLabel(res.activityInfo.applicationInfo);
+                    co.icon  = getActivity().getPackageManager().getApplicationIcon(res.activityInfo.applicationInfo);
+                    co.appIntent= new Intent(intent);
+
+                    co.appIntent.setComponent( new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+
+                    cropOptions.add(co);
+                }
+
+                CropOptionAdapter adapter = new CropOptionAdapter(getActivity().getApplicationContext(), cropOptions);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Choose Crop App");
+                builder.setAdapter( adapter, new DialogInterface.OnClickListener() {
+                    public void onClick( DialogInterface dialog, int item ) {
+                        startActivityForResult( cropOptions.get(item).appIntent, CROP_FROM_CAMERA);
+                    }
+                });
+
+                builder.setOnCancelListener( new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel( DialogInterface dialog ) {
+
+                        if (mImageCaptureUri != null ) {
+                            getActivity().getContentResolver().delete(mImageCaptureUri, null, null );
+                            mImageCaptureUri = null;
+                        }
+                    }
+                } );
+
+                AlertDialog alert = builder.create();
+
+                alert.show();
+            }
+        }
+    }
+    public static Bitmap getRoundedCroppedBitmap(Bitmap bitmap, int radius) {
+        Bitmap finalBitmap;
+        if(bitmap.getWidth() != radius || bitmap.getHeight() != radius)
+            finalBitmap = Bitmap.createScaledBitmap(bitmap, radius, radius, false);
+        else
+            finalBitmap = bitmap;
+        Bitmap output = Bitmap.createBitmap(finalBitmap.getWidth(),
+                finalBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, finalBitmap.getWidth(), finalBitmap.getHeight());
+
+        paint.setAntiAlias(true);
+
+        paint.setFilterBitmap(true);
+        paint.setDither(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(Color.parseColor("#BAB399"));
+        canvas.drawCircle(finalBitmap.getWidth() / 2 + 0.7f, finalBitmap.getHeight() / 2 + 0.7f,
+                finalBitmap.getWidth() / 2 + 0.1f, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(finalBitmap, rect, rect, paint);
+
+
+        return output;
+    }
+    public int uploadFile(String sourceFileUri) throws MalformedURLException {
+        String userid=sharedPreferenceIdAl();
+        String upLoadServerUri ="http://www.ceng.metu.edu.tr/~e1818871/shappy/photos/picture_activity.php?userID="+userid;
+        String fileName = sourceFileUri;
+        int serverResponseCode = 0;
+        ProgressDialog dialog = null;
+        HttpURLConnection conn = null;
+        DataOutputStream dos = null;
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+        File sourceFile = new File(sourceFileUri);
+        String name=sourceFile.getName();
+        if (!sourceFile.isFile()) {
+            Log.e("uploadFile", "Source File Does not exist");
+            return 0;
+        }
+        try {
+            FileInputStream fileInputStream = new FileInputStream(sourceFile);
+            URL url = new URL(upLoadServerUri);
+            conn = (HttpURLConnection) url.openConnection(); // Open a HTTP  connection to  the URL
+            conn.setDoInput(true); // Allow Inputs
+            conn.setDoOutput(true); // Allow Outputs
+            conn.setUseCaches(false); // Don't use a Cached Copy
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Connection", "Keep-Alive");
+            conn.setRequestProperty("ENCTYPE", "multipart/form-data");
+            conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+            conn.setRequestProperty("uploaded_file", fileName);
+            conn.setRequestProperty("userID", userid.trim());
+            Log.i("uploadfile userid","  =========    "+userid);
+            dos = new DataOutputStream(conn.getOutputStream());
+
+            dos.writeBytes(twoHyphens + boundary + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""+ fileName + "\"" + lineEnd);
+            dos.writeBytes(lineEnd);
+
+            bytesAvailable = fileInputStream.available(); // create a buffer of  maximum size
+
+            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+            buffer = new byte[bufferSize];
+
+            // read file and write it into form...
+            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+            while (bytesRead > 0) {
+                dos.write(buffer, 0, bufferSize);
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+            }
+
+            // send multipart form data necesssary after file data...
+            dos.writeBytes(lineEnd);
+            dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+            // Responses from the server (code and message)
+            serverResponseCode = conn.getResponseCode();
+            String serverResponseMessage = conn.getResponseMessage();
+
+            Log.i("uploadFile", "HTTP Response is : " + serverResponseMessage + ": " + serverResponseCode);
+            if(serverResponseCode == 200){
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getActivity(), "File Upload Complete.", Toast.LENGTH_SHORT).show();
+                        getFragmentManager().popBackStack();
+                    }
+                });
+            }
+
+            //close the streams //
+            fileInputStream.close();
+            dos.flush();
+            dos.close();
+        } catch (Exception e) {
+            dialog.dismiss();
+            e.printStackTrace();
+            Toast.makeText(getActivity(), "Exception : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.e("Upload file to server", "Exception : " + e.getMessage(), e);
+        }
+        HttpURLConnection sconnection = null;
+        try {
+            sconnection = (HttpURLConnection) new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/paylas.php?userid=" +
+                    userid + "&type=teklifoto&text=http://www.ceng.metu.edu.tr/~e1818871/shappy/photos/"+userid+"/"+name).openConnection();
+            Log.i("tago", "Page Fragment1 yeni kanal kur bagı kuruldu");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        sconnection.setDoOutput(true);
+        sconnection.setDoInput(true);
+        sconnection.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
+        sconnection.setRequestProperty("Accept", "* /*");
+        sconnection.setRequestProperty("Accept-Charset", "utf-8");
+        sconnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + "utf-8");
+
+        try {
+            OutputStream output = new BufferedOutputStream(sconnection.getOutputStream());
+            //output.write(String.format("param1=%s", URLEncoder.encode("userid", "utf-8")).getBytes("utf-8"));
+            output.close();
+            int a = sconnection.getResponseCode();
+            String b = sconnection.getResponseMessage();
+            Log.i("tago", "rerere" + a + " " + b);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String[] lines = selectedImagePath.split("/");
+        return serverResponseCode;
+    }
+    /*
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode== -1) {
             if (requestCode == 11) {
@@ -184,5 +595,5 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                 }
             }
         }
-    }
+    }*/
 }
