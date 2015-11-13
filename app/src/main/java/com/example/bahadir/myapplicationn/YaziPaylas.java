@@ -42,17 +42,10 @@ public class YaziPaylas extends Activity {
         });
     }
     private String sharedPrefİdAl() {
-<<<<<<< HEAD
         SharedPreferences sp = getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
         String veritabani_id = sp.getString("veritabani_id", "default id");
         Log.i("tago", "YaziPaylas veritabani id = " + veritabani_id);
         return veritabani_id;
-=======
-            SharedPreferences sp = getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
-            String veritabani_id = sp.getString("veritabani_id", "default id");
-            Log.i("tago", "YaziPaylas veritabani id = " + veritabani_id);
-            return veritabani_id;
->>>>>>> b1b20fe65f83c8a0b77e07ed18e5ebdc21483e5c
     }
     private void yaziyiServeraGonder(String yazi){
         aYG = new ArkadanYaziGonder();
@@ -61,7 +54,6 @@ public class YaziPaylas extends Activity {
 
     public class ArkadanYaziGonder extends AsyncTask<String,Void,String>{
 
-<<<<<<< HEAD
         protected String doInBackground(String... params) {
             String param1 = "id";
             String param2 = "type";
@@ -111,56 +103,3 @@ public class YaziPaylas extends Activity {
     }
 
 }
-=======
-            protected String doInBackground(String... params) {
-                String param1 = "id";
-                String param2 = "type";
-                String param3 = "text";
-                charset = "UTF-8";
-                try {
-                    query = String.format("param1=%s&param2=%s&param3=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
-                            URLEncoder.encode(param3, charset));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                Log.i("tago", "VeriTabani arkadan yazi gonderme başlatıldı");
-                try{
-                    return yaziyigonder(params[0]);
-                }catch(Exception e){
-                    e.printStackTrace();
-                    return "olmadı";
-                }
-            }
-
-            private String yaziyigonder(String yazii) {
-                URLConnection connection = null;
-
-                try{
-                    Log.i("tago" , yazii);
-                    Log.i("tago" , veritabaniid);
-                    connection = new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/paylas.php?userid="+veritabaniid
-                            +"&type=text"+"&text="+yazii).openConnection();
-                    Log.i("tago" ,"Arkadan Yazi Gonder bagı kurdum");
-                }catch(IOException e){
-                    e.printStackTrace();
-                }
-                connection.setDoOutput(true);
-                connection.setRequestProperty("Accept-Charset", charset);
-                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
-                try{
-                    OutputStream output = new BufferedOutputStream(connection.getOutputStream());
-                    output.write(query.getBytes(charset));
-                    InputStream response = connection.getInputStream();
-                    Log.i("tago" , "Arkadan Yazi Gonder yazdım");
-                }catch(IOException e){
-                    e.printStackTrace();
-                    Log.i("tago" , "Arkadan Yazi Gonder yazamadım");
-                }
-                return "alabama";
-            }
-        }
-
-    }
-
-
->>>>>>> b1b20fe65f83c8a0b77e07ed18e5ebdc21483e5c

@@ -7,8 +7,9 @@ import android.widget.ImageButton;
 
 public class KarsilastirmaliFotoPaylas extends Activity {
 
-    ImageButton image1,image2;
-    protected void onCreate(Bundle bundle){
+    ImageButton image1, image2;
+
+    protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.karsilastirmalifotopaylas);
         image1 = (ImageButton) findViewById(R.id.imageButton9);
@@ -27,8 +28,4 @@ public class KarsilastirmaliFotoPaylas extends Activity {
             }
         });
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> b1b20fe65f83c8a0b77e07ed18e5ebdc21483e5c
