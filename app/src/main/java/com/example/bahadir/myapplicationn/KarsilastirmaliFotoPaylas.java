@@ -27,4 +27,8 @@ public class KarsilastirmaliFotoPaylas extends Activity {
             }
         });
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> b1b20fe65f83c8a0b77e07ed18e5ebdc21483e5c
