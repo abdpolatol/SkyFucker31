@@ -34,9 +34,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -50,12 +52,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,11 +72,12 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
     ListView liste1;
     private int mPage;
     private Uri outputFileUri;
-    Dialog dialog;
+    Dialog dialoge;
     String charset, query;
     public ArrayList<Paylasilanlar> PaylasilanlarListesi;
     PaylasilanlariCek pC;
     String veritabaniid;
+    ArkadanYaziGonder aYG;
     //ali edited here
     private ImageView mImageView;
     private Uri mImageCaptureUri;
@@ -113,18 +118,18 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         switch (view.getId()) {
 
             case R.id.imageButton8:
-                dialog = new Dialog(getActivity());
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.hangitur);
-                dialog.getWindow().setDimAmount(0.7f);
-                dialog.setCancelable(false);
-                dialog.setCanceledOnTouchOutside(false);
-                dialog.show();
+                dialoge = new Dialog(getActivity());
+                dialoge.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialoge.setContentView(R.layout.hangitur);
+                dialoge.getWindow().setDimAmount(0.7f);
+                dialoge.setCancelable(false);
+                dialoge.setCanceledOnTouchOutside(false);
+                dialoge.show();
                 ImageView image1, image2, image3, image4;
-                image1 = (ImageView) dialog.findViewById(R.id.imageView6);
-                image2 = (ImageView) dialog.findViewById(R.id.imageView7);
-                image3 = (ImageView) dialog.findViewById(R.id.imageView8);
-                image4 = (ImageView) dialog.findViewById(R.id.imageView9);
+                image1 = (ImageView) dialoge.findViewById(R.id.imageView6);
+                image2 = (ImageView) dialoge.findViewById(R.id.imageView7);
+                image3 = (ImageView) dialoge.findViewById(R.id.imageView8);
+                image4 = (ImageView) dialoge.findViewById(R.id.imageView9);
                 //ali edited here for image activity
                 final String[] items = new String[]{"Take from camera", "Select from gallery"};
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_item, items);
@@ -165,7 +170,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                 //
                 image1.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
-                        dialog.dismiss();
+                        dialoge.dismiss();
                         dialog1.show();
                         //Intent i= new Intent(getActivity(), resim_aktivitesi.class);
                         //startActivity(i);
@@ -173,8 +178,31 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                 });
                 image2.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
-                        Intent i = new Intent(getActivity(), YaziPaylas.class);
-                        startActivity(i);
+                        dialoge.dismiss();
+                        final Dialog dialog = new Dialog(getActivity(),R.style.DialogTheme);
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialog.setContentView(R.layout.yazipaylas);
+                        dialog.getWindow().setDimAmount(0.7f);
+                        dialog.show();
+                        final TextView tv1 = (TextView) dialog.findViewById(R.id.textView10);
+                        final EditText etv1 = (EditText) dialog.findViewById(R.id.editText4);
+                        Button onaylaButonu = (Button) dialog.findViewById(R.id.button3);
+                        onaylaButonu.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                String yazi = etv1.getText().toString();
+                                yaziyiServeraGonder(yazi);
+                                PaylasilanlarListesi.clear();
+                                PaylasilanlariCek pc = new PaylasilanlariCek();
+                                pc.execute(veritabaniid);
+                                dialog.dismiss();
+                            }
+
+                            private void yaziyiServeraGonder(String yazi) {
+                                aYG = new ArkadanYaziGonder();
+                                aYG.execute(yazi);
+                            }
+                        });
+
                     }
                 });
                 image3.setOnClickListener(new View.OnClickListener() {
@@ -545,6 +573,55 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         return serverResponseCode;
     }
 
+    public class ArkadanYaziGonder extends AsyncTask<String,Void,String> {
+
+        protected String doInBackground(String... params) {
+            String param1 = "id";
+            String param2 = "type";
+            String param3 = "text";
+            charset = "UTF-8";
+            try {
+                query = String.format("param1=%s&param2=%s&param3=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
+                        URLEncoder.encode(param3, charset));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            Log.i("tago", "VeriTabani arkadan yazi gonderme başlatıldı");
+            try {
+                return yaziyigonder(params[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "olmadı";
+            }
+        }
+
+        private String yaziyigonder(String yazii) {
+            URLConnection connection = null;
+
+            try {
+                Log.i("tago", yazii);
+                Log.i("tago", veritabaniid);
+                connection = new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/paylas.php?userid=" + veritabaniid
+                        + "&type=text" + "&text=" + yazii).openConnection();
+                Log.i("tago", "Arkadan Yazi Gonder bagı kurdum");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Accept-Charset", charset);
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+            try {
+                OutputStream output = new BufferedOutputStream(connection.getOutputStream());
+                output.write(query.getBytes(charset));
+                InputStream response = connection.getInputStream();
+                Log.i("tago", "Arkadan Yazi Gonder yazdım");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.i("tago", "Arkadan Yazi Gonder yazamadım");
+            }
+            return "alabama";
+        }
+    }
     public class PaylasilanlariCek extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... params) {
