@@ -21,6 +21,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
@@ -38,23 +39,20 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -71,6 +69,10 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
     private int mPage;
     private Uri outputFileUri;
     Dialog dialog;
+    String charset, query;
+    public ArrayList<Paylasilanlar> PaylasilanlarListesi;
+    PaylasilanlariCek pC;
+    String veritabaniid;
     //ali edited here
     private ImageView mImageView;
     private Uri mImageCaptureUri;
@@ -80,7 +82,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
     private String selectedImagePath = "";
     boolean GallaryPhotoSelected = false;
     public static String Finalmedia = "";
-    //
+
     public static PageFragment2 newInstance(int page) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
@@ -89,30 +91,26 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         return fragment;
     }
 
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
-
+        veritabaniid=sharedPreferenceIdAl();
     }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.cevrendepaylasilanlar, container, false);
         return view;
     }
-
-    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        buton1= (ImageButton) view.findViewById(R.id.imageButton8);
+        buton1 = (ImageButton) view.findViewById(R.id.imageButton8);
         liste1 = (ListView) view.findViewById(R.id.listView3);
         buton1.setOnClickListener(this);
+        pC = new PaylasilanlariCek();
+        pC.execute(veritabaniid);
     }
-
     public void onClick(View view) {
 
-        switch(view.getId()){
+        switch (view.getId()) {
 
             case R.id.imageButton8:
                 dialog = new Dialog(getActivity());
@@ -122,21 +120,21 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                 dialog.setCancelable(false);
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
-                ImageView image1,image2,image3,image4;
+                ImageView image1, image2, image3, image4;
                 image1 = (ImageView) dialog.findViewById(R.id.imageView6);
                 image2 = (ImageView) dialog.findViewById(R.id.imageView7);
                 image3 = (ImageView) dialog.findViewById(R.id.imageView8);
                 image4 = (ImageView) dialog.findViewById(R.id.imageView9);
                 //ali edited here for image activity
-                final String[] items = new String[] { "Take from camera","Select from gallery" };
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.select_dialog_item, items);
+                final String[] items = new String[]{"Take from camera", "Select from gallery"};
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_item, items);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Select Image");
                 builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) { // pick from
                         // camera
                         if (item == 0) {
-                            Intent intent   = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
                             mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
                                     "tmp_avatar_" + String.valueOf(System.currentTimeMillis()) + ".jpg"));
@@ -175,13 +173,13 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                 });
                 image2.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
-                        Intent i = new Intent(getActivity() , YaziPaylas.class);
+                        Intent i = new Intent(getActivity(), YaziPaylas.class);
                         startActivity(i);
                     }
                 });
                 image3.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
-                        Intent i = new Intent(getActivity() , KarsilastirmaliFotoPaylas.class);
+                        Intent i = new Intent(getActivity(), KarsilastirmaliFotoPaylas.class);
                         startActivity(i);
                     }
                 });
@@ -189,22 +187,21 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
 
         }
     }
-
     private void openImageIntent() {
 
 // Determine Uri of camera image to save.
         final File root = new File(Environment.getExternalStorageDirectory() + File.separator + "BenimDir" + File.separator);
         root.mkdirs();
-        final String fname = "img_"+ System.currentTimeMillis() + ".jpg";
+        final String fname = "img_" + System.currentTimeMillis() + ".jpg";
         final File sdImageMainDirectory = new File(root, fname);
         outputFileUri = Uri.fromFile(sdImageMainDirectory);
 
         // Camera.
         final List<Intent> cameraIntents = new ArrayList<Intent>();
         final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        final PackageManager packageManager =getActivity().getPackageManager();
+        final PackageManager packageManager = getActivity().getPackageManager();
         final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
-        for(ResolveInfo res : listCam) {
+        for (ResolveInfo res : listCam) {
             final String packageName = res.activityInfo.packageName;
             final Intent intent = new Intent(captureIntent);
             intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
@@ -224,10 +221,8 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         // Add the camera options.
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
 
-        startActivityForResult(chooserIntent,11);
+        startActivityForResult(chooserIntent, 11);
     }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != -1)
             return;
@@ -327,7 +322,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         }
     }
     public String getRealPathFromURI(Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
+        String[] proj = {MediaStore.Images.Media.DATA};
         Cursor cursor = getActivity().getContentResolver().query(contentUri, proj, null, null, null);
         int column_index = cursor
                 .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
@@ -365,21 +360,21 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
             intent.putExtra("return-data", true);
 
             if (size == 1) {
-                Intent i   = new Intent(intent);
+                Intent i = new Intent(intent);
                 ResolveInfo res = list.get(0);
 
-                i.setComponent( new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+                i.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
 
                 startActivityForResult(i, CROP_FROM_CAMERA);
             } else {
                 for (ResolveInfo res : list) {
                     final CropOption co = new CropOption();
 
-                    co.title  = getActivity().getPackageManager().getApplicationLabel(res.activityInfo.applicationInfo);
-                    co.icon  = getActivity().getPackageManager().getApplicationIcon(res.activityInfo.applicationInfo);
-                    co.appIntent= new Intent(intent);
+                    co.title = getActivity().getPackageManager().getApplicationLabel(res.activityInfo.applicationInfo);
+                    co.icon = getActivity().getPackageManager().getApplicationIcon(res.activityInfo.applicationInfo);
+                    co.appIntent = new Intent(intent);
 
-                    co.appIntent.setComponent( new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+                    co.appIntent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
 
                     cropOptions.add(co);
                 }
@@ -388,22 +383,22 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("Choose Crop App");
-                builder.setAdapter( adapter, new DialogInterface.OnClickListener() {
-                    public void onClick( DialogInterface dialog, int item ) {
-                        startActivityForResult( cropOptions.get(item).appIntent, CROP_FROM_CAMERA);
+                builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        startActivityForResult(cropOptions.get(item).appIntent, CROP_FROM_CAMERA);
                     }
                 });
 
-                builder.setOnCancelListener( new DialogInterface.OnCancelListener() {
+                builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
-                    public void onCancel( DialogInterface dialog ) {
+                    public void onCancel(DialogInterface dialog) {
 
-                        if (mImageCaptureUri != null ) {
-                            getActivity().getContentResolver().delete(mImageCaptureUri, null, null );
+                        if (mImageCaptureUri != null) {
+                            getActivity().getContentResolver().delete(mImageCaptureUri, null, null);
                             mImageCaptureUri = null;
                         }
                     }
-                } );
+                });
 
                 AlertDialog alert = builder.create();
 
@@ -413,7 +408,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
     }
     public static Bitmap getRoundedCroppedBitmap(Bitmap bitmap, int radius) {
         Bitmap finalBitmap;
-        if(bitmap.getWidth() != radius || bitmap.getHeight() != radius)
+        if (bitmap.getWidth() != radius || bitmap.getHeight() != radius)
             finalBitmap = Bitmap.createScaledBitmap(bitmap, radius, radius, false);
         else
             finalBitmap = bitmap;
@@ -439,8 +434,8 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         return output;
     }
     public int uploadFile(String sourceFileUri) throws MalformedURLException {
-        String userid=sharedPreferenceIdAl();
-        String upLoadServerUri ="http://www.ceng.metu.edu.tr/~e1818871/shappy/photos/picture_activity.php?userID="+userid;
+        String userid = sharedPreferenceIdAl();
+        String upLoadServerUri = "http://www.ceng.metu.edu.tr/~e1818871/shappy/photos/picture_activity.php?userID=" + userid;
         String fileName = sourceFileUri;
         int serverResponseCode = 0;
         ProgressDialog dialog = null;
@@ -453,7 +448,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         byte[] buffer;
         int maxBufferSize = 1 * 1024 * 1024;
         File sourceFile = new File(sourceFileUri);
-        String name=sourceFile.getName();
+        String name = sourceFile.getName();
         if (!sourceFile.isFile()) {
             Log.e("uploadFile", "Source File Does not exist");
             return 0;
@@ -471,11 +466,11 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
             conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
             conn.setRequestProperty("uploaded_file", fileName);
             conn.setRequestProperty("userID", userid.trim());
-            Log.i("uploadfile userid","  =========    "+userid);
+            Log.i("uploadfile userid", "  =========    " + userid);
             dos = new DataOutputStream(conn.getOutputStream());
 
             dos.writeBytes(twoHyphens + boundary + lineEnd);
-            dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\""+ fileName + "\"" + lineEnd);
+            dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + fileName + "\"" + lineEnd);
             dos.writeBytes(lineEnd);
 
             bytesAvailable = fileInputStream.available(); // create a buffer of  maximum size
@@ -502,7 +497,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
             String serverResponseMessage = conn.getResponseMessage();
 
             Log.i("uploadFile", "HTTP Response is : " + serverResponseMessage + ": " + serverResponseCode);
-            if(serverResponseCode == 200){
+            if (serverResponseCode == 200) {
                 runOnUiThread(new Runnable() {
                     public void run() {
                         Toast.makeText(getActivity(), "File Upload Complete.", Toast.LENGTH_SHORT).show();
@@ -524,7 +519,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         HttpURLConnection sconnection = null;
         try {
             sconnection = (HttpURLConnection) new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/paylas.php?userid=" +
-                    userid + "&type=teklifoto&text=http://www.ceng.metu.edu.tr/~e1818871/shappy/photos/"+userid+"/"+name).openConnection();
+                    userid + "&type=teklifoto&text=http://www.ceng.metu.edu.tr/~e1818871/shappy/photos/" + userid + "/" + name).openConnection();
             Log.i("tago", "Page Fragment1 yeni kanal kur bagı kuruldu");
         } catch (IOException e) {
             e.printStackTrace();
@@ -549,51 +544,110 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         String[] lines = selectedImagePath.split("/");
         return serverResponseCode;
     }
-    /*
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode== -1) {
-            if (requestCode == 11) {
-                final boolean isCamera;
-                Log.i("tago" , "iscamerayı olusturdu");
-                if (data == null) {
-                    isCamera = true;
-                    Log.i("tago" , "iscamera = true");
-                } else {
-                    final String action = data.getAction();
-                    Log.i("tago", "action= " + action);
-                    if (action == null) {
-                        isCamera = false;
-                        Log.i("tago" , "iscamera = false");
-                    } else {
-                        isCamera = action.equals(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                        Log.i("tago" , "iscamera action");
-                    }
-                }
 
-                Uri selectedImageUri;
-                if (isCamera) {
-                    selectedImageUri = outputFileUri;
-                    try {
-                        Bitmap kameraresmi = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(),selectedImageUri);
-                        buton1.setImageBitmap(kameraresmi);
-                        dialog.cancel();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Log.i("tago" ,String.valueOf(selectedImageUri));
-                } else {
-                    selectedImageUri = data == null ? null : data.getData();
-                    try {
-                        Bitmap galeriresmi = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver() , selectedImageUri);
-                        buton1.setImageBitmap(galeriresmi);
-                        dialog.cancel();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Log.i("tago" , "ikincisi");
-                    Log.i("tago" , String.valueOf(selectedImageUri));
-                }
+    public class PaylasilanlariCek extends AsyncTask<String, Void, String> {
+
+        protected String doInBackground(String... params) {
+            String param1 = "id";
+            charset = "UTF-8";
+            try {
+                query = String.format("param1=%s", URLEncoder.encode(param1, charset));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            Log.i("tago", "PageFragment2 paylasilanlari alma baÅŸlatÄ±ldÄ±");
+            try {
+                return paylasilanlaricek(params[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "olmadÄ±";
             }
         }
-    }*/
+
+        private String paylasilanlaricek(String veritabaniidd) {
+            HttpURLConnection connection = null;
+
+            try {
+                Log.i("tago", veritabaniidd);
+                connection = (HttpURLConnection) new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/paylasilanlari_al?id=" + veritabaniidd).openConnection();
+                Log.i("tago", "Paylasinlari alma bagÄ± kurdum");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
+            connection.setRequestProperty("Accept", "* /*");
+            connection.setRequestProperty("Accept-Charset", charset);
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+            try {
+                OutputStream output = new BufferedOutputStream(connection.getOutputStream());
+                output.write(query.getBytes(charset));
+                output.close();
+                try {
+                    int a = connection.getResponseCode();
+                    String b = connection.getResponseMessage();
+                    Log.i("tago", "rerere" + a + " " + b);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                BufferedReader in;
+                if (connection.getResponseCode() == 200) {
+                    in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    Log.i("tago", "InputStream");
+                    String inputline = null;
+
+                    for (int i = 0; i < 3; i++) {
+                        inputline = in.readLine();
+                        Log.i("tago", "" + i + " for inputline= " + inputline);
+                    }
+                    PaylasilanlarListesi = new ArrayList();
+                    JSONArray jsono = new JSONArray(inputline);
+                    for (int i = 0; i < jsono.length(); i++) {
+                        JSONObject object = jsono.getJSONObject(i);
+                        Paylasilanlar paylasilan = new Paylasilanlar();
+                        paylasilan.setVeriid(object.optString("id"));
+                        paylasilan.setGonderenid(object.optString("user_id"));
+                        paylasilan.setCesit(object.optString("type"));
+                        paylasilan.setYaziveyaurl(object.optString("text"));
+                        paylasilan.setDate(object.optString("date"));
+                        PaylasilanlarListesi.add(paylasilan);
+                    }
+                } else {
+                    in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                    Log.i("tago", "Error Stream");
+                    String inputline;
+                    while ((inputline = in.readLine()) != null) {
+                        Log.i("tago", "camcamcam" + inputline);
+                    }
+                    PaylasilanlarListesi = new ArrayList();
+                    JSONArray jsono = new JSONArray(inputline);
+                    for (int i = 0; i < jsono.length(); i++) {
+                        JSONObject object = jsono.getJSONObject(i);
+                        Paylasilanlar paylasilan = new Paylasilanlar();
+                        paylasilan.setVeriid(object.optString("id"));
+                        paylasilan.setGonderenid(object.optString("user_id"));
+                        paylasilan.setCesit(object.optString("type"));
+                        paylasilan.setYaziveyaurl(object.optString("text"));
+                        paylasilan.setDate(object.optString("date"));
+                        PaylasilanlarListesi.add(paylasilan);
+                    }
+                }
+                in.close();
+                Log.i("tago", "Page Fragment cevredekileri gor inputline yazdï¿½m");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.i("tago", "Page Fragment cevredekileri gor yazamadï¿½m");
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.i("tago", "json Exception");
+            }
+            return "inputline";
+        }
+
+        protected void onPostExecute(String s) {
+            PaylasilanlarAdapter adapter = new PaylasilanlarAdapter(getActivity() , PaylasilanlarListesi);
+            liste1.setAdapter(adapter);
+        }
+    }
 }
