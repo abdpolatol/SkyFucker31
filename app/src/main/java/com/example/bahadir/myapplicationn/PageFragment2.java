@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -211,8 +212,48 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                         startActivity(i);
                     }
                 });
-                break;
 
+                image4.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        final Dialog dialdial = new Dialog(getActivity(),R.style.DialogTheme);
+                        dialdial.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialdial.setContentView(R.layout.anketpaylas);
+                        dialdial.getWindow().setDimAmount(0.7f);
+                        dialdial.show();
+                        final EditText etv1 , etv2 , etv3 , etv4;
+                        final Button buton1 , buton2,buton3;
+                        final LinearLayout lay1 , lay2;
+                        lay1 = (LinearLayout) dialdial.findViewById(R.id.lay3);
+                        lay2 = (LinearLayout) dialdial.findViewById(R.id.lay4);
+                        etv1 = (EditText) dialdial.findViewById(R.id.editText5);
+                        etv2 = (EditText) dialdial.findViewById(R.id.editText6);
+                        etv3 = (EditText) dialdial.findViewById(R.id.editText7);
+                        etv4 = (EditText) dialdial.findViewById(R.id.editText8);
+                        buton1 = (Button) dialdial.findViewById(R.id.button11);
+                        buton2 = (Button) dialdial.findViewById(R.id.button12);
+                        buton3 = (Button) dialdial.findViewById(R.id.button13);
+                        buton1.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View view) {
+                                lay1.setVisibility(View.VISIBLE);
+                            }
+                        });
+                        buton2.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View view) {
+                              lay2.setVisibility(View.VISIBLE);
+                            }
+                        });
+                        buton3.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View view) {
+                                String soru = etv1.getText().toString();
+                                String ilksecenek = etv2.getText().toString();
+                                String ikincisecenek = etv3.getText().toString();
+                                String ucuncusecenek = etv4.getText().toString();
+
+                            }
+                        });
+                    }
+                });
+                break;
         }
     }
     private void openImageIntent() {
