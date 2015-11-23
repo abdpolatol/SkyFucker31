@@ -79,6 +79,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
     PaylasilanlariCek pC;
     String veritabaniid;
     ArkadanYaziGonder aYG;
+    ArkadanAnketGonder aAG;
     //ali edited here
     private ImageView mImageView;
     private Uri mImageCaptureUri;
@@ -248,6 +249,8 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                                 String ilksecenek = etv2.getText().toString();
                                 String ikincisecenek = etv3.getText().toString();
                                 String ucuncusecenek = etv4.getText().toString();
+                                aAG = new ArkadanAnketGonder(soru,ilksecenek,ikincisecenek,ucuncusecenek);
+                                aAG.execute(veritabaniid);
 
                             }
                         });
@@ -766,6 +769,67 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         protected void onPostExecute(String s) {
             PaylasilanlarAdapter adapter = new PaylasilanlarAdapter(getActivity() , PaylasilanlarListesi);
             liste1.setAdapter(adapter);
+        }
+    }
+    public class ArkadanAnketGonder extends AsyncTask<String,Void,String>{
+
+        String soru,ilksecenek,ikincisecenek,ucuncusecenek;
+
+        public ArkadanAnketGonder(String soru, String ilksecenek, String ikincisecenek, String ucuncusecenek) {
+            this.soru=soru;
+            this.ilksecenek= ilksecenek;
+            this.ikincisecenek= ikincisecenek;
+            this.ucuncusecenek = ucuncusecenek;
+        }
+
+        protected String doInBackground(String... params) {
+            String param1 = "id";
+            String param2 = "question";
+            String param3 = "option1";
+            String param4 = "option2";
+            String param5 = "option3";
+            String param6 = "option4";
+            charset = "UTF-8";
+            try {
+                query = String.format("param1=%s&param2=%s&param3=%s&param4=%s&param5=%s&param6=%s",
+                        URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
+                        URLEncoder.encode(param3, charset),URLEncoder.encode(param4, charset),
+                        URLEncoder.encode(param5, charset),URLEncoder.encode(param6, charset));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            Log.i("tago", "VeriTabani arkadan anket gonderme başlatıldı");
+            try {
+                return anketigonder(params[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "olmadı";
+            }
+        }
+        private String anketigonder(String id) {
+            URLConnection connection = null;
+
+            try {
+                connection = new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/anket_paylas.php?userid="+
+                        id+"&question="+soru+"&option1="+ilksecenek+"&option2=" + ikincisecenek +
+                        "&option3="+ucuncusecenek+"&option4=-").openConnection();
+                Log.i("tago", "Arkadan Anket Gonder bagı kurdum");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Accept-Charset", charset);
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+            try {
+                OutputStream output = new BufferedOutputStream(connection.getOutputStream());
+                output.write(query.getBytes(charset));
+                InputStream response = connection.getInputStream();
+                Log.i("tago", "Arkadan Anket Gonder yazdım");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.i("tago", "Arkadan Anket Gonder yazamadım");
+            }
+            return "alabama";
         }
     }
 }
