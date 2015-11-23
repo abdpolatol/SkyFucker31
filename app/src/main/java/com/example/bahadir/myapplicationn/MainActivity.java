@@ -1,10 +1,13 @@
 package com.example.bahadir.myapplicationn;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +16,9 @@ import android.util.Log;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -26,35 +32,101 @@ import me.pushy.sdk.Pushy;
 
 public class MainActivity extends AppCompatActivity {
 
+    private String sharedcoverurlal() {
+        SharedPreferences sP = getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        String coverurl = sP.getString("coverurl","defaultcoverurl");
+        Log.i("tago", "Takip Servisi hafızadan ulaştım coverurl= " + coverurl);
+        return coverurl;
+    }
+    private String sharedresimurlal() {
+        SharedPreferences sP = getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        String resimurl = sP.getString("resimurl","defaultresimurl");
+        Log.i("tago", "Takip Servisi hafızadan ulaştım resimurl = " + resimurl);
+        return resimurl;
+    }
+    private String sharedemailal() {
+        SharedPreferences sP = getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        String email = sP.getString("email","defaultemail");
+        Log.i("tago", "Takip Servisi hafızadan ulaştım email = " + email);
+        return email;
+    }
+    private String sharedcinsiyetal() {
+        SharedPreferences sP = getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        String cinsiyet = sP.getString("cinsiyet","defaultcinsiyet");
+        Log.i("tago", "Takip Servisi hafızadan ulaştım cinsiyet = " + cinsiyet);
+        return cinsiyet;
+    }
+    private String sharedlastnameal() {
+        SharedPreferences sP = getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        String lastname = sP.getString("lastname","defaultlastname");
+        Log.i("tago", "Takip Servisi hafızadan ulaştım lastname = " + lastname);
+        return lastname;
+    }
+    private String sharedfirstnameal() {
+        SharedPreferences sP = getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        String firstname = sP.getString("firstname","defaultfirstname");
+        Log.i("tago", "Takip Servisi hafızadan ulaştım firstname = " + firstname);
+        return firstname;
+    }
+    private String sharedtumisimal() {
+        SharedPreferences sP = getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        String tumisim = sP.getString("tumisim","defaulttumisim");
+        Log.i("tago", "Takip Servisi hafızadan ulaştım tumisim = " + tumisim);
+        return tumisim;
+    }
+    private String sharedPrefIdAl() {
+        SharedPreferences sP = getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        String veritabani_id = sP.getString("veritabani_id","defaultid");
+        Log.i("tago", "Takip Servisi hafızadan ulaştım veritabanı id = " + veritabani_id);
+        return veritabani_id;
+    }
+    private Bitmap internalresimal(){
+
+            try {
+                File f=new File("/data/data/com.example.bahadir.myapplicationn/app_userpro", "kullaniciresmi.jpg");
+                Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+                return b;
+            }
+            catch (FileNotFoundException e)
+            {
+                e.printStackTrace();
+                return null;
+            }
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i("tago" , "Main Activity onCreate");
+        Log.i("tago", "Main Activity onCreate");
         super.onCreate(savedInstanceState);
         Pushy.listen(this);
-        setContentView(R.layout.activity_main);
-        printHashKey();
         new registerForPushNotificationsAsync().execute();
+        String kullaniciid= sharedPrefIdAl();
+        Log.i("tago", kullaniciid);
+        setContentView(R.layout.activity_main);
+        if(kullaniciid.equals("defaultid")){
+            setContentView(R.layout.activity_main);
+        }else{
+            String tumisim = sharedtumisimal();
+            String firstname = sharedfirstnameal();
+            String lastname = sharedlastnameal();
+            String cinsiyet = sharedcinsiyetal();
+            String email = sharedemailal();
+            String resimurl = sharedresimurlal();
+            String coverurl = sharedcoverurlal();
+            Bitmap resim = internalresimal();
+            Intent i = new Intent(MainActivity.this , TakipServisi.class);
+            i.putExtra("resim" , resim);
+            i.putExtra("isim", tumisim);
+            i.putExtra("resimurl" , resimurl);
+            i.putExtra("firstname" , firstname);
+            i.putExtra("lastname" , lastname);
+            i.putExtra("email" , email);
+            i.putExtra("gender" , cinsiyet);
+            i.putExtra("kapakresmiurl" , coverurl);
+            startService(i);
+        }
+        printHashKey();
     }
-    protected void onStart() {
-        Log.i("tago" , "Main Activity onStart");
-        super.onStart();
-    }
-    protected void onResume() {
-        Log.i("tago" , "Main Activity onResume");
-        super.onResume();
-    }
-    protected void onPause() {
-        Log.i("tago" , "Main Activity onPause");
-        super.onPause();
-    }
-    protected void onStop() {
-        Log.i("tago" , "Main Activity onStop");
-        super.onStop();
-    }
-    protected void onDestroy() {
-        Log.i("tago" , "Main Activity onDestroy");
-        super.onDestroy();
-    }
+
     private void printHashKey() {
 
         try {

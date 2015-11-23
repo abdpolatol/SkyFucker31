@@ -1,6 +1,9 @@
 package com.example.bahadir.myapplicationn;
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -28,6 +31,8 @@ import com.facebook.login.widget.LoginButton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -48,7 +53,6 @@ public class MainFragment extends Fragment{
     String profilid;
     AccessToken accessToken;
     Bitmap bitmap=null;
-    Bitmap kapakresmi;
     ProfileTracker protracker;
     AccessTokenTracker tracker;
     NettenIndir nettenIndir = new NettenIndir();
@@ -56,29 +60,88 @@ public class MainFragment extends Fragment{
     String cover_photo;
     private CallbackManager mCallbackManager;
 
+    private void sharedlastnamekaydet(String a) {
+        SharedPreferences sP =getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = sP.edit();
+        prefEditor.putString("lastname", a);
+        prefEditor.commit();
+    }
+    private void sharedmiddlenamekaydet(String b) {
+        SharedPreferences sP =getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = sP.edit();
+        prefEditor.putString("middlename", b);
+        prefEditor.commit();
+    }
+    private void sharedfirstnamekaydet(String c) {
+        SharedPreferences sP =getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = sP.edit();
+        prefEditor.putString("firstname", c);
+        prefEditor.commit();
+
+    }
+    private void sharedtumisimkaydet(String d) {
+        SharedPreferences sP =getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = sP.edit();
+        prefEditor.putString("tumisim", d);
+        prefEditor.commit();
+    }
+    private void sharedcoverurlkaydet(String x) {
+        SharedPreferences sP =getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = sP.edit();
+        prefEditor.putString("coverurl", x);
+        prefEditor.commit();
+    }
+    private void sharedcinsiyetkaydet(String y) {
+        SharedPreferences sP =getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = sP.edit();
+        prefEditor.putString("cinsiyet", y);
+        prefEditor.commit();
+    }
+    private void sharedemailkaydet(String z) {
+        SharedPreferences sP =getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = sP.edit();
+        prefEditor.putString("email", z);
+        prefEditor.commit();
+    }
+    private void sharedresimurlkaydet(String urll) {
+        SharedPreferences sP =getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = sP.edit();
+        prefEditor.putString("resimurl", urll);
+        prefEditor.commit();
+    }
+    private String bitmapiinternalkaydet(Bitmap bitmap) {
+            ContextWrapper cw = new ContextWrapper(getActivity());
+            File directory = cw.getDir("userpro", Context.MODE_PRIVATE);
+            File mypath=new File(directory,"kullaniciresmi.jpg");
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(mypath);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                fos.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return directory.getAbsolutePath();
+    }
+
+
     public void onCreate(Bundle savedInstanceState){
-        Log.i("tago" , "MainFragment onCreate");
+        Log.i("tago", "MainFragment onCreate");
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
         tracker = new AccessTokenTracker() {
-            @Override
             protected void onCurrentAccessTokenChanged(AccessToken old, AccessToken nev) {
 
             }
         };
         protracker = new ProfileTracker() {
-            @Override
             protected void onCurrentProfileChanged(Profile oldpro, Profile newpro) {
 
             }
         };
         tracker.startTracking();
         protracker.startTracking();
-    }
-    public void onStart() {
-        Log.i("tago", "MainFragment onStart");
-        super.onStart();
     }
     public void onResume() {
         super.onResume();
@@ -88,7 +151,17 @@ public class MainFragment extends Fragment{
             firstname = profile.getFirstName();
             middlename = profile.getMiddleName();
             lastname = profile.getLastName();
+            sharedtumisimkaydet(tumisim);
+            sharedfirstnamekaydet(firstname);
+            sharedmiddlenamekaydet(middlename);
+            sharedlastnamekaydet(lastname);
         }
+    }
+    public void onStop(){
+        super.onStop();
+        tracker.stopTracking();
+        protracker.stopTracking();
+        getActivity().finish();
     }
     private FacebookCallback<LoginResult> mCallBack = new FacebookCallback<LoginResult>() {
         public void onSuccess(LoginResult loginResult) {
@@ -103,10 +176,13 @@ public class MainFragment extends Fragment{
                             try {
                                 email = object.getString("email");
                                 Log.i("tago" , "Main Fragment user email :" + email);
+                                sharedemailkaydet(email);
                                 cinsiyet = object.getString("gender");
                                 Log.i("tago" , "MainFragment user gender: "  + cinsiyet);
+                                sharedcinsiyetkaydet(cinsiyet);
                                 cover_photo = object.getJSONObject("cover").getString("source");
                                 Log.i("tago", "cover photo = " + cover_photo);
+                                sharedcoverurlkaydet(cover_photo);
                             } catch (JSONException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
@@ -155,12 +231,7 @@ public class MainFragment extends Fragment{
         super.onActivityResult(requestCode, resultCode, data);
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
-    public void onStop(){
-        super.onStop();
-        tracker.stopTracking();
-        protracker.stopTracking();
-        getActivity().finish();
-    }
+
 
 
     public class NettenIndir extends AsyncTask<String , Void , Bitmap>{
@@ -169,6 +240,7 @@ public class MainFragment extends Fragment{
             try {
                 URL url = new URL("https://graph.facebook.com/" + params[0]+ "/picture?type=large");
                 urll = "https://graph.facebook.com/" + params[0]+ "/picture?type=large";
+                sharedresimurlkaydet(urll);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 Log.i("tago" , "MainFragment connection sağladm");
                 connection.setDoInput(true);
@@ -177,6 +249,7 @@ public class MainFragment extends Fragment{
                 Log.i("tago" , "MainFragment connect sağladım");
                 InputStream input = connection.getInputStream();
                 bitmap = BitmapFactory.decodeStream(input);
+                bitmapiinternalkaydet(bitmap);
                 Log.i("tago" , "Main Fragment bitmap yaptım");
                 if(bitmap == null){
                     Log.i("tago" , "Main Fragment bitmap yok");
@@ -206,5 +279,7 @@ public class MainFragment extends Fragment{
             }
         }
     }
+
+
 }
 

@@ -108,11 +108,10 @@ public class TakipServisi extends Service implements GoogleApiClient.ConnectionC
             aK = new ArkadanKaynat(regid, issim ,resimurl ,String.valueOf(mFirstLocation.getLongitude())
                    ,String.valueOf(mFirstLocation.getLatitude()) );
             aK.execute();
-        }else{
+        }
             aK = new ArkadanKaynat(regid ,issim ,resimurl ,String.valueOf(mFirstLocation.getLongitude())
                     ,String.valueOf(mFirstLocation.getLatitude()) );
             aK.execute();
-        }
             LocationServices.FusedLocationApi.requestLocationUpdates(googleclient, locrequest, this);
     }
     private String regidSharedPrefAl() {
