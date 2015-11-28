@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 
 
 public class PaylasilanlarAdapter extends BaseAdapter {
+    public LruCache<String , Bitmap> memoryCacheP;
     Context context;
     ArrayList<Paylasilanlar> paylasilanlarListesi ;
     LayoutInflater lala;
@@ -33,6 +35,16 @@ public class PaylasilanlarAdapter extends BaseAdapter {
     int PAYLASILANANKET = 3;
 
     public PaylasilanlarAdapter(Context context, ArrayList<Paylasilanlar> paylasilanlarListesi) {
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 8;
+        Log.i("tago", String.valueOf(cacheSize));
+        memoryCacheP = new LruCache<String, Bitmap>(cacheSize){
+
+            protected int sizeOf(String key, Bitmap bitmap) {
+                Log.i("tago" , String.valueOf(bitmap.getByteCount()/1024));
+                return bitmap.getByteCount()/1024 ;
+            }
+        };
         this.context = context;
         this.paylasilanlarListesi = paylasilanlarListesi;
         lala = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -126,32 +138,67 @@ public class PaylasilanlarAdapter extends BaseAdapter {
 
     public class urldenResim extends AsyncTask<String , Void , Bitmap> {
 
+
+        Bitmap bitmape;
+        boolean eldevar;
+        String paylasilanid;
         ImageView bmImage;
+        boolean hafizadayok = true;
 
         public urldenResim(ImageView bmImage){
             this.bmImage = bmImage;
         }
         protected Bitmap doInBackground(String... params) {
-            URL url = null;
-            try {
-                url = new URL(params[0]);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setDoInput(true);;
-                connection.connect();
-                Log.i("tago" , "Paylasilanlar Adapter connect sağladım");
-                InputStream input = connection.getInputStream();
-                resim = BitmapFactory.decodeStream(input);
-                Log.i("tago" , "Paylasilanlar Adapter bitmap yaptım");
+            loadBitmapFromCache(params[0]);
+            if(hafizadayok==true) {
+                URL url = null;
+                try {
+                    url = new URL(params[0]);
+                    paylasilanid = params[0];
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setDoInput(true);
+                    connection.connect();
+                    Log.i("tago", "Paylasilanlar Adapter connect sağladım");
+                    InputStream input = connection.getInputStream();
+                    resim = BitmapFactory.decodeStream(input);
+                    Log.i("tago", "Paylasilanlar Adapter bitmap yaptım");
+                    return resim;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return resim;
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            }else{
+                return null;
             }
-            return resim;
+        }
+
+        private void loadBitmapFromCache(String key) {
+            bitmape = getBitmapFromMemoryCache(key);
+            if(bitmape!=null){
+                eldevar=true;
+                hafizadayok = false;
+            }else{
+                eldevar = false;
+                hafizadayok = true;
+            }
+        }
+        private Bitmap getBitmapFromMemoryCache(String key) {
+            return memoryCacheP.get(key);
+        }
+        private void addBitmapToMemoryCache(String key , Bitmap bitmap) {
+            if(getBitmapFromMemoryCache(key)==null){
+                memoryCacheP.put(key, bitmap);
+            }
         }
         protected void onPostExecute(Bitmap bitmap) {
-            bmImage.setImageBitmap(bitmap);
+            if(eldevar==true){
+                bmImage.setImageBitmap(bitmape);
+            }if(eldevar==false){
+                addBitmapToMemoryCache(paylasilanid, bitmap);
+                bmImage.setImageBitmap(bitmap);
+            }
         }
     }
 }
