@@ -5,6 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -170,11 +177,31 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
 
         protected void onPostExecute(Bitmap bitmap) {
             if(eldevar==true){
-                bmImage.setImageBitmap(bitmape);
+                Bitmap yuvarlakbitmape = getCircleBitmap(bitmape);
+                bmImage.setImageBitmap(yuvarlakbitmape);
             }if(eldevar==false){
                 addBitmapToMemoryCache(fotoid, bitmap);
-                bmImage.setImageBitmap(bitmap);
+                Bitmap yuvarlakbitmap = getCircleBitmap(bitmap);
+                bmImage.setImageBitmap(yuvarlakbitmap);
             }
+        }
+
+        private Bitmap getCircleBitmap(Bitmap b) {
+            final Bitmap output = Bitmap.createBitmap(b.getWidth(),b.getHeight(),Bitmap.Config.ARGB_8888);
+            final Canvas canvas = new Canvas(output);
+            final int color = Color.RED;
+            final Paint paint = new Paint();
+            final Rect rect = new Rect(0,0,b.getWidth(),b.getHeight());
+            final RectF rectf = new RectF(rect);
+
+            paint.setAntiAlias(true);
+            paint.setColor(color);
+            canvas.drawARGB(0, 0, 0, 0);
+            canvas.drawOval(rectf, paint);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+
+            canvas.drawBitmap(b, rect, rect, paint);
+            return output;
         }
 
         private void addBitmapToMemoryCache(String key , Bitmap bitmap) {
