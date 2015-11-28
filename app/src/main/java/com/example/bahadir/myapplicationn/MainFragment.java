@@ -201,11 +201,11 @@ public class MainFragment extends Fragment{
         }
 
         public void onCancel() {
-
+            Log.i("tago" , "MainFragment onCancel");
         }
 
         public void onError(FacebookException e) {
-
+            Log.i("tago" , "MainFragment onError");
         }
     };
     private void displayCase(Profile profile) {

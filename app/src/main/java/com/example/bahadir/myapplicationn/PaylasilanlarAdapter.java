@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,8 +38,6 @@ public class PaylasilanlarAdapter extends BaseAdapter {
         lala = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-
-
     public int getCount() {
         return paylasilanlarListesi.size();
     }
@@ -62,12 +61,9 @@ public class PaylasilanlarAdapter extends BaseAdapter {
         }
         return -1;
     }
-
-
     public int getViewTypeCount() {
         return 4;
     }
-
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         PaylasilanHolder holder;
         final int pozisyon = position;
@@ -90,6 +86,12 @@ public class PaylasilanlarAdapter extends BaseAdapter {
             }else if(paylasilan.cesit.equals("ikilifoto")){
                 Log.i("tago" , "ikiliikiliikili");
             }else if(paylasilan.cesit.equals("anket")){
+
+                convertView = lala.inflate(R.layout.paylasilananket,null);
+                holder.etv1 = (EditText) convertView.findViewById(R.id.editText5);
+                holder.etv2 = (EditText) convertView.findViewById(R.id.editText6);
+                holder.etv3 = (EditText) convertView.findViewById(R.id.editText7);
+                holder.etv4 = (EditText) convertView.findViewById(R.id.editText8);
                 Log.i("tago" , "anketanketanket");
             }
 
@@ -107,17 +109,19 @@ public class PaylasilanlarAdapter extends BaseAdapter {
         }else if(paylasilan.cesit.equals("ikilifoto")){
 
         }else if(paylasilan.cesit.equals("anket")){
-
+            holder.etv1.setText(paylasilanlarListesi.get(position).getQuestion());
+            holder.etv2.setText(paylasilanlarListesi.get(position).getOption1());
+            holder.etv3.setText(paylasilanlarListesi.get(position).getOption2());
+            holder.etv4.setText(paylasilanlarListesi.get(position).getOption3());
         }
         return convertView;
     }
 
 
-
-
     static class PaylasilanHolder{
         TextView tv1,tv2,tv3;
         ImageButton image1;
+        EditText etv1,etv2,etv3,etv4;
     }
 
     public class urldenResim extends AsyncTask<String , Void , Bitmap> {

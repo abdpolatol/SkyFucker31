@@ -1,7 +1,6 @@
 package com.example.bahadir.myapplicationn;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -102,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         String kullaniciid= sharedPrefIdAl();
         Log.i("tago", kullaniciid);
         setContentView(R.layout.activity_main);
-        if(kullaniciid.equals("defaultid")){
+        /*if(kullaniciid.equals("defaultid")){
             setContentView(R.layout.activity_main);
         }else{
             String tumisim = sharedtumisimal();
@@ -123,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             i.putExtra("gender" , cinsiyet);
             i.putExtra("kapakresmiurl" , coverurl);
             startService(i);
-        }
+        }*/
         printHashKey();
     }
 

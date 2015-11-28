@@ -55,6 +55,7 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
         }else{
             holder = (InsannHolder)convertView.getTag();
         }
+            holder.image1.setImageResource(R.mipmap.ins);
             holder.text1.setText(objects.get(position).getName());
             new urldenResim(holder.image1).execute(objects.get(position).getUrl());
             holder.likebutonu.setOnClickListener(new View.OnClickListener() {

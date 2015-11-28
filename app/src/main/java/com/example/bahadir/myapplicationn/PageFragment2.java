@@ -63,6 +63,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.google.android.gms.internal.zzhl.runOnUiThread;
@@ -216,6 +217,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
 
                 image4.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
+                        dialoge.dismiss();
                         final Dialog dialdial = new Dialog(getActivity(),R.style.DialogTheme);
                         dialdial.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         dialdial.setContentView(R.layout.anketpaylas);
@@ -251,7 +253,10 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                                 String ucuncusecenek = etv4.getText().toString();
                                 aAG = new ArkadanAnketGonder(soru,ilksecenek,ikincisecenek,ucuncusecenek);
                                 aAG.execute(veritabaniid);
-
+                                PaylasilanlarListesi.clear();
+                                PaylasilanlariCek pc = new PaylasilanlariCek();
+                                pc.execute(veritabaniid);
+                                dialdial.dismiss();
                             }
                         });
                     }
@@ -763,10 +768,110 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                 e.printStackTrace();
                 Log.i("tago", "json Exception");
             }
+            anketlerial(veritabaniidd);
             return "inputline";
         }
 
+        private void anketlerial(String veritabaniidd) {
+                HttpURLConnection connection = null;
+
+                try {
+                    Log.i("tago", veritabaniidd);
+                    connection = (HttpURLConnection) new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/anketleri_al?id=" + veritabaniidd).openConnection();
+                    Log.i("tago", "Anketleri alma bagÄ± kurdum");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
+                connection.setRequestProperty("Accept", "* /*");
+            connection.setRequestProperty("Accept-Charset", charset);
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+                try {
+                    OutputStream output = new BufferedOutputStream(connection.getOutputStream());
+                    output.write(query.getBytes(charset));
+                    output.close();
+                    try {
+                        int a = connection.getResponseCode();
+                        String b = connection.getResponseMessage();
+                        Log.i("tago", "rerere" + a + " " + b);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    BufferedReader in;
+                    if (connection.getResponseCode() == 200) {
+                        in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        Log.i("tago", "InputStream");
+                        String inputline = null;
+
+                        for (int i = 0; i < 3; i++) {
+                            inputline = in.readLine();
+                            Log.i("tago", "" + i + " for inputline= " + inputline);
+                        }
+                        JSONArray jsono = new JSONArray(inputline);
+                        for (int i = 0; i < jsono.length(); i++) {
+                            JSONObject object = jsono.getJSONObject(i);
+                            Paylasilanlar paylasilan = new Paylasilanlar();
+                            paylasilan.setVeriid(object.optString("id"));
+                            paylasilan.setGonderenid(object.optString("user_id"));
+                            paylasilan.setCesit("anket");
+                            paylasilan.setQuestion(object.optString("question"));
+                            paylasilan.setOption1(object.optString("option1"));
+                            paylasilan.setOption2(object.optString("option2"));
+                            paylasilan.setOption3(object.optString("option3"));
+                            paylasilan.setOption4(object.optString("option4"));
+                            paylasilan.setOptionrate1(object.optString("option1rate"));
+                            paylasilan.setOptionrate2(object.optString("option2rate"));
+                            paylasilan.setOptionrate3(object.optString("option3rate"));
+                            paylasilan.setOptionrate4(object.optString("option4rate"));
+                            paylasilan.setDate(object.optString("date"));
+                            PaylasilanlarListesi.add(paylasilan);
+                        }
+                    } else {
+                        in = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                        Log.i("tago", "Error Stream");
+                        String inputline;
+                        while ((inputline = in.readLine()) != null) {
+                            Log.i("tago", "camcamcam" + inputline);
+                        }
+                        JSONArray jsono = new JSONArray(inputline);
+                        for (int i = 0; i < jsono.length(); i++) {
+                            JSONObject object = jsono.getJSONObject(i);
+                            Paylasilanlar paylasilan = new Paylasilanlar();
+                            paylasilan.setVeriid(object.optString("id"));
+                            paylasilan.setGonderenid(object.optString("user_id"));
+                            paylasilan.setCesit("anket");
+                            paylasilan.setQuestion(object.optString("question"));
+                            paylasilan.setOption1(object.optString("option1"));
+                            paylasilan.setOption2(object.optString("option2"));
+                            paylasilan.setOption3(object.optString("option3"));
+                            paylasilan.setOption4(object.optString("option4"));
+                            paylasilan.setOptionrate1(object.optString("option1rate"));
+                            paylasilan.setOptionrate2(object.optString("option2rate"));
+                            paylasilan.setOptionrate3(object.optString("option3rate"));
+                            paylasilan.setOptionrate4(object.optString("option4rate"));
+                            paylasilan.setDate(object.optString("date"));
+                            PaylasilanlarListesi.add(paylasilan);
+                        }
+                    }
+                    in.close();
+                    Log.i("tago", "Page Fragment cevredekileri gor inputline yazdï¿½m");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.i("tago", "Page Fragment cevredekileri gor yazamadï¿½m");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.i("tago", "json Exception");
+                }
+            }
+
         protected void onPostExecute(String s) {
+            Collections.sort(PaylasilanlarListesi);
+            Log.i("tago", PaylasilanlarListesi.get(1).getDate());
+            Log.i("tago", PaylasilanlarListesi.get(2).getDate());
+            Log.i("tago" , PaylasilanlarListesi.get(3).getDate());
+            Log.i("tago" , PaylasilanlarListesi.get(4).getDate());
             PaylasilanlarAdapter adapter = new PaylasilanlarAdapter(getActivity() , PaylasilanlarListesi);
             liste1.setAdapter(adapter);
         }
@@ -832,4 +937,5 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
             return "alabama";
         }
     }
+
 }
