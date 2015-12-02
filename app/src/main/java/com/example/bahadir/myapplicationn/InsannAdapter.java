@@ -26,11 +26,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class InsannAdapter extends ArrayAdapter<Insann>{
@@ -41,6 +45,7 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
     Context context;
     LayoutInflater lala;
     Bitmap icon = null;
+    OndenLikeAt oLA;
     public InsannAdapter(Context context, int resource, ArrayList<Insann> objects) {
         super(context, resource, objects);
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
@@ -79,8 +84,8 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
             holder.text1.setText(objects.get(position).getName());
             new urldenResim(holder.image1).execute(objects.get(position).getUrl());
             holder.likebutonu.setOnClickListener(new View.OnClickListener() {
-                @Override
                 public void onClick(View v) {
+                    kullanicilikela(objects.get(pozisyon).getId());
                     Log.i("tago", "like butonu tıklandı");
                 }
             });
@@ -110,11 +115,16 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
         holder.image1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("tago" , "kullanıcı resmi tıklandı");
+                Log.i("tago", "kullanıcı resmi tıklandı");
             }
         });
 
         return convertView;
+    }
+
+    private void kullanicilikela(String userid) {
+        oLA = new OndenLikeAt();
+        oLA.execute(userid);
     }
 
     static class InsannHolder{
@@ -241,5 +251,53 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
             Log.i("tago", "getbitmap keyi :" + key);
             return memoryCache.get(key);
         }
+    }
+
+    public class OndenLikeAt extends AsyncTask<String , Void , String>{
+
+        String charset;
+        String query;
+        public OndenLikeAt(){
+            charset = "UTF-8";
+            String param1 = "id";
+            String param2 = "long";
+            String param3 ="lat";
+            try {
+                query = String.format("param1=%s&param2=%s&param3=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
+                        URLEncoder.encode(param3, charset) );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        protected String doInBackground(String... strings) {
+            URLConnection connection = null;
+            Log.i("tago", strings[0]);
+            try {
+                connection = new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/update_location.php?id=").openConnection();
+                Log.i("tago" , "InsanAdapter like atma işlemi başladı");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Accept-Charset", charset);
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+
+            try {
+                OutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());
+                outputStream.write(query.getBytes(charset));
+                InputStream response = connection.getInputStream();
+                Log.i("tago" , "Insan Adapter like atma veri tabanına gönderildi");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.i("tago" , "Insan Adapter like atma veri tabanına gönderilemedi");
+            }
+            return "mavifacebook";
+        }
+
+        protected void onPostExecute(String result){
+
+        }
+
     }
 }

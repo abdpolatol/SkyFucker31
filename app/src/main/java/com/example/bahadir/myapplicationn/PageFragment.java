@@ -304,7 +304,7 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
                     dpToPx(getActivity(), 50));
 
             if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
-                // This is the correct way to register an OnScrollListener.
+                    // This is the correct way to register an OnScrollListener.
                 // You have to add it on the QuickReturnAttacher, instead
                 // of on the viewGroup directly.
                 AbsListViewQuickReturnAttacher
