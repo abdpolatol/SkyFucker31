@@ -1,6 +1,7 @@
 package com.example.bahadir.myapplicationn;
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -19,7 +20,10 @@ import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,7 +49,6 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
     Context context;
     LayoutInflater lala;
     Bitmap icon = null;
-    OndenLikeAt oLA;
     public InsannAdapter(Context context, int resource, ArrayList<Insann> objects) {
         super(context, resource, objects);
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
@@ -92,6 +95,7 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
             holder.reportbutonu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    kullanıcıreportet(objects.get(pozisyon).getId());
                     Log.i("tago" , "report butonu tıklandı");
                 }
             });
@@ -121,9 +125,27 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
 
         return convertView;
     }
-
+    private void kullanıcıreportet(final String id) {
+        final String idd = id;
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialogreport);
+        dialog.getWindow().setDimAmount(0.7f);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+        final EditText etv1 = (EditText) dialog.findViewById(R.id.editText9);
+        Button buton1 = (Button) dialog.findViewById(R.id.button14);
+        buton1.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                String reportyazisi = etv1.getText().toString();
+                OndenReportEt oRE = new OndenReportEt(reportyazisi);
+                oRE.execute(idd);
+                dialog.dismiss();
+            }
+        });
+    }
     private void kullanicilikela(String userid) {
-        oLA = new OndenLikeAt();
+        OndenLikeAt oLA = new OndenLikeAt();
         oLA.execute(userid);
     }
 
@@ -169,7 +191,7 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
                 }
                 return icon;
             }else{
-                Log.i("tago" , "yanlış yapıyosun");
+                Log.i("tago" , "resmi gecici hafizadan cektim");
                 return null;
             }
         }
@@ -252,7 +274,6 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
             return memoryCache.get(key);
         }
     }
-
     public class OndenLikeAt extends AsyncTask<String , Void , String>{
 
         String charset;
@@ -271,7 +292,7 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
         }
         protected String doInBackground(String... strings) {
             URLConnection connection = null;
-            Log.i("tago", strings[0]);
+            Log.i("tago","likeidsi :"+strings[0]);
             try {
                 connection = new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/update_location.php?id=").openConnection();
                 Log.i("tago" , "InsanAdapter like atma işlemi başladı");
@@ -299,5 +320,46 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
 
         }
 
+    }
+    public class OndenReportEt extends AsyncTask<String , Void , String>{
+
+        String charset , query;
+        public OndenReportEt(String reportyazisi){
+            charset = "UTF-8";
+            String param1 = "id";
+            String param2 = "long";
+            String param3 ="lat";
+            try {
+                query = String.format("param1=%s&param2=%s&param3=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset),
+                        URLEncoder.encode(param3, charset) );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        protected String doInBackground(String... strings) {
+            URLConnection connection = null;
+            Log.i("tago", "reportidsi :" + strings[0]);
+            try {
+                connection = new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/update_location.php?id=d").openConnection();
+                Log.i("tago" , "InsanAdapter report etme işlemi başladı");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Accept-Charset", charset);
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+
+            try {
+                OutputStream outputStream = new BufferedOutputStream(connection.getOutputStream());
+                outputStream.write(query.getBytes(charset));
+                InputStream response = connection.getInputStream();
+                Log.i("tago" , "InsanAdapter report etme işlemi yapıldı");
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.i("tago" , "Report etme işlemi yapılamadı");
+            }
+            return "wifii";
+        }
     }
 }

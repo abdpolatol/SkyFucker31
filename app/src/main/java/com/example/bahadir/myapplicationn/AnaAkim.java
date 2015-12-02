@@ -70,7 +70,7 @@ public class AnaAkim extends FragmentActivity {
     public void nickAl(){
         final Dialog dialog = new Dialog(AnaAkim.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.customdialog);
+        dialog.setContentView(R.layout.dialognickal);
         dialog.getWindow().setDimAmount(0.7f);
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
