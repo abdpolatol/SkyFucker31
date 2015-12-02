@@ -1,5 +1,7 @@
 package com.example.bahadir.myapplicationn;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -12,6 +14,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -20,6 +25,7 @@ import java.net.URL;
 
 public class PageFragment3 extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
+    boolean kullanicicikti=false;
     ImageView image1 , image2,image3,image4;
     TextView tv1 , tv2 ,tv3 ;
     Bitmap resim,kapakresmi;
@@ -36,8 +42,18 @@ public class PageFragment3 extends Fragment {
     }
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedkullaniciciktikeydet(kullanicicikti);
         mPage = getArguments().getInt(ARG_PAGE);
+        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
     }
+
+    private void sharedkullaniciciktikeydet(boolean x) {
+        SharedPreferences sP =getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor = sP.edit();
+        prefEditor.putBoolean("kullanicicikti" , x);
+        prefEditor.commit();
+    }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle b = getActivity().getIntent().getExtras();
         isim = b.getString("isim");
@@ -51,7 +67,20 @@ public class PageFragment3 extends Fragment {
         tanimlar(view);
         UrldenResim urldenResim = new UrldenResim(image4);
         urldenResim.execute(kapakresmiurl);
+        image3.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                programdancik();
+            }
+        });
     }
+
+    private void programdancik() {
+        LoginManager.getInstance().logOut();
+        kullanicicikti = true;
+        sharedkullaniciciktikeydet(kullanicicikti);
+        getActivity().finish();
+    }
+
     private void tanimlar(View view) {
         image1 = (ImageView) view.findViewById(R.id.imageView);
         image2 = (ImageView) view.findViewById(R.id.imageView3);

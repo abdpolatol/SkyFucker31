@@ -23,6 +23,7 @@ public class AnaAkim extends FragmentActivity {
     protected void onCreate(Bundle bambam){
         super.onCreate(bambam);
         setContentView(R.layout.genelaltplan);
+        sharedkullaniciciktikaydet(false);
         notificationbas = true;
         notificationSharedPrefKaydet();
         /*Intent intent = getIntent();
@@ -42,7 +43,12 @@ public class AnaAkim extends FragmentActivity {
        // yerolustur();
         //mesafeyiBul(x, y);
     }
-
+    private void sharedkullaniciciktikaydet(boolean b) {
+            SharedPreferences sP =getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
+            SharedPreferences.Editor prefEditor = sP.edit();
+            prefEditor.putBoolean("kullanicicikti" , b);
+            prefEditor.commit();
+    }
     private void notificationSharedPrefKaydet() {
         SharedPreferences sP = getSharedPreferences("notification" , Context.MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = sP.edit();

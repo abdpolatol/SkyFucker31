@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -146,8 +147,9 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
                     connection.setDoInput(true);
                     connection.connect();
                     Log.i("tago", "Insan Adapter connect sağladım");
-                    InputStream input = connection.getInputStream();
+                    InputStream input = new BufferedInputStream(connection.getInputStream());
                     icon = BitmapFactory.decodeStream(input);
+                    //icon = decodeBitmapFromResources(input,65,65);
                     Log.i("tago", "Insan Adapter bitmap yaptım");
                     return icon;
                 } catch (MalformedURLException e) {
@@ -162,6 +164,32 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
             }
         }
 
+        private Bitmap decodeBitmapFromResources(InputStream input , int istenilengenislik , int istenilenboy) {
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+                BitmapFactory.decodeStream(input,null,options);
+                options.inSampleSize = calculateInSampleSize(options, 2, 2);
+
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false;
+            return BitmapFactory.decodeStream(input,null,options);
+        }
+        private int calculateInSampleSize(BitmapFactory.Options options, int istenilencozunurlukx , int istenilencozunurluky){
+            final int boy = options.outHeight;
+            final int genislik = options.outWidth;
+            int sampleSize = 1;
+
+            if(boy>istenilencozunurluky || genislik >istenilencozunurlukx) {
+                final int yariboy = boy / 2;
+                final int yarigenislik = genislik / 2;
+
+                while ((yariboy / sampleSize) > istenilencozunurluky && (yarigenislik / sampleSize) > istenilencozunurlukx) {
+                    sampleSize = sampleSize * 2;
+                    Log.i("tago" , "sample sizee = " + sampleSize);
+                }
+            }
+            return sampleSize;
+        }
         private void loadBitmapFromCache(String key) {
             bitmape = getBitmapFromMemoryCache(key);
             if(bitmape!=null){
@@ -174,7 +202,6 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
                 hafizadayok = true;
             }
         }
-
         protected void onPostExecute(Bitmap bitmap) {
             if(eldevar==true){
                 Bitmap yuvarlakbitmape = getCircleBitmap(bitmape);
@@ -185,7 +212,6 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
                 bmImage.setImageBitmap(yuvarlakbitmap);
             }
         }
-
         private Bitmap getCircleBitmap(Bitmap b) {
             final Bitmap output = Bitmap.createBitmap(b.getWidth(),b.getHeight(),Bitmap.Config.ARGB_8888);
             final Canvas canvas = new Canvas(output);
@@ -203,7 +229,6 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
             canvas.drawBitmap(b, rect, rect, paint);
             return output;
         }
-
         private void addBitmapToMemoryCache(String key , Bitmap bitmap) {
             Log.i("tago" ,"addBitmapToMemoryCache" );
             if(getBitmapFromMemoryCache(key)==null){
