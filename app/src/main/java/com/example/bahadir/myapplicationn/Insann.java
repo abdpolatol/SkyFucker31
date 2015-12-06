@@ -8,7 +8,6 @@ public class Insann {
         public String url;
         public String id;
         public String uzaklik;
-        public String anasisikilmisurl;
         public Insann() {
 
         }
@@ -39,6 +38,6 @@ public class Insann {
         public void setUzaklik(String uzaklik) {
             this.uzaklik = uzaklik;
         }
-    }
+}
 
 

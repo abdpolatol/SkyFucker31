@@ -172,17 +172,6 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
                 yenikanalekle.execute(kurulacakkanaladi);
                 kYC = new KanallariYenidenCek();
                 kYC.execute(veritabani_id);
-                /*Thread t = new Thread(){
-                  public void run(){
-                      try {
-                          sleep(5000);
-                      } catch (InterruptedException e) {
-                          e.printStackTrace();
-                      }
-                  }
-                };
-                t.start();
-                */
                 dialog.cancel();
                 }
     });
@@ -204,6 +193,7 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
     }
     public void onClick(View view) {
     }
+
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
     }
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -463,61 +453,9 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-               /* BufferedReader in;
-                if (sconnection.getResponseCode() == 200) {
-                    in = new BufferedReader(new InputStreamReader(sconnection.getInputStream()));
-                    Log.i("tago", "InputStream");
-                    String inputline = null;
-
-                    inputline = in.readLine();
-                    Log.i("tago", "inputline= " + inputline);
-                    JSONArray jsono = new JSONArray(inputline);
-                    officialKanalListesi = new ArrayList();
-                    for (int i = 0; i < jsono.length(); i++) {
-                        JSONObject object = jsono.getJSONObject(i);
-                        OfficialKanal officialKanal = new OfficialKanal();
-                        officialKanal.setKanaladi(object.optString("name"));
-                        officialKanal.setDate(object.optString("date"));
-                        officialKanalListesi.add(officialKanal);
-                        Kanal kanal = new Kanal(true);
-                        kanal.setKanaladi(object.optString("name"));
-                        kanal.setDate("date");
-                        channelbaba.add(kanal);
-                    }
-                } else {
-                    in = new BufferedReader(new InputStreamReader(sconnection.getErrorStream()));
-                    Log.i("tago", "Error Stream");
-                    String inputline;
-                    inputline = in.readLine();
-                    Log.i("tago", "inputline= " + inputline);
-                    JSONArray jsono = new JSONArray(inputline);
-                    officialKanalListesi = new ArrayList();
-                    for (int i = 0; i < jsono.length(); i++) {
-                        JSONObject object = jsono.getJSONObject(i);
-                        OfficialKanal officialKanal = new OfficialKanal();
-                        officialKanal.setKanaladi(object.optString("name"));
-                        officialKanal.setDate(object.optString("date"));
-                        officialKanalListesi.add(officialKanal);
-                        Kanal kanal = new Kanal(true);
-                        kanal.setKanaladi(object.optString("name"));
-                        kanal.setDate("date");
-                        channelbaba.add(kanal);
-                    }
-                }
-                in.close();
-                Log.i("tago", "Page Fragment official gor inputline yazd�m");
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.i("tago", "Page Fragment official gor yazamad�m");
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.i("tago", "json Exception");
-            }*/
             return "Caxobaxo";
         }
 
-        @Override
         protected void onPostExecute(String s) {
             kanaleklemebitti=true;
         }
@@ -543,6 +481,7 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
         }
 
         private String kanallarigor(String id) {
+            channelbaba.clear();
             HttpURLConnection sconnection = null;
             try {
                 sconnection = (HttpURLConnection) new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy//get_official_channels.php?id=" + id).openConnection();
@@ -699,6 +638,29 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
             }
 
             return "inputline";
+        }
+
+        protected void onPostExecute(String s) {
+            KanalAdapter adapter = new KanalAdapter(getActivity(), officialKanalListesi, normalKanalListesi, channelbaba);
+            if (viewGroup instanceof AbsListView) {
+                int numColumns = (viewGroup instanceof GridView) ? 3 : 1;
+                absListView.setAdapter(new QuickReturnAdapter(adapter, numColumns));
+            }
+
+            QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(viewGroup);
+            quickReturnAttacher.addTargetView(bottomTextView, AbsListViewScrollTarget.POSITION_BOTTOM);
+            topTargetView = quickReturnAttacher.addTargetView(lay1,
+                    AbsListViewScrollTarget.POSITION_TOP,
+                    dpToPx(getActivity(), 50));
+
+            if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
+                AbsListViewQuickReturnAttacher
+                        attacher =
+                        (AbsListViewQuickReturnAttacher) quickReturnAttacher;
+                attacher.addOnScrollListener(PageFragment1.this);
+                attacher.setOnItemClickListener(PageFragment1.this);
+                attacher.setOnItemLongClickListener(PageFragment1.this);
+            }
         }
     }
 }

@@ -45,7 +45,7 @@ public class MesajArrayAdapter extends ArrayAdapter<Mesaj> {
         layout1 = (LinearLayout) v.findViewById(R.id.mesajlayout);
         Mesaj mesajobj = getItem(position);
         tv1=(TextView) v.findViewById(R.id.textView7);
-        tv1.setText(mesajobj.mesac);
+        tv1.setText("   " + mesajobj.mesac);
        // tv1.setBackgroundResource(mesajobj.left ? R.drawable.pbutton : R.drawable.pbutton3);
         layout1.setGravity(mesajobj.side? Gravity.LEFT : Gravity.RIGHT);
         return v;

@@ -67,7 +67,6 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
         lala = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-
     public View getView(int position, View convertView, ViewGroup parent) {
         InsannHolder holder ;
         final int pozisyon = position;
@@ -93,14 +92,12 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
                 }
             });
             holder.reportbutonu.setOnClickListener(new View.OnClickListener() {
-                @Override
                 public void onClick(View v) {
                     kullanıcıreportet(objects.get(pozisyon).getId());
                     Log.i("tago" , "report butonu tıklandı");
                 }
             });
             holder.esasbolge.setOnClickListener(new View.OnClickListener() {
-                @Override
                 public void onClick(View v) {
                     Log.i("tago" , "esas bölge tıklandı");
                     String name = objects.get(pozisyon).getName();
