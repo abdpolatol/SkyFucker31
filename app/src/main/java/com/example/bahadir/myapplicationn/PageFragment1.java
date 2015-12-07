@@ -88,6 +88,7 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
         });
         liste1 = (ListView) view.findViewById(R.id.listView);
         veritabani_id = idSharedPrefAl();
+        Log.i("tago" , "PageFragment1 onCreateView");
         initializeQuickReturn();
         return view;
     }

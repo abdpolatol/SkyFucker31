@@ -132,12 +132,13 @@ public class MainFragment extends Fragment{
         mCallbackManager = CallbackManager.Factory.create();
         tracker = new AccessTokenTracker() {
             protected void onCurrentAccessTokenChanged(AccessToken old, AccessToken nev) {
-                Log.i("tago" , "accesstokendeğişti");
+                Log.i("tago", "accesstokendeğişti");
             }
         };
         protracker = new ProfileTracker() {
             protected void onCurrentProfileChanged(Profile oldpro, Profile newpro) {
                 Log.i("tago" , "profile degisti");
+
             }
         };
         tracker.startTracking();

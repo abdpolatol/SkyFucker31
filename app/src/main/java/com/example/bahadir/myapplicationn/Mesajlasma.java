@@ -78,6 +78,7 @@ public class Mesajlasma extends Activity {
         setContentView(R.layout.mesajlasma);
         progressbar =(ProgressBar) findViewById(R.id.progressBar2);
         Intent i = getIntent();
+
         karsidakiisim = i.getStringExtra("isim");
         karsidakiresimurl = i.getStringExtra("resimurl");
         karsidakiid = i.getStringExtra("id");

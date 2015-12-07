@@ -23,13 +23,13 @@ public class PushReceiver extends BroadcastReceiver
 
         String notificationTitle = "Shappy";
         String notificationDesc = "Test notification";
-
+        Bundle bundle;
 
         if ( intent.getStringExtra("message") != null )
         {
             notificationDesc = intent.getStringExtra("message");
             if(intent.getStringExtra("message").substring(0,18).equals("default kanal chat")){
-                Bundle bundle = intent.getExtras();
+                bundle = intent.getExtras();
                 Intent inte = new Intent("groupchatbroadcast");
                 inte.putExtra("mesaj" , bundle.getString("message"));
                 context.sendBroadcast(inte);
@@ -38,7 +38,7 @@ public class PushReceiver extends BroadcastReceiver
 
         }
 
-        Bundle bundle = intent.getExtras();
+        bundle = intent.getExtras();
         Intent inte = new Intent("broadCastName");
         inte.putExtra("mesaj" , bundle.getString("message"));
         context.sendBroadcast(inte);
@@ -53,12 +53,16 @@ public class PushReceiver extends BroadcastReceiver
             notification.setContentTitle(notificationTitle);
             notification.setSmallIcon(R.mipmap.ozerprof);
             notification.setWhen(System.currentTimeMillis());
-            Intent i = new Intent(context, PushReceiver.class);
+            Intent i = new Intent(context, Mesajlasma.class);
+            i.putExtra("mesaj",bundle.getString("message"));
+            i.putExtra("konusulanid" , bundle.getString("karsiid"));
+
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
             notification.setContentIntent(pendingIntent);
 
             NotificationManager nm = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
             nm.notify(uniqueID, notification.build());
+
             Log.i("tago", "notification oluşturuldu " + notificationDesc + " " + notificationTitle);
         }
         //-----------------------------
