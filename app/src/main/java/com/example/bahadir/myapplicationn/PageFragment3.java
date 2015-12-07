@@ -150,8 +150,12 @@ public class PageFragment3 extends Fragment {
     }
     public void onStop(){
         super.onStop();
-        tracker.stopTracking();
-        protracker.stopTracking();
+        if(tracker!=null){
+            tracker.stopTracking();
+        }
+        if(protracker!=null){
+            protracker.stopTracking();
+        }
     }
     private void sharedcoverurlkaydet(String yenicoverfoto) {
         SharedPreferences sP =getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);

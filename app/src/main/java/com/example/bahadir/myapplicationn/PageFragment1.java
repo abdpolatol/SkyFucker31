@@ -88,7 +88,6 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
         });
         liste1 = (ListView) view.findViewById(R.id.listView);
         veritabani_id = idSharedPrefAl();
-        Log.i("tago" , "PageFragment1 onCreateView");
         initializeQuickReturn();
         return view;
     }
@@ -145,11 +144,25 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
 
         bottomTextView = (TextView) view.findViewById(R.id.quickReturnBottomTarget);
         if (!veritabani_id.equals("default")) {
+            if(officialKanalListesi!=null){
+                officialKanalListesi.clear();
+            }if(normalKanalListesi!=null){
+                normalKanalListesi.clear();
+            }if(channelbaba!=null){
+                channelbaba.clear();
+            }
             cevredekikanallaricek(veritabani_id);
         } else if (veritabani_id.equals("default")) {
             do {
                 idSharedPrefAl();
             } while (!veritabani_id.equals("default"));
+            if(officialKanalListesi!=null){
+                officialKanalListesi.clear();
+            }if(normalKanalListesi!=null){
+                normalKanalListesi.clear();
+            }if(channelbaba!=null){
+                channelbaba.clear();
+            }
             cevredekikanallaricek(veritabani_id);
         } else {
             Log.i("tago", "Anan� avrad�n� sikerim senin");
