@@ -8,7 +8,7 @@ public class NormalKanal {
     String kurankisi;
     String date;
     int likesayisi;
-
+    int likedurumu;
 
     public NormalKanal(){
 
@@ -49,5 +49,11 @@ public class NormalKanal {
     }
     public void setLikesayisi(int likesayisi) {
         this.likesayisi = likesayisi;
+    }
+    public int getLikedurumu() {
+        return likedurumu;
+    }
+    public void setLikedurumu(int likedurumu) {
+        this.likedurumu = likedurumu;
     }
 }

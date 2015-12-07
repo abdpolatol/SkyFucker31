@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -56,28 +57,24 @@ public class KanalAdapter extends BaseAdapter {
         lala = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+
     private String SharedIdCek() {
         SharedPreferences sp = context.getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
         String veritabani_id = sp.getString("veritabani_id", "default id");
         return veritabani_id;
     }
-
     public int getCount() {
-        Log.i("tago" , "getCount ="+(channelbaba.size()));
         return (channelbaba.size());
     }
-
     public Object getItem(int i) {
             Log.i("tago" , "getItem = " + channelbaba.get(i));
         return channelbaba.get(i);
 
     }
-
     public long getItemId(int i) {
         Log.i("tago" , "getItemId =" + i);
         return i;
     }
-
     public int getItemViewType(int position) {
         Object item = getItem(position-1);
         Kanal kanal = (Kanal)item;
@@ -88,11 +85,9 @@ public class KanalAdapter extends BaseAdapter {
         }
         return -1;
     }
-
     public int getViewTypeCount() {
         return 2;
     }
-
     public View getView(final int position, View convertView, ViewGroup viewGroup) {
         KanalHolder holder = null;
         final int pozisyon = position;
@@ -104,6 +99,7 @@ public class KanalAdapter extends BaseAdapter {
             if (kanal.official) {
                 convertView = lala.inflate(R.layout.officialkanal, null);
                 holder.image2 = (ImageView) convertView.findViewById(R.id.imageView5);
+                holder.image3 = (ImageButton) convertView.findViewById(R.id.button7);
                 holder.tv3 = (TextView) convertView.findViewById(R.id.textView4);
                 holder.tv4 = (TextView) convertView.findViewById(R.id.textView8);
                 holder.buton1 = (ImageButton) convertView.findViewById(R.id.button7);
@@ -126,16 +122,36 @@ public class KanalAdapter extends BaseAdapter {
             if(kanal.official){
                 Drawable a = ContextCompat.getDrawable(context , R.drawable.taylanprof);
                 holder.image2.setBackground(a);
+                Log.i("tago", "kanaladapter position = " + channelbaba.get(position).getLikedurumu());
                 holder.tv3.setText(channelbaba.get(position).getKanaladi());
                 holder.image2.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
                         kanaladi = channelbaba.get(position).getKanaladi();
-                        Log.i("tago" , kanaladi);
+                        Log.i("tago", kanaladi);
                         kEE = new KanalaElemanEkle();
                         kEE.execute(kanaladi);
-                        Intent intent = new Intent(context , GrupSohbeti.class);
-                        intent.putExtra("kanaladi" ,kanaladi);
+                        Intent intent = new Intent(context, GrupSohbeti.class);
+                        intent.putExtra("kanaladi", kanaladi);
                         context.startActivity(intent);
+                    }
+                });
+                if(channelbaba.get(position).getLikedurumu()== 1){
+                    holder.image3.setImageResource(R.mipmap.heartson);
+                    Log.i("tago" , "likedurumu1");
+                }else{
+                    holder.image3.setImageResource(R.mipmap.heartsonn);
+                    Log.i("tago", "likedurumu2");
+                }
+                final ImageButton image1 = holder.image3;
+                holder.image3.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        channelbaba.get(pozisyon).setLikedurumu(1);
+                        image1.setImageResource(R.mipmap.heartson);
+                        image1.setClickable(false);
+                        Log.i("tago" , "butona tıklanıldı");
+                        String channelid = channelbaba.get(pozisyon).getId();
+                        Log.i("tago" , "channel id= " + channelid);
+                        officialkanalilikela(channelbaba.get(pozisyon).getId());
                     }
                 });
             }
@@ -156,10 +172,15 @@ public class KanalAdapter extends BaseAdapter {
             }
         return convertView;
     }
+    private void officialkanalilikela(String kanalid) {
+        OfficialKanaliLike oKL = new OfficialKanaliLike();
+        oKL.execute(kanalid);
+    }
 
     static class KanalHolder{
         public ImageView image1,image2;
-        public TextView tv1 , tv2,tv3,tv4;
+        public ImageButton image3,image4;
+        public TextView tv1,tv2,tv3,tv4;
         public ImageButton buton1,buton2,buton3;
     }
 
@@ -186,7 +207,7 @@ public class KanalAdapter extends BaseAdapter {
             HttpURLConnection sconnection = null;
             try {
                 sconnection = (HttpURLConnection) new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/join_us.php?id=" + veritabani_id + "&name=" + kanaladi).openConnection();
-                Log.i("tago", "Page Fragment1 yeni kanal kur bagı kuruldu");
+                Log.i("tago", "KanalAdapter kanali ekleme bağı kuruldu");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -201,9 +222,56 @@ public class KanalAdapter extends BaseAdapter {
                 OutputStream output = new BufferedOutputStream(sconnection.getOutputStream());
                 output.write(query.getBytes(charset));
                 output.close();
-                int a = sconnection.getResponseCode();
-                String b = sconnection.getResponseMessage();
-                Log.i("tago", "rerere" + a + " " + b);
+                InputStream response = sconnection.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return "alabama";
+        }
+    }
+    private class OfficialKanaliLike extends AsyncTask<String,Void,String>{
+
+        protected String doInBackground(String... strings) {
+            charset = "utf-8";
+            String param1 = "kanalid";
+            String param2 = "ekleyenid";
+            String param3 = "type";
+            try {
+                query = String.format("param1=%s&param2=%s&param3=%s", URLEncoder.encode(param1, charset), URLEncoder.encode(param2, charset)
+                , URLEncoder.encode(param3,charset));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.i("tago", "KanalAdapter official kanali like etme başlatıldı");
+            try {
+                return officiallike(strings[0]);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "olmadi";
+            }
+        }
+
+        private String officiallike(String string) {
+            HttpURLConnection vconnection = null;
+            String kullaniciid= SharedIdCek();
+            Log.i("tago" , "kanalid= "+string);
+            Log.i("tago", "kullaniciid= " + kullaniciid);
+            try {
+                vconnection = (HttpURLConnection) new URL("http://www.ceng.metu.edu.tr/~e1818871/shappy/like_channel.php?id=" + string + "&userid="
+                        + kullaniciid+"&type=2").openConnection();
+                Log.i("tago", "KanalAdapter official like etme bağı kuruldu");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            vconnection.setDoOutput(true);
+            vconnection.setRequestProperty("Accept-Charset", charset);
+            vconnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+
+            try {
+                OutputStream output = new BufferedOutputStream(vconnection.getOutputStream());
+                output.write(query.getBytes(charset));
+                InputStream response = vconnection.getInputStream();
+                Log.i("tago" , "olması lazımm");
             } catch (IOException e) {
                 e.printStackTrace();
             }

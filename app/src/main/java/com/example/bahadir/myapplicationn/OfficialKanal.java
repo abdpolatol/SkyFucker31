@@ -6,8 +6,8 @@ public class OfficialKanal {
     String kanalurl;
     String id;
     String date;
-    int like;
-
+    int likesayisi;
+    int likedurumu;
     public OfficialKanal(){
 
     }
@@ -30,16 +30,22 @@ public class OfficialKanal {
     public void setId(String id) {
         this.id = id;
     }
-    public int getLike() {
-        return like;
+    public int getLikesayisi() {
+        return likesayisi;
     }
-    public void setLike(int like) {
-        this.like = like;
+    public void setLikesayisi(int likesayisi) {
+        this.likesayisi = likesayisi;
     }
     public String getDate() {
         return date;
     }
     public void setDate(String date) {
         this.date = date;
+    }
+    public int getLikedurumu() {
+        return likedurumu;
+    }
+    public void setLikedurumu(int likedurumu) {
+        this.likedurumu = likedurumu;
     }
 }

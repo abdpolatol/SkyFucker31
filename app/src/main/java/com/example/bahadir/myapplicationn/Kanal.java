@@ -8,6 +8,7 @@ public class Kanal {
     String kurankisi;
     String date;
     int likesayisi;
+    int likedurumu;
     boolean official;
 
     public Kanal(Boolean official){
@@ -48,5 +49,11 @@ public class Kanal {
     }
     public void setKanalurl(String kanalurl) {
         this.kanalurl = kanalurl;
+    }
+    public int getLikedurumu() {
+        return likedurumu;
+    }
+    public void setLikedurumu(int likedurumu) {
+        this.likedurumu = likedurumu;
     }
 }

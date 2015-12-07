@@ -204,6 +204,7 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
     public void onScroll(AbsListView absListView, int i, int i1, int i2) {
     }
 
+
     private class KanallariCek extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... params) {
@@ -264,10 +265,14 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
                         OfficialKanal officialKanal = new OfficialKanal();
                         officialKanal.setKanaladi(object.optString("name"));
                         officialKanal.setDate(object.optString("date"));
+                        officialKanal.setId(object.optString("id"));
+                        officialKanal.setLikedurumu(object.optInt("like_status"));
                         officialKanalListesi.add(officialKanal);
                         Kanal kanal = new Kanal(true);
                         kanal.setKanaladi(object.optString("name"));
                         kanal.setDate("date");
+                        kanal.setId(object.optString("id"));
+                        kanal.setLikedurumu(object.optInt("like_status"));
                         channelbaba.add(kanal);
                     }
                 } else {
@@ -283,10 +288,14 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
                         OfficialKanal officialKanal = new OfficialKanal();
                         officialKanal.setKanaladi(object.optString("name"));
                         officialKanal.setDate(object.optString("date"));
+                        officialKanal.setId(object.optString("id"));
+                        officialKanal.setLikedurumu(object.optInt("like_status"));
                         officialKanalListesi.add(officialKanal);
                         Kanal kanal = new Kanal(true);
                         kanal.setKanaladi(object.optString("name"));
                         kanal.setDate("date");
+                        kanal.setId(object.optString("id"));
+                        kanal.setLikedurumu(object.optInt("like_status"));
                         channelbaba.add(kanal);
                     }
                 }
@@ -340,10 +349,12 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
                         NormalKanal normalKanal = new NormalKanal();
                         normalKanal.setKanaladi(object.optString("name"));
                         normalKanal.setDate(object.optString("date"));
+                        normalKanal.setId(object.optString("id"));
                         normalKanalListesi.add(normalKanal);
                         Kanal kanal = new Kanal(false);
                         kanal.setKanaladi(object.optString("name"));
                         kanal.setDate("date");
+                        kanal.setId(object.optString("id"));
                         channelbaba.add(kanal);
                     }
                 } else {
@@ -360,10 +371,12 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
                         NormalKanal normalKanal = new NormalKanal();
                         normalKanal.setKanaladi(object.optString("name"));
                         normalKanal.setDate(object.optString("date"));
+                        normalKanal.setId(object.optString("id"));
                         normalKanalListesi.add(normalKanal);
                         Kanal kanal = new Kanal(false);
                         kanal.setKanaladi(object.optString("name"));
                         kanal.setDate("date");
+                        kanal.setId(object.optString("id"));
                         channelbaba.add(kanal);
                         Log.i("tago", "insaninsan");
 
@@ -407,7 +420,6 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
         }
 
     }
-
     private class YeniKanalEkle extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... params) {
@@ -460,7 +472,6 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
             kanaleklemebitti=true;
         }
     }
-
     private class KanallariYenidenCek extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... params) {
@@ -663,4 +674,5 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
             }
         }
     }
+
 }
