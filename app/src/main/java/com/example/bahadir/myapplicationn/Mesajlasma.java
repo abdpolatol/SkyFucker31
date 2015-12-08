@@ -78,12 +78,21 @@ public class Mesajlasma extends Activity {
         setContentView(R.layout.mesajlasma);
         progressbar =(ProgressBar) findViewById(R.id.progressBar2);
         Intent i = getIntent();
-
-        karsidakiisim = i.getStringExtra("isim");
-        karsidakiresimurl = i.getStringExtra("resimurl");
-        karsidakiid = i.getStringExtra("id");
-        icon = i.getBundleExtra("icon").getParcelable("iccon");
-        Log.i("tago", karsidakiid);
+        if(i.getStringExtra("intentname").equals("InsanAdapter")){
+            Log.i("tago" , "InsanAdapterdan ulaşıldı");
+            karsidakiisim = i.getStringExtra("isim");
+            karsidakiresimurl = i.getStringExtra("resimurl");
+            karsidakiid = i.getStringExtra("id");
+            icon = i.getBundleExtra("icon").getParcelable("iccon");
+        }else if(i.getStringExtra("intentname").equals("PushReceiver")){
+            Log.i("tago" , "PushReceiverdan ulaşıldı");
+            karsidakiid = i.getStringExtra("yazaninid");
+            Log.i("tago" , "karsiid mesaj= " + karsidakiid);
+            karsidakiresimurl = i.getStringExtra("yazaninurl");
+            Log.i("tago" , "karsiresim mesaj= " + karsidakiresimurl);
+            karsidakiisim = i.getStringExtra("yazaninisim");
+            Log.i("tago" , "karsiisim mesaj =" + karsidakiisim);
+        }
         tanımlar();
         registerReceiver(receiveralfa, new IntentFilter("broadCastName"));
         DatabaseClass dB = new DatabaseClass(Mesajlasma.this);

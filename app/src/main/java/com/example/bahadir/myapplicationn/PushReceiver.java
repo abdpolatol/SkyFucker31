@@ -23,11 +23,16 @@ public class PushReceiver extends BroadcastReceiver
 
         String notificationTitle = "Shappy";
         String notificationDesc = "Test notification";
+        String yazaninid = "Defaultid";
+        String yazaninurl = "Defaulturl";
+        String yazaninadi = "Defaultisim";
         Bundle bundle;
 
         if ( intent.getStringExtra("message") != null )
         {
             notificationDesc = intent.getStringExtra("message");
+            yazaninid = intent.getStringExtra("id");
+            yazaninurl = intent.getStringExtra("url");
             if(intent.getStringExtra("message").substring(0,18).equals("default kanal chat")){
                 bundle = intent.getExtras();
                 Intent inte = new Intent("groupchatbroadcast");
@@ -53,10 +58,20 @@ public class PushReceiver extends BroadcastReceiver
             notification.setContentTitle(notificationTitle);
             notification.setSmallIcon(R.mipmap.ozerprof);
             notification.setWhen(System.currentTimeMillis());
+            String duzenlenmemisisim= bundle.getString("message");
+            int bitisbolumu = duzenlenmemisisim.indexOf(">");
+            String duzenlenmisisim = null;
+            if(bitisbolumu!= -1){
+                String azduzenlenmisisim = duzenlenmemisisim.substring(0,bitisbolumu);
+                int uzunluk = azduzenlenmisisim.length();
+                duzenlenmisisim = azduzenlenmisisim.substring(0,(uzunluk-20));
+            }
             Intent i = new Intent(context, Mesajlasma.class);
             i.putExtra("mesaj",bundle.getString("message"));
-            i.putExtra("konusulanid" , bundle.getString("karsiid"));
-
+            i.putExtra("yazaninid" , bundle.getString("id"));
+            i.putExtra("yazaninurl" , bundle.getString("url"));
+            i.putExtra("yazaninisim" , duzenlenmisisim);
+            i.putExtra("intentname" , "PushReceiver");
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
             notification.setContentIntent(pendingIntent);
 

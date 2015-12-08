@@ -107,6 +107,7 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
                     intent.putExtra("id" , id);
                     intent.putExtra("isim" , name);
                     intent.putExtra("resimurl" , resim);
+                    intent.putExtra("intentname" , "InsanAdapter");
                     Bundle xxx = new Bundle();
                     xxx.putParcelable("iccon" , icon);
                     intent.putExtra("icon" , xxx);
