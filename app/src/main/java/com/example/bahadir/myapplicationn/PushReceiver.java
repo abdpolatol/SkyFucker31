@@ -31,8 +31,6 @@ public class PushReceiver extends BroadcastReceiver
         if ( intent.getStringExtra("message") != null )
         {
             notificationDesc = intent.getStringExtra("message");
-            yazaninid = intent.getStringExtra("id");
-            yazaninurl = intent.getStringExtra("url");
             if(intent.getStringExtra("message").substring(0,18).equals("default kanal chat")){
                 bundle = intent.getExtras();
                 Intent inte = new Intent("groupchatbroadcast");
@@ -45,10 +43,13 @@ public class PushReceiver extends BroadcastReceiver
 
         bundle = intent.getExtras();
         Intent inte = new Intent("broadCastName");
-        inte.putExtra("mesaj" , bundle.getString("message"));
+        inte.putExtra("mesaj", bundle.getString("message"));
         context.sendBroadcast(inte);
-        Log.i("tago" , "broadcast gonderildi");
-
+        Log.i("tago", "broadcast gonderildi");
+        DatabaseClass db = new DatabaseClass(context);
+        db.open();
+        db.olusturx(bundle.getString("message"),bundle.getString("id"));
+        db.close();
         //-----------------------------
         // Create a test notification
         //-----------------------------

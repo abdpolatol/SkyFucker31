@@ -160,7 +160,6 @@ public class Mesajlasma extends Activity {
         list1.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         list1.setAdapter(adapter);
         adapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
             public void onChanged() {
                 super.onChanged();
                 list1.setSelection(adapter.getCount() - 1);
