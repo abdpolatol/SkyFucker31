@@ -8,7 +8,7 @@ import com.astuetz.PagerSlidingTabStrip;
 
 public class SampleFragmentPagerAdapter extends FragmentPagerAdapter implements PagerSlidingTabStrip.IconTabProvider {
     final int PAGE_COUNT = 4;
-    private int tabIcons[] = {R.mipmap.iconselect, R.mipmap.ic_launcher, R.mipmap.ic_launcher,R.mipmap.ic_launcher};
+    private int tabIcons[] = {R.mipmap.iconselect, R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher};
 
     public SampleFragmentPagerAdapter(FragmentManager fm) {
         super(fm);

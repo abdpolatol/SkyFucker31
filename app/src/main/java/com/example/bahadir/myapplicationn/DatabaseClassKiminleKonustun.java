@@ -68,6 +68,8 @@ public class DatabaseClassKiminleKonustun {
             cV.put(KARSIISIM , karsiisim);
             cV.put(KARSIRESIMURL, karsiresimurl);
             return sqlitedatabaseobjesi.insert(TABLENAME , null , cV);
+        }if(var==true){
+
         }
         long b = 23;
         return b;

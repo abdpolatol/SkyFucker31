@@ -237,9 +237,12 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
                 Bitmap yuvarlakbitmape = getCircleBitmap(bitmape);
                 bmImage.setImageBitmap(yuvarlakbitmape);
             }if(eldevar==false){
-                addBitmapToMemoryCache(fotoid, bitmap);
-                Bitmap yuvarlakbitmap = getCircleBitmap(bitmap);
-                bmImage.setImageBitmap(yuvarlakbitmap);
+                if(bitmap!=null){
+                    addBitmapToMemoryCache(fotoid, bitmap);
+                    Log.i("tago", "nasıl null değil");
+                    Bitmap yuvarlakbitmap = getCircleBitmap(bitmap);
+                    bmImage.setImageBitmap(yuvarlakbitmap);
+                }
             }
         }
         private Bitmap getCircleBitmap(Bitmap b) {

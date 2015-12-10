@@ -67,6 +67,33 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
     TextView bottomTextView;
     private QuickReturnTargetView topTargetView;;
 
+
+
+    public void onStart() {
+        super.onStart();
+        Log.i("tago", "FragmentDonguleri frag 1 onStart");
+    }
+
+    public void onResume() {
+        super.onResume();
+        Log.i("tago", "FragmentDonguleri frag 1 onResume");
+    }
+
+    public void onPause() {
+        super.onPause();
+        Log.i("tago", "FragmentDonguleri frag 1 onPause");
+    }
+
+    public void onStop() {
+        super.onStop();
+        Log.i("tago", "FragmentDonguleri frag 1 onStop");
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("tago", "FragmentDonguleri frag 1 onDestroy");
+    }
+
     public static PageFragment1 newInstance(int page) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);

@@ -57,7 +57,22 @@ public class PageFragment3 extends Fragment {
     Profile profile;
     String yenicoverfotourl;
     String yeniresimurlidsi;
+    public void onStart() {
+        super.onStart();
+        Log.i("tago", "FragmentDonguleri frag 3 onStart");
+    }
 
+
+    public void onPause() {
+        super.onPause();
+        Log.i("tago", "FragmentDonguleri frag 3 onPause");
+    }
+
+
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("tago", "FragmentDonguleri frag 3 onDestroy");
+    }
     public static PageFragment3 newInstance(int page) {
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_PAGE, page);
@@ -147,6 +162,7 @@ public class PageFragment3 extends Fragment {
     public void onResume() {
         super.onResume();
         Profile profile = Profile.getCurrentProfile();
+        Log.i("tago", "FragmentDonguleri frag 3 onResume");
     }
     public void onStop(){
         super.onStop();
@@ -156,6 +172,7 @@ public class PageFragment3 extends Fragment {
         if(protracker!=null){
             protracker.stopTracking();
         }
+        Log.i("tago", "FragmentDonguleri frag 3 onStop");
     }
     private void sharedcoverurlkaydet(String yenicoverfoto) {
         SharedPreferences sP =getActivity().getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);

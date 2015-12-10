@@ -65,6 +65,32 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
         fragment.setArguments(args);
         return fragment;
     }
+
+    public void onStart() {
+        super.onStart();
+        Log.i("tago" , "FragmentDonguleri frag 0 onStart");
+    }
+
+    public void onResume() {
+        super.onResume();
+        Log.i("tago", "FragmentDonguleri frag 0 onResume");
+    }
+
+    public void onPause() {
+        Log.i("tago" , "FragmentDonguleri frag 0 onPause");
+        super.onPause();
+    }
+
+    public void onStop() {
+        Log.i("tago" , "FragmentDonguleri frag 0 onStop");
+        super.onStop();
+    }
+
+    public void onDestroy() {
+        Log.i("tago" , "FragmentDonguleri frag 0 onDestroy");
+        super.onDestroy();
+    }
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
@@ -104,7 +130,9 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
                 List<String> isimler = dB.databasedenisimcek();
                 List<String> resimurller = dB.databasedenresimurlcek();
                 dB.close();
-                for(int i = 0 ; i<idler.size() ; i++){
+                Log.i("tago" , "donuyor" + idler.size());
+                for(int i = idler.size()-1 ; i>-1 ; i--){
+                    Log.i("tago" , "donuyor donuyor acımasız olma onun harici canını sıkma");
                     Insann insann = new Insann();
                     insann.setId(idler.get(i));
                     Log.i("tago", idler.get(i));
