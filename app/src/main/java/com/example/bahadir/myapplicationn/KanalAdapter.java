@@ -3,9 +3,7 @@ package com.example.bahadir.myapplicationn;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -120,8 +118,7 @@ public class KanalAdapter extends BaseAdapter {
             holder = (KanalHolder)convertView.getTag();
         }
             if(kanal.official){
-                Drawable a = ContextCompat.getDrawable(context , R.drawable.taylanprof);
-                holder.image2.setBackground(a);
+                holder.image2.setBackgroundResource(R.mipmap.cropped);
                 Log.i("tago", "kanaladapter position = " + channelbaba.get(position).getLikedurumu());
                 holder.tv3.setText(channelbaba.get(position).getKanaladi());
                 holder.image2.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +133,7 @@ public class KanalAdapter extends BaseAdapter {
                     }
                 });
                 if(channelbaba.get(position).getLikedurumu()== 1){
-                    holder.image3.setImageResource(R.mipmap.heartson);
+                    //holder.image3.setImageResource(R.mipmap.heartson);
                     Log.i("tago" , "likedurumu1");
                 }else{
                     holder.image3.setImageResource(R.mipmap.heartsonn);
@@ -146,7 +143,7 @@ public class KanalAdapter extends BaseAdapter {
                 holder.image3.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
                         channelbaba.get(pozisyon).setLikedurumu(1);
-                        image1.setImageResource(R.mipmap.heartson);
+                        //image1.setImageResource(R.mipmap.heartson);
                         image1.setClickable(false);
                         Log.i("tago" , "butona tıklanıldı");
                         String channelid = channelbaba.get(pozisyon).getId();
@@ -156,7 +153,7 @@ public class KanalAdapter extends BaseAdapter {
                 });
             }
             if(!kanal.official){
-                holder.image1.setImageResource(R.mipmap.apoprof);
+                holder.image1.setBackgroundResource(R.mipmap.odtu);
                 holder.tv1.setText(channelbaba.get(position).getKanaladi());
                 holder.image1.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {

@@ -42,7 +42,7 @@
         app:pstsTextAllCaps="true"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="#ffa518"
+        android:background="#322342"
         android:elevation="25dp">
     </com.astuetz.PagerSlidingTabStrip>
 

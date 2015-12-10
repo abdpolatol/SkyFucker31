@@ -16,8 +16,9 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.felipecsl.quickreturn.library.AbsListViewQuickReturnAttacher;
@@ -62,8 +63,8 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
     ViewGroup viewGroup;
     View view;
     AbsListView absListView;
-    LinearLayout lay1;
-    Button buton1,buton2;
+    RelativeLayout lay1;
+    ImageButton buton1,buton2;
     TextView bottomTextView;
     private QuickReturnTargetView topTargetView;;
 
@@ -107,7 +108,7 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.kanallar, container, false);
-        Button buton3 = (Button) view.findViewById(R.id.button9);
+        ImageButton buton3 = (ImageButton) view.findViewById(R.id.button9);
         buton3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 kanalekle();
@@ -121,9 +122,9 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
     private void initializeQuickReturn() {
         viewGroup = (ViewGroup) view.findViewById(R.id.listView);
         absListView = (AbsListView) viewGroup;
-        lay1 = (LinearLayout) view.findViewById(R.id.quickReturnTopTarget);
-        buton1 = (Button) view.findViewById(R.id.button);
-        buton2 = (Button) view.findViewById(R.id.button2);
+        lay1 = (RelativeLayout) view.findViewById(R.id.quickReturnTopTarget);
+        buton1 = (ImageButton) view.findViewById(R.id.button);
+        buton2 = (ImageButton) view.findViewById(R.id.button2);
         buton1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Log.i("tago" , "Buton 1 tıklandı");

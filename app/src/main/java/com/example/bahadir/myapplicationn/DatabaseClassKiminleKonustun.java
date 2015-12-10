@@ -27,6 +27,9 @@ public class DatabaseClassKiminleKonustun {
     private DbHelper dbhelper;
     private static File kayityeri;
     private static SQLiteDatabase sqlitedatabaseobjesi;
+    int hangisatir = 0;
+    boolean oncedenvar = false;
+    String varolanid= null;
 
     public DatabaseClassKiminleKonustun(Context context) {
         this.context = context;
@@ -52,27 +55,35 @@ public class DatabaseClassKiminleKonustun {
         sqlitedatabaseobjesi.close();
     }
     public long olustur(String karsiid , String karsiisim , String karsiresimurl){
-        boolean var = false;
+
         List<String> a = databasedenidcek();
         for(int i = 0 ; i<a.size() ; i++){
-            Log.i("tago" , "karsi id=" + karsiid);
-            Log.i("tago" , "databaseid = " + a.get(i));
             if(karsiid.equals(a.get(i))){
-                var = true;
-                Log.i("tago" , String.valueOf(var));
+                oncedenvar = true;
+                varolanid= a.get(i);
+                Log.i("tago" , "hangi onceden var" + String.valueOf(oncedenvar));
             }
         }
-        if(var==false){
+        if(oncedenvar==true){
+            int c = sqlitedatabaseobjesi.delete(TABLENAME,KARSIID+"="+varolanid,null);
+            Log.i("tago" , "hangi satir " + hangisatir);
+            Log.i("tago" , "hangi dondu" + c);
+        }
+        if(oncedenvar==false){
             ContentValues cV = new ContentValues();
             cV.put(KARSIID , karsiid);
             cV.put(KARSIISIM , karsiisim);
             cV.put(KARSIRESIMURL, karsiresimurl);
             return sqlitedatabaseobjesi.insert(TABLENAME , null , cV);
-        }if(var==true){
-
+        }else if(oncedenvar==true){
+            ContentValues cV = new ContentValues();
+            cV.put(KARSIID , karsiid);
+            cV.put(KARSIISIM , karsiisim);
+            cV.put(KARSIRESIMURL, karsiresimurl);
+            Log.i("tago" , "hangi");
+            return sqlitedatabaseobjesi.insert(TABLENAME,null,cV);
         }
-        long b = 23;
-        return b;
+        return 23;
     }
     public List<String> databasedencek(String karsidakiid) {
         String[] kolonlar = new String[]{ROWID , KARSIID , KARSIISIM, KARSIRESIMURL};
@@ -94,6 +105,7 @@ public class DatabaseClassKiminleKonustun {
         int karsiidindexi = c.getColumnIndex(KARSIID);
         for(c.moveToFirst() ; !c.isAfterLast() ; c.moveToNext()){
             kayitliidler.add(c.getString(karsiidindexi));
+            Log.i("tago" , "hangi id" + c.getString(karsiidindexi));
         }
         return kayitliidler ;
     }
@@ -117,7 +129,13 @@ public class DatabaseClassKiminleKonustun {
         }
         return kayitliresimurller ;
     }
-
+    public void deleteRow(){
+        if(oncedenvar==true){
+            int c = sqlitedatabaseobjesi.delete(TABLENAME,KARSIID+"="+varolanid,null);
+            Log.i("tago" , "hangi satir " + hangisatir);
+            Log.i("tago" , "hangi dondu" + c);
+        }
+    }
     public void delete(String table_name, String o, String o1) {
         sqlitedatabaseobjesi.delete(table_name , null, null);
     }

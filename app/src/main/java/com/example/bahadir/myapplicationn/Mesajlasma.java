@@ -104,7 +104,7 @@ public class Mesajlasma extends Activity {
         for(int k = 0 ; k < kayitlimesajlar.size() ; k++){
             Log.i("tago" , kayitlimesajlar.get(k).substring(0,10));
             if(kayitlimesajlar.get(k).substring(0,10).equals("badbadbado")){
-                adapter.add(new Mesaj(!taraf,kayitlimesajlar.get(k).substring(37)));
+                adapter.add(new Mesaj(!taraf,kayitlimesajlar.get(k).substring(36)));
             }else{
                 adapter.add(new Mesaj(taraf,kayitlimesajlar.get(k).substring(0,kayitlimesajlar.get(k).indexOf("rumbararumbarumbarumruru"))));
             }

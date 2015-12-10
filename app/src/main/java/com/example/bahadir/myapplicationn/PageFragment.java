@@ -132,7 +132,6 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
                 dB.close();
                 Log.i("tago" , "donuyor" + idler.size());
                 for(int i = idler.size()-1 ; i>-1 ; i--){
-                    Log.i("tago" , "donuyor donuyor acımasız olma onun harici canını sıkma");
                     Insann insann = new Insann();
                     insann.setId(idler.get(i));
                     Log.i("tago", idler.get(i));

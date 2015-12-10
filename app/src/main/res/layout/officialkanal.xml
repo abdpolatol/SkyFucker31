@@ -3,15 +3,18 @@
     android:orientation="vertical" android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/babo">
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="180dp"
+        android:id="@+id/babo"
+        android:layout_alignParentRight="true"
+        android:layout_alignWithParentIfMissing="false"
+        android:layout_alignParentLeft="true"
+        android:background="@mipmap/chat_back">
 
         <ImageButton
-            android:layout_width="fill_parent"
-            android:layout_height="200dp"
+            android:layout_width="330dp"
+            android:layout_height="160dp"
             android:id="@+id/imageView5"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
@@ -20,47 +23,29 @@
             android:maxHeight="50dp"
             android:maxWidth="400dp"
             android:cropToPadding="false"
-            android:elevation="15dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="bottom|center_horizontal"
+            android:baselineAlignBottom="false" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:background="@mipmap/chat_back">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Offical Kanal Adı"
-                android:id="@+id/textView4"
-                android:layout_gravity="center"
-                android:layout_marginTop="5dp"
-                android:textSize="15dp"
-                android:textColorHighlight="#70ff00"
-                android:textIsSelectable="false"
-                android:layout_centerInParent="true"
-                android:visibility="visible" />
-        </RelativeLayout>
-
-    </LinearLayout>
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="45dp"
+        android:layout_height="42dp"
         android:layout_gravity="right"
-        android:layout_below="@+id/babo"
+        android:id="@+id/relativeLayout"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="5dp"
-        android:id="@+id/relativeLayout">
+        android:layout_below="@+id/babo"
+        android:background="@mipmap/chat_back">
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/button7"
-            android:src="@mipmap/menu"
+            android:src="@mipmap/like_deneme"
             android:background="#00000000"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginEnd="17dp"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/imageButton7" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -68,12 +53,12 @@
             android:text="Beğen"
             android:id="@+id/button8"
             android:layout_gravity="right"
-            android:layout_marginLeft="150dp"
-            android:src="@mipmap/galpman"
+            android:src="@mipmap/info_grup"
             android:background="#00000000"
-            android:layout_marginEnd="63dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_marginLeft="10dp"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/button7"
+            android:layout_marginEnd="20dp" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -81,9 +66,35 @@
             android:id="@+id/imageButton7"
             android:layout_alignParentEnd="true"
             android:background="#ffffff"
-            android:src="@mipmap/yskayet"
+            android:src="@mipmap/warning_deneme"
             android:layout_marginRight="10dp"
             android:layout_centerInParent="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Offical Kanal Adı"
+            android:id="@+id/textView4"
+            android:layout_gravity="center"
+            android:textSize="15dp"
+            android:textColorHighlight="#70ff00"
+            android:textIsSelectable="false"
+            android:visibility="visible"
+            android:layout_marginStart="20dp"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true" />
+
     </RelativeLayout>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="6dp"
+        android:id="@+id/imageView10"
+        android:layout_gravity="right|top"
+        android:background="#2c434344"
+        android:layout_below="@+id/relativeLayout"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
