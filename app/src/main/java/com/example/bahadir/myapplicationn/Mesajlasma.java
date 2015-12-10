@@ -214,7 +214,7 @@ public class Mesajlasma extends Activity {
         }
         DatabaseClassKiminleKonustun dB = new DatabaseClassKiminleKonustun(Mesajlasma.this);
         dB.open();
-        dB.olustur(karsidakiid,karsidakiisim,karsidakiresimurl);
+        dB.olustur(karsidakiid, karsidakiisim, karsidakiresimurl);
         dB.close();
         Log.i("tago", "Mesajlasma sqlite yeni kayit işlemi yapıldı");
     }
@@ -234,7 +234,6 @@ public class Mesajlasma extends Activity {
             Log.i("tago", "okunamaz ve yazılamaz");
         }
         if (okunabilir && yazilabilir) {
-            String mesaj = yazaninmesaj;
             File path = Environment.getExternalStorageDirectory();
             Log.i("tago", "path= " + path);
             String whappy = "Whappy";
@@ -255,10 +254,8 @@ public class Mesajlasma extends Activity {
     }
     private boolean takeChatMessage(String mesaajj) {
         adapter.add(new Mesaj(!taraf, mesaajj));
-        DatabaseClass databaseClass = new DatabaseClass(Mesajlasma.this);
-        databaseClass.open();
-        databaseClass.olusturx(mesaajj, karsidakiid);
-        databaseClass.close();
+        alinanmesajiexternalkaydet(mesaajj);
+        kiminlemesajlasiyorsun();
         handler = new Handler();
         Thread thread = new Thread(new Runnable() {
             public void run() {
@@ -274,6 +271,41 @@ public class Mesajlasma extends Activity {
 
         return true;
     }
+    private void alinanmesajiexternalkaydet(String mesaj) {
+        String durum = Environment.getExternalStorageState();
+        if (durum.equals(Environment.MEDIA_MOUNTED)) {
+            okunabilir = true;
+            yazilabilir = true;
+            Log.i("tago", "okunabilir ve yazılabilir");
+        } else if (durum.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
+            okunabilir = true;
+            yazilabilir = false;
+            Log.i("tago", "okunabilir fakat yazılamaz");
+        } else {
+            okunabilir = false;
+            yazilabilir = false;
+            Log.i("tago", "okunamaz ve yazılamaz");
+        }
+        if (okunabilir && yazilabilir) {
+            File path = Environment.getExternalStorageDirectory();
+            Log.i("tago", "path= " + path);
+            String whappy = "Whappy";
+            File f = new File(path, whappy);
+            if (!f.exists()) {
+                f.mkdirs();
+            }
+            File mesajlar = new File(f, "Mesajlar");
+            if (!mesajlar.exists()) {
+                mesajlar.mkdirs();
+            }
+            DatabaseClass dB = new DatabaseClass(Mesajlasma.this);
+            dB.open();
+            dB.olusturx(mesaj, karsidakiid);
+            dB.close();
+            Log.i("tago", "Mesajlasma alinan sqlite kayıt işlemi yapıldı");
+        }
+    }
+
 
     public class ArkadanVurdur extends AsyncTask<String, Void, String> {
 
@@ -338,7 +370,6 @@ public class Mesajlasma extends Activity {
             return "alabama";
         }
     }
-
     public class urldenResim extends AsyncTask<String, Void, Bitmap> {
 
         ImageButton bmImage;
