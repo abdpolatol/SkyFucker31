@@ -40,6 +40,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class InsannAdapter extends ArrayAdapter<Insann>{
 
@@ -103,14 +104,21 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
                     String name = objects.get(pozisyon).getName();
                     String resim = objects.get(pozisyon).getUrl();
                     String id = objects.get(pozisyon).getId();
+                    try {
+                        icon = new urldenResimm().execute(objects.get(pozisyon).getUrl()).get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
                     Intent intent = new Intent(context , Mesajlasma.class);
                     intent.putExtra("id" , id);
                     intent.putExtra("isim" , name);
                     intent.putExtra("resimurl" , resim);
-                    intent.putExtra("intentname" , "InsanAdapter");
-                    Bundle xxx = new Bundle();
-                    xxx.putParcelable("iccon" , icon);
-                    intent.putExtra("icon" , xxx);
+                    intent.putExtra("intentname", "InsanAdapter");
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("kullaniciresmi" , icon);
+                    intent.putExtra("kullaniciresmi" , bundle);
                     context.startActivity(intent);
                 }
             });
@@ -361,6 +369,37 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
                 Log.i("tago" , "Report etme işlemi yapılamadı");
             }
             return "wifii";
+        }
+    }
+    public class urldenResimm extends AsyncTask<String, Void, Bitmap> {
+
+
+        public urldenResimm() {
+        }
+
+        protected Bitmap doInBackground(String... params) {
+            URL url;
+            Bitmap icon = null;
+            try {
+                url = new URL(params[0]);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                Log.i("tago", "Insan Adapter connect sağladım");
+                InputStream input = connection.getInputStream();
+                icon = BitmapFactory.decodeStream(input);
+                Log.i("tago", "Insan Adapter bitmap yaptım");
+                return icon;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return icon;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
         }
     }
 }

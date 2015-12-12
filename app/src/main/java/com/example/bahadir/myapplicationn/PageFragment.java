@@ -2,6 +2,8 @@ package com.example.bahadir.myapplicationn;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,9 +32,11 @@ import org.json.JSONObject;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -87,7 +91,7 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
     }
 
     public void onDestroy() {
-        Log.i("tago" , "FragmentDonguleri frag 0 onDestroy");
+        Log.i("tago", "FragmentDonguleri frag 0 onDestroy");
         super.onDestroy();
     }
 
@@ -348,6 +352,36 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
             // Took from http://stackoverflow.com/questions/8309354/formula-px-to-dp-dp-to-px-android
             float scale = context.getResources().getDisplayMetrics().density;
             return (int) ((dp * scale) + 0.5f);
+        }
+    }
+    public class urldenResim extends AsyncTask<String, Void, Bitmap> {
+
+        public urldenResim() {
+            Log.i("tago" , "yeniurlden resim");
+        }
+
+        protected Bitmap doInBackground(String... params) {
+            URL url;
+            Bitmap icon = null;
+            try {
+                url = new URL(params[0]);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                Log.i("tago", "Insan Adapter connect sağladım");
+                InputStream input = connection.getInputStream();
+                icon = BitmapFactory.decodeStream(input);
+                Log.i("tago", "Insan Adapter bitmap yaptım");
+                return icon;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return icon;
+        }
+
+        protected void onPostExecute(Bitmap bitmap) {
         }
     }
     }

@@ -54,7 +54,7 @@ public class Mesajlasma extends Activity {
     String karsidakiid;
     String karsidakiisim;
     String karsidakiresimurl;
-    Bitmap icon;
+    Bitmap kullaniciresmi;
     List<String> kayitlimesajlar;
     ImageButton imagebuton1;
     String yazaninid;
@@ -83,7 +83,7 @@ public class Mesajlasma extends Activity {
             karsidakiisim = i.getStringExtra("isim");
             karsidakiresimurl = i.getStringExtra("resimurl");
             karsidakiid = i.getStringExtra("id");
-            icon = i.getBundleExtra("icon").getParcelable("iccon");
+            kullaniciresmi = i.getBundleExtra("kullaniciresmi").getParcelable("kullaniciresmi");
         }else if(i.getStringExtra("intentname").equals("PushReceiver")){
             Log.i("tago" , "PushReceiverdan ulaşıldı");
             karsidakiid = i.getStringExtra("yazaninid");
@@ -132,7 +132,7 @@ public class Mesajlasma extends Activity {
         tv1 = (TextView) findViewById(R.id.textView2);
         tv1.setText(karsidakiisim);
         imagebuton1 = (ImageButton) findViewById(R.id.imageButton);
-        imagebuton1.setImageBitmap(icon);
+        imagebuton1.setImageBitmap(kullaniciresmi);
         buton1 = (ImageButton) findViewById(R.id.button4);
         buton2 = (Button) findViewById(R.id.button6);
         buton2.setOnClickListener(new View.OnClickListener() {
