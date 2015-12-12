@@ -9,6 +9,13 @@ import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -132,7 +139,7 @@ public class Mesajlasma extends Activity {
         tv1 = (TextView) findViewById(R.id.textView2);
         tv1.setText(karsidakiisim);
         imagebuton1 = (ImageButton) findViewById(R.id.imageButton);
-        imagebuton1.setImageBitmap(kullaniciresmi);
+        imagebuton1.setImageBitmap(getCircleBitmap(kullaniciresmi));
         buton1 = (ImageButton) findViewById(R.id.button4);
         buton2 = (Button) findViewById(R.id.button6);
         buton2.setOnClickListener(new View.OnClickListener() {
@@ -304,7 +311,23 @@ public class Mesajlasma extends Activity {
             Log.i("tago", "Mesajlasma alinan sqlite kayıt işlemi yapıldı");
         }
     }
+    private Bitmap getCircleBitmap(Bitmap b) {
+        final Bitmap output = Bitmap.createBitmap(b.getWidth(), b.getHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(output);
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0,0,b.getWidth(),b.getHeight());
+        final RectF rectf = new RectF(rect);
 
+        paint.setAntiAlias(true);
+        paint.setColor(color);
+        canvas.drawARGB(0, 0, 0, 0);
+        canvas.drawOval(rectf, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+
+        canvas.drawBitmap(b, rect, rect, paint);
+        return output;
+    }
 
     public class ArkadanVurdur extends AsyncTask<String, Void, String> {
 

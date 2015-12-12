@@ -5,6 +5,13 @@ import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,7 +26,6 @@ import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
-import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -52,9 +58,6 @@ public class PageFragment3 extends Fragment {
     //Facebook part
     ProfileTracker protracker;
     AccessTokenTracker tracker;
-    private CallbackManager mCallbackManager;
-    AccessToken accessToken;
-    Profile profile;
     String yenicoverfotourl;
     String yeniresimurlidsi;
     public void onStart() {
@@ -85,7 +88,6 @@ public class PageFragment3 extends Fragment {
         sharedkullaniciciktikeydet(kullanicicikti);
         mPage = getArguments().getInt(ARG_PAGE);
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
-        mCallbackManager = CallbackManager.Factory.create();
     }
     private void tanimlar(View view) {
         image1 = (ImageView) view.findViewById(R.id.imageView);
@@ -96,7 +98,7 @@ public class PageFragment3 extends Fragment {
         tv2 = (TextView) view.findViewById(R.id.textView5);
         tv3 = (TextView) view.findViewById(R.id.textView6);
         buton1 = (Button) view.findViewById(R.id.button15);
-        image1.setImageBitmap(resim);
+        image1.setImageBitmap(getCircleBitmap(resim));
         tv1.setText(isim);
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -192,7 +194,23 @@ public class PageFragment3 extends Fragment {
         sharedkullaniciciktikeydet(kullanicicikti);
         getActivity().finish();
     }
+    private Bitmap getCircleBitmap(Bitmap b) {
+        final Bitmap output = Bitmap.createBitmap(b.getWidth(),b.getHeight(),Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(output);
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0,0,b.getWidth(),b.getHeight());
+        final RectF rectf = new RectF(rect);
 
+        paint.setAntiAlias(true);
+        paint.setColor(color);
+        canvas.drawARGB(0, 0, 0, 0);
+        canvas.drawOval(rectf, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+
+        canvas.drawBitmap(b, rect, rect, paint);
+        return output;
+    }
 
 
 
