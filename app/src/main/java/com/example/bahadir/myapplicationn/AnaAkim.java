@@ -7,15 +7,11 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
@@ -32,35 +28,6 @@ public class AnaAkim extends AppCompatActivity {
         sharedkullaniciciktikaydet(false);
         notificationbas = true;
         notificationSharedPrefKaydet();
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        searchView = (MaterialSearchView) findViewById(R.id.search_view);
-        searchView.setVoiceSearch(false);
-        searchView.setCursorDrawable(R.drawable.custom_cursor);
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
-            public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(AnaAkim.this, query, Toast.LENGTH_SHORT).show();
-                Log.i("tago", query);
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Log.i("tago", newText);
-                return false;
-            }
-        });
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
-            @Override
-            public void onSearchViewShown() {
-                //Do some magic
-            }
-
-            @Override
-            public void onSearchViewClosed() {
-                //Do some magic
-            }
-        });
 
         /*Intent intent = getIntent();
         bitmap = intent.getParcelableExtra("resim");
@@ -78,21 +45,6 @@ public class AnaAkim extends AppCompatActivity {
         nickAl();
        // yerolustur();
         //mesafeyiBul(x, y);
-    }
-    public void onBackPressed() {
-        if (searchView.isSearchOpen()) {
-            searchView.closeSearch();
-        } else {
-            super.onBackPressed();
-        }
-    }
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_anakim, menu);
-
-        MenuItem item = menu.findItem(R.id.action_search);
-        searchView.setMenuItem(item);
-
-        return true;
     }
     private void sharedkullaniciciktikaydet(boolean b) {
             SharedPreferences sP =getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);

@@ -24,7 +24,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -52,8 +51,7 @@ public class Mesajlasma extends Activity {
     public MesajArrayAdapter adapter;
     public List<Mesaj> MesajListesi = new ArrayList();
     EditText etv1;
-    ImageButton buton1;
-    Button buton2;
+    ImageButton buton1,buton2;
     TextView tv1;
     ProgressBar progressbar;
     int ilerleme = 0;
@@ -141,7 +139,7 @@ public class Mesajlasma extends Activity {
         imagebuton1 = (ImageButton) findViewById(R.id.imageButton);
         imagebuton1.setImageBitmap(getCircleBitmap(kullaniciresmi));
         buton1 = (ImageButton) findViewById(R.id.button4);
-        buton2 = (Button) findViewById(R.id.button6);
+        buton2 = (ImageButton) findViewById(R.id.button6);
         buton2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 finish();
