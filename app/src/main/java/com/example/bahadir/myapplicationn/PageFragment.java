@@ -72,7 +72,7 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
 
     public void onStart() {
         super.onStart();
-        Log.i("tago" , "FragmentDonguleri frag 0 onStart");
+        Log.i("tago", "FragmentDonguleri frag 0 onStart");
     }
 
     public void onResume() {
@@ -81,12 +81,12 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
     }
 
     public void onPause() {
-        Log.i("tago" , "FragmentDonguleri frag 0 onPause");
+        Log.i("tago", "FragmentDonguleri frag 0 onPause");
         super.onPause();
     }
 
     public void onStop() {
-        Log.i("tago" , "FragmentDonguleri frag 0 onStop");
+        Log.i("tago", "FragmentDonguleri frag 0 onStop");
         super.onStop();
     }
 
@@ -94,7 +94,6 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
         Log.i("tago", "FragmentDonguleri frag 0 onDestroy");
         super.onDestroy();
     }
-
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);

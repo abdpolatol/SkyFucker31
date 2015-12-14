@@ -64,7 +64,7 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
     View view;
     AbsListView absListView;
     RelativeLayout lay1;
-    ImageButton buton1,buton2;
+    ImageButton buton1,buton2,buton3;
     TextView bottomTextView;
     private QuickReturnTargetView topTargetView;;
 
@@ -125,6 +125,7 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
         lay1 = (RelativeLayout) view.findViewById(R.id.quickReturnTopTarget);
         buton1 = (ImageButton) view.findViewById(R.id.button);
         buton2 = (ImageButton) view.findViewById(R.id.button2);
+        buton3 = (ImageButton) view.findViewById(R.id.imageButton12);
         buton1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 Log.i("tago" , "Buton 1 tıklandı");

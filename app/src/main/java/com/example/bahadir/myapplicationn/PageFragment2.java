@@ -66,8 +66,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.google.android.gms.internal.zzhl.runOnUiThread;
-
 public class PageFragment2 extends Fragment implements View.OnClickListener {
     public static final String ARG_PAGE = "ARG_PAGE";
     ImageButton buton1;
@@ -393,7 +391,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                     Button uploadbutton = (Button) getActivity().findViewById(R.id.uploadbutton);
                     mImageView = (ImageView) getActivity().findViewById(R.id.iv_photo);
                     mImageView.setImageBitmap(bm);
-                    uploadbutton.setOnClickListener(new View.OnClickListener() {
+                    /*uploadbutton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             new Thread(new Runnable() {
@@ -411,7 +409,7 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
                                 }
                             }).start();
                         }
-                    });
+                    });*/
                 }
 
                 File f = new File(mImageCaptureUri.getPath());
@@ -599,12 +597,12 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
 
             Log.i("uploadFile", "HTTP Response is : " + serverResponseMessage + ": " + serverResponseCode);
             if (serverResponseCode == 200) {
-                runOnUiThread(new Runnable() {
+                /*runOnUiThread(new Runnable() {
                     public void run() {
                         Toast.makeText(getActivity(), "File Upload Complete.", Toast.LENGTH_SHORT).show();
                         getFragmentManager().popBackStack();
                     }
-                });
+                });*/
             }
 
             //close the streams //
