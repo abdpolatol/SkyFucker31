@@ -25,6 +25,7 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 public class AnaAkim extends AppCompatActivity {
     Bitmap bitmap;
+    int hangifragmentuzerindesin;
     String isim;
     String resimurl;
     boolean notificationbas;
@@ -42,7 +43,6 @@ public class AnaAkim extends AppCompatActivity {
         final ImageButton imagesimge,imagearama;
         final ImageView logo;
         final EditText etv1;
-
         etv1 = (EditText) findViewById(R.id.aramaalani);
         imagesimge = (ImageButton) findViewById(R.id.imageButton14);
         imagearama = (ImageButton) findViewById(R.id.aramabutonu);
@@ -150,6 +150,19 @@ public class AnaAkim extends AppCompatActivity {
     }
     public void tanimlar(){
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            public void onPageSelected(int position) {
+                hangifragmentuzerindesin = position;
+                Log.i("tago" , "onPageSelected position" + position );
+            }
+
+            public void onPageScrollStateChanged(int state) {
+                Log.i("tago" , "onPageScrollStateChanged " + state);
+            }
+        });
         viewPager.setAdapter(new SampleFragmentPagerAdapter(getSupportFragmentManager()));
         PagerSlidingTabStrip tabsStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabsStrip.setViewPager(viewPager);
