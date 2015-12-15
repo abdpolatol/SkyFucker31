@@ -4,12 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <RelativeLayout
+    <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
-        android:layout_height="47dp"
-        android:background="#322342">
-
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar"
+        android:elevation="4dp"
+        android:background="@color/ColorPrimary">
+        <EditText
+            android:id="@+id/aramaalani"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content" />
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,7 +31,14 @@
             android:src="@mipmap/whappy"
             android:layout_alignTop="@+id/imageButton14"
             android:layout_centerHorizontal="true" />
-    </RelativeLayout>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id ="@+id/aramabutonu"
+            android:background="@mipmap/aramam"
+            android:layout_marginLeft="50dp"/>
+    </android.support.v7.widget.Toolbar>
 
     <com.astuetz.PagerSlidingTabStrip
         android:id="@+id/tabs"
