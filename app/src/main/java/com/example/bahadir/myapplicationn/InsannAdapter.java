@@ -126,6 +126,53 @@ public class InsannAdapter extends ArrayAdapter<Insann>{
             @Override
             public void onClick(View v) {
                 Log.i("tago", "kullanıcı resmi tıklandı");
+                Dialog dialog = new Dialog(context);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.kullanicibuyut);
+                dialog.getWindow().setDimAmount(0.7f);
+                dialog.show();
+                ImageButton imageb1,imageb2,imageb3,imageb4;
+                imageb1=(ImageButton) dialog.findViewById(R.id.imageButton15);
+                imageb2=(ImageButton) dialog.findViewById(R.id.imageButton16);
+                imageb3=(ImageButton) dialog.findViewById(R.id.imageButton17);
+                imageb4=(ImageButton) dialog.findViewById(R.id.imageButton18);
+                try {
+                    imageb1.setImageBitmap(new urldenResimm().execute(objects.get(pozisyon).getUrl()).get());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                imageb2.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context,Mesajlasma.class);
+                        try {
+                            icon = new urldenResimm().execute(objects.get(pozisyon).getUrl()).get();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
+                        intent.putExtra("isim",objects.get(pozisyon).getName());
+                        intent.putExtra("id",objects.get(pozisyon).getId());
+                        intent.putExtra("resimurl" , objects.get(pozisyon).getUrl());
+                        intent.putExtra("intentname","InsanAdapter");
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("kullaniciresmi",icon);
+                        intent.putExtra("kullaniciresmi",bundle);
+                        context.startActivity(intent);
+                    }
+                });
+                imageb3.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Log.i("tago", "like etme işlemi başlatıldı");
+                    }
+                });
+                imageb4.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        Log.i("tago" , "kullanici report etme işlemi başlatıldı");
+                    }
+                });
             }
         });
 
