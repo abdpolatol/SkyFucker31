@@ -9,10 +9,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -37,9 +39,10 @@ public class AnaAkim extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        ImageButton imagesimge,imagearama;
-        ImageView logo;
+        final ImageButton imagesimge,imagearama;
+        final ImageView logo;
         final EditText etv1;
+
         etv1 = (EditText) findViewById(R.id.aramaalani);
         imagesimge = (ImageButton) findViewById(R.id.imageButton14);
         imagearama = (ImageButton) findViewById(R.id.aramabutonu);
@@ -47,9 +50,10 @@ public class AnaAkim extends AppCompatActivity {
         imagearama.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("tago", "onclicktıklandı");
-                editTextAyarla(etv1);
-               // final float scale = getResources().getDisplayMetrics().density;
-                // etv1.setWidth((int) (200 * scale + 0.5f));
+                InputMethodManager iMM = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                etv1.requestFocus();
+                iMM.showSoftInput(etv1, InputMethodManager.SHOW_IMPLICIT);
+                editTextAyarla(etv1, imagesimge, logo, imagearama);
             }
         });
         /*Intent intent = getIntent();
@@ -70,9 +74,50 @@ public class AnaAkim extends AppCompatActivity {
         //mesafeyiBul(x, y);
     }
 
-    private void editTextAyarla(EditText etv) {
-        Toolbar.LayoutParams lparams = new Toolbar.LayoutParams(50,30);
-        etv.setLayoutParams(lparams);
+    private void editTextAyarla(final EditText etv, final ImageButton simge,final ImageView logo,final ImageButton imagefirstarama) {
+        final float scale = getResources().getDisplayMetrics().density;
+        simge.setImageResource(R.mipmap.aramam);
+        final Toolbar.LayoutParams normalfirstaramaparams =(Toolbar.LayoutParams)imagefirstarama.getLayoutParams();
+        final Toolbar.LayoutParams normaletvparams = new Toolbar.LayoutParams(0,0);
+        final Toolbar.LayoutParams normallogoparams = (Toolbar.LayoutParams) logo.getLayoutParams();
+        Log.i("tago" , "params" + String.valueOf(normaletvparams));
+        Log.i("tago", "params" + String.valueOf(normalfirstaramaparams));
+        Log.i("tago", "params" + String.valueOf(normallogoparams));
+        Toolbar.LayoutParams firstaramaparams = new Toolbar.LayoutParams(0,0);
+        imagefirstarama.setLayoutParams(firstaramaparams);
+        Toolbar.LayoutParams logoparams = new Toolbar.LayoutParams(0,0);
+        logo.setLayoutParams(logoparams);
+        Toolbar.LayoutParams etvparams = new Toolbar.LayoutParams((int) (300 * scale + 0.5f),(int) (50 * scale + 0.5f));
+        etv.setLayoutParams(etvparams);
+        etv.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if((event.getAction()==KeyEvent.ACTION_DOWN)&&(keyCode==KeyEvent.KEYCODE_ENTER)){
+                    String arananveri = etv.getText().toString();
+                    Log.i("tago", arananveri);
+                    etv.setLayoutParams(normaletvparams);
+                    imagefirstarama.setLayoutParams(normalfirstaramaparams);
+                    logo.setLayoutParams(normallogoparams);
+                    simge.setImageResource(R.mipmap.owll_3);
+                    View view = getCurrentFocus();
+                    InputMethodManager iMM = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    iMM.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+                return false;
+            }
+        });
+        simge.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                String arananveri = etv.getText().toString();
+                Log.i("tago", arananveri);
+                etv.setLayoutParams(normaletvparams);
+                imagefirstarama.setLayoutParams(normalfirstaramaparams);
+                logo.setLayoutParams(normallogoparams);
+                simge.setImageResource(R.mipmap.owll_3);
+                View view = getCurrentFocus();
+                InputMethodManager iMM = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                iMM.hideSoftInputFromWindow(view.getWindowToken(),0);
+            }
+        });
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

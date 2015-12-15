@@ -3,7 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:id="@+id/linearlay1">
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -12,8 +15,10 @@
         android:background="@color/ColorPrimary">
         <EditText
             android:id="@+id/aramaalani"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content" />
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="#33ff33"
+            />
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,8 +41,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id ="@+id/aramabutonu"
-            android:background="@mipmap/aramam"
-            android:layout_marginLeft="50dp"/>
+            android:background="@mipmap/aramabutonu"
+            android:layout_marginLeft="100dp"/>
     </android.support.v7.widget.Toolbar>
 
     <com.astuetz.PagerSlidingTabStrip
