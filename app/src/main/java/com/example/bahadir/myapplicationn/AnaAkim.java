@@ -21,19 +21,21 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.astuetz.PagerSlidingTabStrip;
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 public class AnaAkim extends AppCompatActivity {
     Bitmap bitmap;
     int hangifragmentuzerindesin;
+    SampleFragmentPagerAdapter sFPA;
     String isim;
     String resimurl;
     boolean notificationbas;
     public Toolbar toolbar;
-    public MaterialSearchView searchView;
+    ViewPager viewPager;
+
     protected void onCreate(Bundle bambam) {
         super.onCreate(bambam);
         setContentView(R.layout.genelaltplan);
+        sFPA = new SampleFragmentPagerAdapter(getSupportFragmentManager());
         sharedkullaniciciktikaydet(false);
         notificationbas = true;
         notificationSharedPrefKaydet();
@@ -73,7 +75,6 @@ public class AnaAkim extends AppCompatActivity {
        // yerolustur();
         //mesafeyiBul(x, y);
     }
-
     private void editTextAyarla(final EditText etv, final ImageButton simge,final ImageView logo,final ImageButton imagefirstarama) {
         final float scale = getResources().getDisplayMetrics().density;
         simge.setImageResource(R.mipmap.aramam);
@@ -91,7 +92,7 @@ public class AnaAkim extends AppCompatActivity {
         etv.setLayoutParams(etvparams);
         etv.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if((event.getAction()==KeyEvent.ACTION_DOWN)&&(keyCode==KeyEvent.KEYCODE_ENTER)){
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     String arananveri = etv.getText().toString();
                     Log.i("tago", arananveri);
                     etv.setLayoutParams(normaletvparams);
@@ -101,7 +102,19 @@ public class AnaAkim extends AppCompatActivity {
                     View view = getCurrentFocus();
                     InputMethodManager iMM = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     iMM.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    if (viewPager.getCurrentItem() == 0) {
+                        PageFragment frag1 = (PageFragment) viewPager.getAdapter().instantiateItem(viewPager,viewPager.getCurrentItem());
+                        frag1.aramaYap(arananveri);
+                        Log.i("tago", "ilk fragmenttesin");
+                    } else if (viewPager.getCurrentItem() == 1) {
+                        Log.i("tago", "ikinci fragmenttesin");
+                    } else if (viewPager.getCurrentItem() == 2) {
+                        Log.i("tago", "ucuncu fragmenttesin");
+                    } else if (viewPager.getCurrentItem() == 3) {
+                        Log.i("tago", "dorduncu fragmenttesin");
+                    }
                 }
+
                 return false;
             }
         });
@@ -115,21 +128,18 @@ public class AnaAkim extends AppCompatActivity {
                 simge.setImageResource(R.mipmap.owll_3);
                 View view = getCurrentFocus();
                 InputMethodManager iMM = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                iMM.hideSoftInputFromWindow(view.getWindowToken(),0);
+                iMM.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
     }
-
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_anakim,menu);
         return true;
     }
-
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         return super.onOptionsItemSelected(item);
     }
-
     private void sharedkullaniciciktikaydet(boolean b) {
             SharedPreferences sP =getSharedPreferences("kullaniciverileri", Context.MODE_PRIVATE);
             SharedPreferences.Editor prefEditor = sP.edit();
@@ -142,25 +152,24 @@ public class AnaAkim extends AppCompatActivity {
         prefEditor.putBoolean("notificationver", notificationbas);
         prefEditor.commit();
     }
-
     protected void onResume() {
         super.onResume();
         Log.i("tago", "AnaAkim " + isim + " giriş yaptı");
 
     }
     public void tanimlar(){
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
 
             public void onPageSelected(int position) {
                 hangifragmentuzerindesin = position;
-                Log.i("tago" , "onPageSelected position" + position );
+                Log.i("tago", "onPageSelected position" + position);
             }
 
             public void onPageScrollStateChanged(int state) {
-                Log.i("tago" , "onPageScrollStateChanged " + state);
+                Log.i("tago", "onPageScrollStateChanged " + state);
             }
         });
         viewPager.setAdapter(new SampleFragmentPagerAdapter(getSupportFragmentManager()));
@@ -187,23 +196,15 @@ public class AnaAkim extends AppCompatActivity {
         });
 
     }
-
     private void nickiSharedKeydet(String nick) {
         SharedPreferences sP = getSharedPreferences("kullaniciverileri",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sP.edit();
         editor.putString("kullanicinick" , nick);
         editor.commit();
     }
-
     protected void onStop() {
         super.onStop();
     }
 
-   /* protected void onDestroy() {
-        unregisterReceiver(breceiver);
-        stopService(new Intent(AnaAkim.this , TakipServisi.class));
-        super.onDestroy();
-    }
-*/
 
 }

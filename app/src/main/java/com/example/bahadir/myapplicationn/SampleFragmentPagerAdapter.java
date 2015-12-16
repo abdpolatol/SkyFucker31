@@ -3,11 +3,13 @@ package com.example.bahadir.myapplicationn;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.view.ViewGroup;
 
 import com.astuetz.PagerSlidingTabStrip;
 
 public class SampleFragmentPagerAdapter extends FragmentPagerAdapter implements PagerSlidingTabStrip.IconTabProvider {
     final int PAGE_COUNT = 4;
+    private Fragment currentFragment;
     private int tabIcons[] = {R.mipmap.iconselect, R.mipmap.ic_launcher, R.mipmap.ic_launcher, R.mipmap.ic_launcher};
 
     public SampleFragmentPagerAdapter(FragmentManager fm) {
@@ -30,7 +32,15 @@ public class SampleFragmentPagerAdapter extends FragmentPagerAdapter implements 
         else return PageFragment3.newInstance(position + 1);
     }
 
+    public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            if(getCurrentFragment()!=object){
+                currentFragment = (Fragment)object;
+            }
+    }
 
+    public Fragment getCurrentFragment(){
+        return currentFragment;
+    }
     public int getPageIconResId(int position) {
         return tabIcons[position];
     }

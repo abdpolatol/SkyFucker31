@@ -55,6 +55,7 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
     String query;
     CevredekileriGoster cG;
     ArrayList<Insann> InsanListesi;
+    ArrayList<Insann> ArananInsanListesi;
 
     ViewGroup viewGroup;
     AbsListView absListView;
@@ -62,6 +63,8 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
     Button buton1,buton2;
     private QuickReturnTargetView topTargetView;
     TextView bottomTextView ;
+
+
     public static PageFragment newInstance(int page) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
@@ -69,27 +72,22 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
         fragment.setArguments(args);
         return fragment;
     }
-
     public void onStart() {
         super.onStart();
         Log.i("tago", "FragmentDonguleri frag 0 onStart");
     }
-
     public void onResume() {
         super.onResume();
         Log.i("tago", "FragmentDonguleri frag 0 onResume");
     }
-
     public void onPause() {
         Log.i("tago", "FragmentDonguleri frag 0 onPause");
         super.onPause();
     }
-
     public void onStop() {
         Log.i("tago", "FragmentDonguleri frag 0 onStop");
         super.onStop();
     }
-
     public void onDestroy() {
         Log.i("tago", "FragmentDonguleri frag 0 onDestroy");
         super.onDestroy();
@@ -190,6 +188,7 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
         float scale = context.getResources().getDisplayMetrics().density;
         return (int) ((dp * scale) + 0.5f);
     }
+
     public void onClick(View view) {
 
     }
@@ -204,6 +203,39 @@ public class PageFragment extends Fragment implements AbsListView.OnScrollListen
     }
     public void onScroll(AbsListView absListView, int i, int i1, int i2) {
 
+    }
+
+    public void aramaYap(String arananyazi){
+        ArananInsanListesi = new ArrayList();
+        for(int i = 0; i<InsanListesi.size() ; i++){
+            Log.i("tago" , InsanListesi.get(i).getName());
+            if((InsanListesi.get(i).getName()).equals(arananyazi)){
+                ArananInsanListesi.add(InsanListesi.get(i));
+                Log.i("tago" , "aramayla eşleşen öge bulundu: " + InsanListesi.get(i).getName());
+            }else{
+                Log.i("tago", "aramayla eşleşen öge bulunmadı");
+            }
+        }
+
+        InsannAdapter arananadapter = new InsannAdapter(getActivity(),R.layout.listview_item,ArananInsanListesi);
+        if(viewGroup instanceof AbsListView){
+            int numColumns = (viewGroup instanceof GridView) ? 3 : 1;
+            absListView.setAdapter(new QuickReturnAdapter(arananadapter, numColumns));
+        }
+        QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(viewGroup);
+        quickReturnAttacher.addTargetView(bottomTextView, AbsListViewScrollTarget.POSITION_BOTTOM);
+        topTargetView = quickReturnAttacher.addTargetView(lay1,
+                AbsListViewScrollTarget.POSITION_TOP,
+                dpToPx(getActivity(), 50));
+
+        if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
+            AbsListViewQuickReturnAttacher
+                    attacher =
+                    (AbsListViewQuickReturnAttacher) quickReturnAttacher;
+            attacher.addOnScrollListener(PageFragment.this);
+            attacher.setOnItemClickListener(PageFragment.this);
+            attacher.setOnItemLongClickListener(PageFragment.this);
+        }
     }
 
     private class CevredekileriGoster extends AsyncTask<String, Void, String> {
