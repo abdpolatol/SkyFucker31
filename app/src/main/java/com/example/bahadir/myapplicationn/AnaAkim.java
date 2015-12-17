@@ -107,8 +107,12 @@ public class AnaAkim extends AppCompatActivity {
                         frag1.aramaYap(arananveri);
                         Log.i("tago", "ilk fragmenttesin");
                     } else if (viewPager.getCurrentItem() == 1) {
+                        PageFragment1 frag2 = (PageFragment1) viewPager.getAdapter().instantiateItem(viewPager,viewPager.getCurrentItem());
+                        frag2.aramaYap(arananveri);
                         Log.i("tago", "ikinci fragmenttesin");
                     } else if (viewPager.getCurrentItem() == 2) {
+                        PageFragment2 frag3 = (PageFragment2) viewPager.getAdapter().instantiateItem(viewPager,viewPager.getCurrentItem());
+                        frag3.aramaYap(arananveri);
                         Log.i("tago", "ucuncu fragmenttesin");
                     } else if (viewPager.getCurrentItem() == 3) {
                         Log.i("tago", "dorduncu fragmenttesin");

@@ -15,8 +15,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,7 +33,7 @@ import java.util.List;
 
 public class GrupSohbeti extends Activity {
     ListView liste1;
-    Button buton1 , buton2 ;
+    ImageButton buton1 , buton2 ;
     EditText etv1;
     boolean taraf;
     String yazaninmesaj;
@@ -96,8 +96,8 @@ public class GrupSohbeti extends Activity {
         TextView tv1 = (TextView) findViewById(R.id.textViewisim);
         tv1.setText(kanaladi);
         liste1 = (ListView) findViewById(R.id.listViewmesaj);
-        buton1 = (Button) findViewById(R.id.buttongonder);
-        buton2 = (Button) findViewById(R.id.buttongeri);
+        buton1 = (ImageButton) findViewById(R.id.buttongonder);
+        buton2 = (ImageButton) findViewById(R.id.buttongeri);
         etv1 = (EditText) findViewById(R.id.editTextyazi);
         etv1.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {

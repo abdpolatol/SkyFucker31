@@ -644,6 +644,10 @@ public class PageFragment2 extends Fragment implements View.OnClickListener {
         return serverResponseCode;
     }
 
+    public void aramaYap(String arananveri) {
+
+    }
+
     public class ArkadanYaziGonder extends AsyncTask<String,Void,String> {
 
         protected String doInBackground(String... params) {

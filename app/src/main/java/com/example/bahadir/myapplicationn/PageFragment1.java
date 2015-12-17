@@ -49,6 +49,7 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
     public static final String ARG_PAGE = "ARG_PAGE";
     ArrayList<OfficialKanal> officialKanalListesi;
     ArrayList<NormalKanal> normalKanalListesi;
+    ArrayList<Kanal> ArananKanalListesi;
     KanallariCek kC;
     KanallariYenidenCek kYC;
     ArrayList<Kanal> channelbaba = new ArrayList<>();
@@ -247,6 +248,39 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
     public void onScroll(AbsListView absListView, int i, int i1, int i2) {
     }
 
+    public void aramaYap(String arananveri) {
+        ArananKanalListesi = new ArrayList();
+        for (int i = 0; i < channelbaba.size(); i++) {
+            Log.i("tago", channelbaba.get(i).getKanaladi());
+            if ((channelbaba.get(i).getKanaladi().equals(arananveri))) {
+                ArananKanalListesi.add(channelbaba.get(i));
+                Log.i("tago", "aramayla eşleşen öge bulundu: " + ArananKanalListesi.get(i).getKanaladi());
+            } else {
+                Log.i("tago", "aramayla eşleşen öge bulunmadı");
+            }
+        }
+
+        KanalAdapter arananadapter = new KanalAdapter(getActivity(), officialKanalListesi, normalKanalListesi, ArananKanalListesi);
+        if (viewGroup instanceof AbsListView) {
+            int numColumns = (viewGroup instanceof GridView) ? 3 : 1;
+            absListView.setAdapter(new QuickReturnAdapter(arananadapter, numColumns));
+        }
+        QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(viewGroup);
+        quickReturnAttacher.addTargetView(bottomTextView, AbsListViewScrollTarget.POSITION_BOTTOM);
+        topTargetView = quickReturnAttacher.addTargetView(lay1,
+                AbsListViewScrollTarget.POSITION_TOP,
+                dpToPx(getActivity(), 50));
+
+        if (quickReturnAttacher instanceof AbsListViewQuickReturnAttacher) {
+            AbsListViewQuickReturnAttacher
+                    attacher =
+                    (AbsListViewQuickReturnAttacher) quickReturnAttacher;
+            attacher.addOnScrollListener(PageFragment1.this);
+            attacher.setOnItemClickListener(PageFragment1.this);
+            attacher.setOnItemLongClickListener(PageFragment1.this);
+        }
+    }
+
 
     private class KanallariCek extends AsyncTask<String, Void, String> {
 
@@ -305,12 +339,12 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
                     officialKanalListesi = new ArrayList();
                     for (int i = 0; i < jsono.length(); i++) {
                         JSONObject object = jsono.getJSONObject(i);
-                        OfficialKanal officialKanal = new OfficialKanal();
+                        /*OfficialKanal officialKanal = new OfficialKanal();
                         officialKanal.setKanaladi(object.optString("name"));
                         officialKanal.setDate(object.optString("date"));
                         officialKanal.setId(object.optString("id"));
                         officialKanal.setLikedurumu(object.optInt("like_status"));
-                        officialKanalListesi.add(officialKanal);
+                        officialKanalListesi.add(officialKanal);*/
                         Kanal kanal = new Kanal(true);
                         kanal.setKanaladi(object.optString("name"));
                         kanal.setDate("date");
@@ -389,11 +423,11 @@ public class PageFragment1 extends Fragment implements AbsListView.OnScrollListe
                     normalKanalListesi = new ArrayList();
                     for (int i = 0; i < jsono.length(); i++) {
                         JSONObject object = jsono.getJSONObject(i);
-                        NormalKanal normalKanal = new NormalKanal();
+                        /*NormalKanal normalKanal = new NormalKanal();
                         normalKanal.setKanaladi(object.optString("name"));
                         normalKanal.setDate(object.optString("date"));
                         normalKanal.setId(object.optString("id"));
-                        normalKanalListesi.add(normalKanal);
+                        normalKanalListesi.add(normalKanal);*/
                         Kanal kanal = new Kanal(false);
                         kanal.setKanaladi(object.optString("name"));
                         kanal.setDate("date");
