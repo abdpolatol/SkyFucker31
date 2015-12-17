@@ -41,6 +41,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -61,6 +62,7 @@ public class Mesajlasma extends Activity {
     String karsidakiresimurl;
     Bitmap kullaniciresmi;
     List<String> kayitlimesajlar;
+    List<String> kayitlizamanlar;
     ImageButton imagebuton1;
     String yazaninid;
     String yazaninmesaj;
@@ -103,15 +105,16 @@ public class Mesajlasma extends Activity {
         DatabaseClass dB = new DatabaseClass(Mesajlasma.this);
         dB.open();
         kayitlimesajlar = dB.databasedencek(karsidakiid);
+        kayitlizamanlar = dB.databasedenzamanlaricek(karsidakiid);
         dB.close();
         Log.i("tago" , String.valueOf(kayitlimesajlar));
 
         for(int k = 0 ; k < kayitlimesajlar.size() ; k++){
             Log.i("tago" , kayitlimesajlar.get(k).substring(0,10));
             if(kayitlimesajlar.get(k).substring(0,10).equals("badbadbado")){
-                adapter.add(new Mesaj(!taraf,kayitlimesajlar.get(k).substring(36)));
+                adapter.add(new Mesaj(!taraf,kayitlimesajlar.get(k).substring(36),kayitlizamanlar.get(k)));
             }else{
-                adapter.add(new Mesaj(taraf,kayitlimesajlar.get(k).substring(0,kayitlimesajlar.get(k).indexOf("rumbararumbarumbarumruru"))));
+                adapter.add(new Mesaj(taraf,kayitlimesajlar.get(k).substring(0,kayitlimesajlar.get(k).indexOf("rumbararumbarumbarumruru")),kayitlizamanlar.get(k)));
             }
         }
     }
@@ -181,11 +184,15 @@ public class Mesajlasma extends Activity {
         yazaninmesaj = etv1.getText().toString();
         aV = new ArkadanVurdur(yazaninid, yazaninmesaj, karsidakiid);
         aV.execute("sikim");
-        adapter.add(new Mesaj(taraf, yazaninmesaj));
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR);
+        int minute = c.get(Calendar.MINUTE);
+        String date = String.valueOf(hour) + ":" + String.valueOf(minute);
+        adapter.add(new Mesaj(taraf, yazaninmesaj,date));
         etv1.setText("");
         Log.i("tago" , "yeni konusma kaydi aciliyor");
         kiminlemesajlasiyorsun();
-        mesajiexternalkaydet(yazaninmesaj);
+        mesajiexternalkaydet(yazaninmesaj,date);
         handler = new Handler();
         Thread thread = new Thread(new Runnable() {
             public void run() {
@@ -222,7 +229,7 @@ public class Mesajlasma extends Activity {
         dB.close();
         Log.i("tago", "Mesajlasma sqlite yeni kayit işlemi yapıldı");
     }
-    private void mesajiexternalkaydet(String yazaninmesaj) {
+    private void mesajiexternalkaydet(String yazaninmesaj,String mesajdate) {
         String durum = Environment.getExternalStorageState();
         if (durum.equals(Environment.MEDIA_MOUNTED)) {
             okunabilir = true;
@@ -251,14 +258,18 @@ public class Mesajlasma extends Activity {
             }
             DatabaseClass dB = new DatabaseClass(Mesajlasma.this);
             dB.open();
-            dB.olustur(yazaninmesaj,karsidakiid);
+            dB.olustur(yazaninmesaj,karsidakiid,mesajdate);
             dB.close();
             Log.i("tago", "Mesajlasma sqlite kayıt işlemi yapıldı");
         }
     }
     private boolean takeChatMessage(String mesaajj) {
-        adapter.add(new Mesaj(!taraf, mesaajj));
-        alinanmesajiexternalkaydet(mesaajj);
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR);
+        int minute = c.get(Calendar.MINUTE);
+        String date = String.valueOf(hour) + ":" + String.valueOf(minute);
+        adapter.add(new Mesaj(!taraf, mesaajj,date));
+        alinanmesajiexternalkaydet(mesaajj,date);
         kiminlemesajlasiyorsun();
         handler = new Handler();
         Thread thread = new Thread(new Runnable() {
@@ -275,7 +286,7 @@ public class Mesajlasma extends Activity {
 
         return true;
     }
-    private void alinanmesajiexternalkaydet(String mesaj) {
+    private void alinanmesajiexternalkaydet(String mesaj,String date) {
         String durum = Environment.getExternalStorageState();
         if (durum.equals(Environment.MEDIA_MOUNTED)) {
             okunabilir = true;
@@ -304,7 +315,7 @@ public class Mesajlasma extends Activity {
             }
             DatabaseClass dB = new DatabaseClass(Mesajlasma.this);
             dB.open();
-            dB.olusturx(mesaj, karsidakiid);
+            dB.olusturx(mesaj, karsidakiid,date);
             dB.close();
             Log.i("tago", "Mesajlasma alinan sqlite kayıt işlemi yapıldı");
         }

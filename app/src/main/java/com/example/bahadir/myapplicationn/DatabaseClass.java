@@ -17,16 +17,18 @@ public class DatabaseClass {
 
     private static final String DATABASENAME= "MesajlarData.db";
     private static final String TABLENAME = "MesajTablosu";
-    private static final int DATABASEVERSION = 3;
+    private static final int DATABASEVERSION = 5;
 
     private static final String ROWID = "_id";
     private static final String KENDIMESAJ = "kendimesaj";
     private static final String KARSIMESAJ = "karsimesaj";
     private static final String KARSIID = "karsiid";
+    private static final String DATE="date";
     Context context;
     private DbHelper dbhelper;
     private static File kayityeri;
     private static SQLiteDatabase sqlitedatabaseobjesi;
+
     public DatabaseClass(Context context) {
         this.context = context;
         File path = Environment.getExternalStorageDirectory();
@@ -65,18 +67,19 @@ public class DatabaseClass {
             Log.i("tago" , "okunamaz ve yazılamaz");
         }
     }
-    public long olustur(String mesaj , String karsiid){
+    public long olustur(String mesaj , String karsiid, String mesajdate){
         ContentValues cV = new ContentValues();
         cV.put(KENDIMESAJ , mesaj);
         cV.put(KARSIMESAJ , "badbadbado");
         cV.put(KARSIID, karsiid);
+        cV.put(DATE,mesajdate);
         return sqlitedatabaseobjesi.insert(TABLENAME , null , cV);
     }
     public void close(){
         sqlitedatabaseobjesi.close();
     }
     public List<String> databasedencek(String karsidakiid) {
-        String[] kolonlar = new String[]{ROWID , KENDIMESAJ , KARSIMESAJ, KARSIID};
+        String[] kolonlar = new String[]{ROWID , KENDIMESAJ , KARSIMESAJ, KARSIID,DATE};
         Cursor c = sqlitedatabaseobjesi.query(TABLENAME, kolonlar, KARSIID+"="+karsidakiid, null, null, null, null);
         List<String> kayitlimesajlar = new ArrayList<>();
         int kendimesajindexi = c.getColumnIndex(KENDIMESAJ);
@@ -86,11 +89,22 @@ public class DatabaseClass {
         }
         return kayitlimesajlar ;
     }
-    public long olusturx(String mesaj,String karsidakiid) {
+    public List<String> databasedenzamanlaricek(String karsidakiid){
+        String[] kolonlar = new String[]{ROWID,KENDIMESAJ,KARSIMESAJ,KARSIID,DATE};
+        Cursor c = sqlitedatabaseobjesi.query(TABLENAME,kolonlar,KARSIID+"="+karsidakiid,null,null,null,null);
+        List<String> kayitlizamanlar = new ArrayList<>();
+        int dateindexi = c.getColumnIndex(DATE);
+        for(c.moveToFirst();!c.isAfterLast() ;c.moveToNext()){
+            kayitlizamanlar.add(c.getString(dateindexi));
+        }
+        return kayitlizamanlar;
+    }
+    public long olusturx(String mesaj,String karsidakiid,String date) {
         ContentValues cV = new ContentValues();
         cV.put(KENDIMESAJ , "badbadbado");
         cV.put(KARSIMESAJ , mesaj);
         cV.put(KARSIID , karsidakiid);
+        cV.put(DATE,date);
         return sqlitedatabaseobjesi.insert(TABLENAME , null , cV);
     }
 
@@ -102,7 +116,7 @@ public class DatabaseClass {
 
         public void onCreate(SQLiteDatabase db) {
             db.execSQL("CREATE TABLE " + TABLENAME + "(" + ROWID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    KENDIMESAJ +" TEXT NOT NULL, "+ KARSIMESAJ + " TEXT NOT NULL, " + KARSIID + " TEXT NOT NULL);");
+                    KENDIMESAJ +" TEXT NOT NULL, "+ KARSIMESAJ + " TEXT NOT NULL, " + KARSIID + " TEXT NOT NULL, " + DATE + " TEXT NOT NULL);");
         }
 
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

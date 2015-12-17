@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.util.Calendar;
+
 public class PushReceiver extends BroadcastReceiver
 {
     boolean notificationver = true;
@@ -46,9 +48,13 @@ public class PushReceiver extends BroadcastReceiver
         inte.putExtra("mesaj", bundle.getString("message"));
         context.sendBroadcast(inte);
         Log.i("tago", "broadcast gonderildi");
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR);
+        int minute = c.get(Calendar.MINUTE);
+        String date = String.valueOf(hour) + ":" + String.valueOf(minute);
         DatabaseClass db = new DatabaseClass(context);
         db.open();
-        db.olusturx(bundle.getString("message"),bundle.getString("id"));
+        db.olusturx(bundle.getString("message"),bundle.getString("id"),date);
         db.close();
         //-----------------------------
         // Create a test notification

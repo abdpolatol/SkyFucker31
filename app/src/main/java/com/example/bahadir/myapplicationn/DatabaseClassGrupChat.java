@@ -16,17 +16,20 @@ import java.util.List;
 public class DatabaseClassGrupChat {
     private static final String DATABASENAME= "GrupMesajlarData.db";
     private static final String TABLENAME = "MesajTablosu";
-    private static final int DATABASEVERSION = 1;
+    private static final int DATABASEVERSION = 3;
 
     private static final String ROWID = "_id";
     private static final String KENDIMESAJ = "kendimesaj";
     private static final String KARSIMESAJ = "karsimesaj";
     private static final String KANALADI = "kanaladi";
+    private static final String DATE = "date";
+
     Context context;
     boolean okunabilir , yazilabilir;
     private DbHelper dbhelper;
     private static File kayityeri;
     private static SQLiteDatabase sqlitedatabaseobjesi;
+
     public DatabaseClassGrupChat(Context context) {
         this.context = context;
         File path = Environment.getExternalStorageDirectory();
@@ -65,12 +68,12 @@ public class DatabaseClassGrupChat {
             Log.i("tago" , "okunamaz ve yazılamaz");
         }
     }
-    public long olustur(String mesaj , String kanaladi){
+    public long olustur(String mesaj , String kanaladi,String date){
         ContentValues cV = new ContentValues();
         cV.put(KENDIMESAJ , mesaj);
         cV.put(KARSIMESAJ , "badbadbado");
-        Log.i("tago" ,"Kanaladi = " +  kanaladi);
         cV.put(KANALADI, kanaladi);
+        cV.put(DATE, date);
         Log.i("tago", "olustur database");
         return sqlitedatabaseobjesi.insert(TABLENAME , null , cV);
     }
@@ -81,7 +84,7 @@ public class DatabaseClassGrupChat {
     public List<String> databasedencek (String kanaladi) {
         List<String> kayitlimesajlar = new ArrayList<>();
         try {
-            String[] kolonlar = new String[]{ROWID, KENDIMESAJ, KARSIMESAJ, KANALADI};
+            String[] kolonlar = new String[]{ROWID, KENDIMESAJ, KARSIMESAJ, KANALADI,DATE};
             Cursor c = sqlitedatabaseobjesi.query(TABLENAME, kolonlar, KANALADI +"='"+kanaladi+"'", null, null, null, null);
                 int kendimesajindexi = c.getColumnIndex(KENDIMESAJ);
                 int karsimesajindexi = c.getColumnIndex(KARSIMESAJ);
@@ -95,11 +98,22 @@ public class DatabaseClassGrupChat {
         }
         return kayitlimesajlar;
     }
-    public long olusturx(String mesaj,String kanaladi) {
+    public List<String> databasedenzamancek (String kanaladi){
+        List<String> kayitlizamanlar = new ArrayList<>();
+        String[] kolonlar = new String[]{ROWID,KENDIMESAJ,KARSIMESAJ,KANALADI,DATE};
+        Cursor c = sqlitedatabaseobjesi.query(TABLENAME,kolonlar,KANALADI + "='" + kanaladi +"'",null,null,null,null );
+        int dateindexi = c.getColumnIndex(DATE);
+        for(c.moveToFirst();!c.isAfterLast();c.moveToNext()){
+            kayitlizamanlar.add(c.getString(dateindexi));
+        }
+        return kayitlizamanlar;
+    }
+    public long olusturx(String mesaj,String kanaladi,String date) {
         ContentValues cV = new ContentValues();
         cV.put(KENDIMESAJ , "badbadbado");
         cV.put(KARSIMESAJ , mesaj);
         cV.put(KANALADI , kanaladi);
+        cV.put(DATE,date);
         return sqlitedatabaseobjesi.insert(TABLENAME , null , cV);
     }
 
@@ -112,7 +126,7 @@ public class DatabaseClassGrupChat {
 
         public void onCreate(SQLiteDatabase db) {
             db.execSQL("CREATE TABLE " + TABLENAME + "(" + ROWID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    KENDIMESAJ +" TEXT NOT NULL, "+ KARSIMESAJ + " TEXT NOT NULL, " + KANALADI + " TEXT NOT NULL);");
+                    KENDIMESAJ +" TEXT NOT NULL, "+ KARSIMESAJ + " TEXT NOT NULL, " + KANALADI + " TEXT NOT NULL, " + DATE + " TEXT NOT NULL);");
         }
 
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

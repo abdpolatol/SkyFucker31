@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -14,9 +14,9 @@ import java.util.List;
 
 public class MesajArrayAdapter extends ArrayAdapter<Mesaj> {
 
-    public TextView tv1;
+    public TextView tv1,tv2;
     public List<Mesaj> MesajListesi = new ArrayList();
-    public LinearLayout layout1;
+    public RelativeLayout layout1;
 
     public MesajArrayAdapter(Context applicationContext, int mesaj, List<Mesaj> mesajListesi) {
         super(applicationContext , mesaj , mesajListesi);
@@ -42,10 +42,12 @@ public class MesajArrayAdapter extends ArrayAdapter<Mesaj> {
             v = inflater.inflate(R.layout.mesaj , parent, false);
         }
 
-        layout1 = (LinearLayout) v.findViewById(R.id.mesajlayout);
+        layout1 = (RelativeLayout) v.findViewById(R.id.mesajlayout);
         Mesaj mesajobj = getItem(position);
         tv1=(TextView) v.findViewById(R.id.textView7);
-        tv1.setText("   " + mesajobj.mesac);
+        tv2 = (TextView) v.findViewById(R.id.textView19);
+        tv1.setText(mesajobj.mesac);
+        tv2.setText(mesajobj.date);
        // tv1.setBackgroundResource(mesajobj.left ? R.drawable.pbutton : R.drawable.pbutton3);
         layout1.setGravity(mesajobj.side? Gravity.LEFT : Gravity.RIGHT);
         return v;

@@ -4,9 +4,11 @@ public class Mesaj {
 
     public boolean side ;
     public String mesac;
-    public Mesaj(boolean side, String s) {
+    public String date;
+    public Mesaj(boolean side, String s, String date) {
         super();
         this.side = side;
         mesac = s;
+        this.date = date;
     }
 }

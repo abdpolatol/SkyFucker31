@@ -29,6 +29,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class GrupSohbeti extends Activity {
@@ -42,6 +43,7 @@ public class GrupSohbeti extends Activity {
     boolean okunabilir , yazilabilir ;
     boolean notificationbas = true;
     List<String> kayitlimesajlar;
+    List<String> kayitlizamanlar;
     List<Mesaj> mesajlistesi = new ArrayList();
     MesajArrayAdapter adapter ;
     BroadcastReceiver receiveralfa = new BroadcastReceiver() {
@@ -63,15 +65,16 @@ public class GrupSohbeti extends Activity {
         dB.open();
         if(dB.databasedencek(kanaladi)!= null){
             kayitlimesajlar = dB.databasedencek(kanaladi);
+            kayitlizamanlar = dB.databasedenzamancek(kanaladi);
             Log.i("tago", String.valueOf(kayitlimesajlar));
         }
         dB.close();
         for(int k = 0 ; k < kayitlimesajlar.size() ; k++){
             Log.i("tago" , kayitlimesajlar.get(k).substring(0,10));
             if(kayitlimesajlar.get(k).substring(0,10).equals("badbadbado")){
-                adapter.add(new Mesaj(!taraf,kayitlimesajlar.get(k).substring(37)));
+                adapter.add(new Mesaj(!taraf,kayitlimesajlar.get(k).substring(37),kayitlizamanlar.get(k)));
             }else{
-                adapter.add(new Mesaj(taraf,kayitlimesajlar.get(k).substring(0,kayitlimesajlar.get(k).indexOf("rumbararumbarumbarumruru"))));
+                adapter.add(new Mesaj(taraf,kayitlimesajlar.get(k).substring(0,kayitlimesajlar.get(k).indexOf("rumbararumbarumbarumruru")),kayitlizamanlar.get(k)));
             }
         }
     }
@@ -129,10 +132,14 @@ public class GrupSohbeti extends Activity {
         String yazaninnicki = SharedPrefNickAl();
         aT = new ArkadanToplu(yazaninid,yazaninnicki,kanaladi,yazaninmesaj);
         aT.execute("sikim");
-        adapter.add(new Mesaj(taraf, yazaninmesaj));
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR);
+        int minute = c.get(Calendar.MINUTE);
+        String date = String.valueOf(hour) + ":" + String.valueOf(minute);
+        adapter.add(new Mesaj(taraf, yazaninmesaj,date));
         etv1.setText("");
         konusulankanalikaydet();
-        mesajiexternalkaydet(yazaninmesaj);
+        mesajiexternalkaydet(yazaninmesaj,date);
         return true;
     }
     private void konusulankanalikaydet() {
@@ -157,10 +164,14 @@ public class GrupSohbeti extends Activity {
         Log.i("tago", "Mesajlasma sqlite konusulan kanal kayit işlemi yapıldı");
     }
     private boolean takeChatMessage(String mesaj){
-        adapter.add(new Mesaj(!taraf, mesaj));
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR);
+        int minute = c.get(Calendar.MINUTE);
+        String date = String.valueOf(hour) + ":" + String.valueOf(minute);
+        adapter.add(new Mesaj(!taraf, mesaj,date));
         DatabaseClassGrupChat databaseClass = new DatabaseClassGrupChat(GrupSohbeti.this);
         databaseClass.open();
-        databaseClass.olusturx(mesaj, kanaladi);
+        databaseClass.olusturx(mesaj, kanaladi,date);
         databaseClass.close();
         return true;
     }
@@ -174,7 +185,7 @@ public class GrupSohbeti extends Activity {
         String veritabani_id= sP.getString("veritabani_id", "default");
         return veritabani_id;
     }
-    private void mesajiexternalkaydet(String yazaninmesaj) {
+    private void mesajiexternalkaydet(String yazaninmesaj,String date) {
         String durum = Environment.getExternalStorageState();
         if (durum.equals(Environment.MEDIA_MOUNTED)) {
             okunabilir = true;
@@ -204,7 +215,7 @@ public class GrupSohbeti extends Activity {
             }
             DatabaseClassGrupChat dB = new DatabaseClassGrupChat(GrupSohbeti.this);
             dB.open();
-            dB.olustur(yazaninmesaj,kanaladi);
+            dB.olustur(yazaninmesaj,kanaladi,date);
             dB.close();
             Log.i("tago", "Grup Mesajlasma sqlite kayıt işlemi yapıldı");
         }
