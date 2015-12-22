@@ -31,6 +31,13 @@ public class AnaAkim extends AppCompatActivity {
     boolean notificationbas;
     public Toolbar toolbar;
     ViewPager viewPager;
+    ImageButton imagesimge;
+    ImageButton imagearama;
+    ImageView logo;
+    EditText etv1;
+    Toolbar.LayoutParams normalfirstaramaparams;
+    Toolbar.LayoutParams normaletvparams;
+    Toolbar.LayoutParams normallogoparams;
 
     protected void onCreate(Bundle bambam) {
         super.onCreate(bambam);
@@ -42,13 +49,13 @@ public class AnaAkim extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        final ImageButton imagesimge,imagearama;
-        final ImageView logo;
-        final EditText etv1;
         etv1 = (EditText) findViewById(R.id.aramaalani);
         imagesimge = (ImageButton) findViewById(R.id.imageButton14);
         imagearama = (ImageButton) findViewById(R.id.aramabutonu);
         logo = (ImageView) findViewById(R.id.imageView13);
+        normalfirstaramaparams =(Toolbar.LayoutParams)imagearama.getLayoutParams();
+        normaletvparams = new Toolbar.LayoutParams(0,0);
+        normallogoparams = (Toolbar.LayoutParams) logo.getLayoutParams();
         imagearama.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.i("tago", "onclicktıklandı");
@@ -78,12 +85,6 @@ public class AnaAkim extends AppCompatActivity {
     private void editTextAyarla(final EditText etv, final ImageButton simge,final ImageView logo,final ImageButton imagefirstarama) {
         final float scale = getResources().getDisplayMetrics().density;
         simge.setImageResource(R.mipmap.aramam);
-        final Toolbar.LayoutParams normalfirstaramaparams =(Toolbar.LayoutParams)imagefirstarama.getLayoutParams();
-        final Toolbar.LayoutParams normaletvparams = new Toolbar.LayoutParams(0,0);
-        final Toolbar.LayoutParams normallogoparams = (Toolbar.LayoutParams) logo.getLayoutParams();
-        Log.i("tago" , "params" + String.valueOf(normaletvparams));
-        Log.i("tago", "params" + String.valueOf(normalfirstaramaparams));
-        Log.i("tago", "params" + String.valueOf(normallogoparams));
         Toolbar.LayoutParams firstaramaparams = new Toolbar.LayoutParams(0,0);
         imagefirstarama.setLayoutParams(firstaramaparams);
         Toolbar.LayoutParams logoparams = new Toolbar.LayoutParams(0,0);
@@ -95,6 +96,7 @@ public class AnaAkim extends AppCompatActivity {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     String arananveri = etv.getText().toString();
                     Log.i("tago", arananveri);
+                    etv.setText("");
                     etv.setLayoutParams(normaletvparams);
                     imagefirstarama.setLayoutParams(normalfirstaramaparams);
                     logo.setLayoutParams(normallogoparams);
@@ -103,15 +105,15 @@ public class AnaAkim extends AppCompatActivity {
                     InputMethodManager iMM = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     iMM.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     if (viewPager.getCurrentItem() == 0) {
-                        PageFragment frag1 = (PageFragment) viewPager.getAdapter().instantiateItem(viewPager,viewPager.getCurrentItem());
+                        PageFragment frag1 = (PageFragment) viewPager.getAdapter().instantiateItem(viewPager, viewPager.getCurrentItem());
                         frag1.aramaYap(arananveri);
                         Log.i("tago", "ilk fragmenttesin");
                     } else if (viewPager.getCurrentItem() == 1) {
-                        PageFragment1 frag2 = (PageFragment1) viewPager.getAdapter().instantiateItem(viewPager,viewPager.getCurrentItem());
+                        PageFragment1 frag2 = (PageFragment1) viewPager.getAdapter().instantiateItem(viewPager, viewPager.getCurrentItem());
                         frag2.aramaYap(arananveri);
                         Log.i("tago", "ikinci fragmenttesin");
                     } else if (viewPager.getCurrentItem() == 2) {
-                        PageFragment2 frag3 = (PageFragment2) viewPager.getAdapter().instantiateItem(viewPager,viewPager.getCurrentItem());
+                        PageFragment2 frag3 = (PageFragment2) viewPager.getAdapter().instantiateItem(viewPager, viewPager.getCurrentItem());
                         frag3.aramaYap(arananveri);
                         Log.i("tago", "ucuncu fragmenttesin");
                     } else if (viewPager.getCurrentItem() == 3) {
@@ -126,6 +128,7 @@ public class AnaAkim extends AppCompatActivity {
             public void onClick(View v) {
                 String arananveri = etv.getText().toString();
                 Log.i("tago", arananveri);
+                etv.setText("");
                 etv.setLayoutParams(normaletvparams);
                 imagefirstarama.setLayoutParams(normalfirstaramaparams);
                 logo.setLayoutParams(normallogoparams);
@@ -133,6 +136,21 @@ public class AnaAkim extends AppCompatActivity {
                 View view = getCurrentFocus();
                 InputMethodManager iMM = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 iMM.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                if (viewPager.getCurrentItem() == 0) {
+                    PageFragment frag1 = (PageFragment) viewPager.getAdapter().instantiateItem(viewPager,viewPager.getCurrentItem());
+                    frag1.aramaYap(arananveri);
+                    Log.i("tago", "ilk fragmenttesin");
+                } else if (viewPager.getCurrentItem() == 1) {
+                    PageFragment1 frag2 = (PageFragment1) viewPager.getAdapter().instantiateItem(viewPager,viewPager.getCurrentItem());
+                    frag2.aramaYap(arananveri);
+                    Log.i("tago", "ikinci fragmenttesin");
+                } else if (viewPager.getCurrentItem() == 2) {
+                    PageFragment2 frag3 = (PageFragment2) viewPager.getAdapter().instantiateItem(viewPager,viewPager.getCurrentItem());
+                    frag3.aramaYap(arananveri);
+                    Log.i("tago", "ucuncu fragmenttesin");
+                } else if (viewPager.getCurrentItem() == 3) {
+                    Log.i("tago", "dorduncu fragmenttesin");
+                }
             }
         });
     }
@@ -199,6 +217,14 @@ public class AnaAkim extends AppCompatActivity {
             }
         });
 
+    }
+    public void onBackPressed(){
+        etv1.setText("");
+        etv1.setLayoutParams(normaletvparams);
+        imagearama.setLayoutParams(normalfirstaramaparams);
+        logo.setLayoutParams(normallogoparams);
+        imagesimge.setImageResource(R.mipmap.owll_3);
+        Log.i("tago" , "back pressed basıldı");
     }
     private void nickiSharedKeydet(String nick) {
         SharedPreferences sP = getSharedPreferences("kullaniciverileri",Context.MODE_PRIVATE);
