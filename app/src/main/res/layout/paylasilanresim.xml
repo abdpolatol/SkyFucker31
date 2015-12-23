@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:id="@+id/neid">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="20dp"
+        android:background="@mipmap/chat_back">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Gönderenid"
+            android:id="@+id/textView13"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignBottom="@+id/textView8"
+            android:layout_alignParentStart="true"
+            android:textSize="15dp"
+            android:textStyle="bold"
+            android:layout_marginLeft="10dp" />
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:id="@+id/imageView12"
+        android:background="#2cc0c0c2" />
+
+    <ImageButton
+        android:layout_width="fill_parent"
+        android:layout_height="160dp"
+        android:id="@+id/imageButton11"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.16"
+        android:background="#00000000" />
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:id="@+id/imageView11"
+        android:background="#2cc0c0c2" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:layout_gravity="right"
+        android:id="@+id/relativeLayout"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/babo"
+        android:background="@mipmap/chat_back">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button7"
+            android:background="#00000000"
+            android:layout_marginLeft="20dp"
+            android:src="@mipmap/like_deneme23"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/imageButton13"
+            android:layout_marginStart="18dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButton7"
+            android:background="#ffffff"
+            android:src="@mipmap/warning_deneme2"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="false"
+            android:layout_marginLeft="320dp" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButton13"
+            android:background="#00000000"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/comment"
+            android:layout_marginStart="15dp"
+            android:layout_alignTop="@+id/button7"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="6dp"
+        android:id="@+id/imageView10"
+        android:layout_gravity="right|top"
+        android:background="#2c434344"
+        android:layout_below="@+id/relativeLayout"
+        android:layout_alignParentStart="true" />
+
+</LinearLayout>
