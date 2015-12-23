@@ -8,7 +8,7 @@ import android.widget.ImageButton;
 public class KarsilastirmaliFotoPaylas extends Activity {
 
     ImageButton image1, image2;
-
+String deneme="deneme";
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.karsilastirmalifotopaylas);
